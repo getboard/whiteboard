@@ -1,0 +1,26 @@
+timestamp=1670531593,kind=ADD_TEXT,x=100,y=100,obj_id=386624f9d1,text=it works!
+timestamp=1670531593,kind=ADD_TEXT,x=200,y=200,obj_id=31cef23cf7,text=текст на русском
+timestamp=1670531618,kind=ADD_TEXT,x=400,y=400,obj_id=fc6f40b1e4,text=новый текст по клику
+timestamp=1670531619,kind=EDIT_TEXT,obj_id=fc6f40b1e4,new_text=этот текст поменялся с помощью ивента EDIT_TEXT
+timestamp=1670602608,kind=MOVE_OBJECT,x=221,y=88,obj_id=386624f9d1
+timestamp=1670602610,kind=ADD_TEXT,x=489,y=144,obj_id=3791fadb95,text=новый текст по клику
+timestamp=1670602612,kind=MOVE_OBJECT,x=347,y=127,obj_id=3791fadb95
+timestamp=1670602613,kind=MOVE_OBJECT,x=160,y=195,obj_id=31cef23cf7
+timestamp=1670602624,kind=MOVE_OBJECT,x=285,y=235,obj_id=3791fadb95
+timestamp=1672071972,kind=ADD_TEXT,x=599,y=157,obj_id=f8116a66ff,text=новый текст по клику
+timestamp=1672071974,kind=ADD_TEXT,x=606,y=197,obj_id=8ac109f919,text=новый текст по клику
+timestamp=1672071989,kind=MOVE_OBJECT,x=495,y=180,obj_id=8ac109f919
+timestamp=1672071989,kind=ADD_TEXT,x=628,y=190,obj_id=834aaacb7e,text=новый текст по клику
+timestamp=1672071989,kind=MOVE_OBJECT,x=495,y=180,obj_id=8ac109f919
+timestamp=1672081494,kind=ADD_TEXT,x=421,y=296,obj_id=cb383b166a,text=новый текст по клику
+timestamp=1672081497,kind=MOVE_OBJECT,x=244,y=87,obj_id=f8116a66ff
+timestamp=1672082302,kind=MOVE_OBJECT,x=350,y=155,obj_id=834aaacb7e
+timestamp=1672082303,kind=MOVE_OBJECT,x=334,y=139,obj_id=834aaacb7e
+timestamp=1672082304,kind=MOVE_OBJECT,x=334,y=139,obj_id=834aaacb7e
+timestamp=1672082304,kind=ADD_TEXT,x=380,y=150,obj_id=baa8ba43a4,text=новый текст по клику
+timestamp=1672082304,kind=MOVE_OBJECT,x=334,y=139,obj_id=834aaacb7e
+timestamp=1672082305,kind=MOVE_OBJECT,x=467,y=319,obj_id=baa8ba43a4
+timestamp=1672082306,kind=MOVE_OBJECT,x=428,y=18,obj_id=834aaacb7e
+timestamp=1672082307,kind=MOVE_OBJECT,x=470,y=73,obj_id=f8116a66ff
+timestamp=1672083564,kind=MOVE_OBJECT,x=85,y=365,obj_id=fc6f40b1e4
+timestamp=1672083566,kind=ADD_TEXT,x=249,y=315,obj_id=9d0f023007,text=новый текст по клику
