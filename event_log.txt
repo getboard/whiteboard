@@ -3,24 +3,45 @@ timestamp=1670531593,kind=ADD_TEXT,x=200,y=200,obj_id=31cef23cf7,text=текст
 timestamp=1670531618,kind=ADD_TEXT,x=400,y=400,obj_id=fc6f40b1e4,text=новый текст по клику
 timestamp=1670531619,kind=EDIT_TEXT,obj_id=fc6f40b1e4,new_text=этот текст поменялся с помощью ивента EDIT_TEXT
 timestamp=1670602608,kind=MOVE_OBJECT,x=221,y=88,obj_id=386624f9d1
-timestamp=1670602610,kind=ADD_TEXT,x=489,y=144,obj_id=3791fadb95,text=новый текст по клику
-timestamp=1670602612,kind=MOVE_OBJECT,x=347,y=127,obj_id=3791fadb95
-timestamp=1670602613,kind=MOVE_OBJECT,x=160,y=195,obj_id=31cef23cf7
-timestamp=1670602624,kind=MOVE_OBJECT,x=285,y=235,obj_id=3791fadb95
-timestamp=1672071972,kind=ADD_TEXT,x=599,y=157,obj_id=f8116a66ff,text=новый текст по клику
-timestamp=1672071974,kind=ADD_TEXT,x=606,y=197,obj_id=8ac109f919,text=новый текст по клику
-timestamp=1672071989,kind=MOVE_OBJECT,x=495,y=180,obj_id=8ac109f919
-timestamp=1672071989,kind=ADD_TEXT,x=628,y=190,obj_id=834aaacb7e,text=новый текст по клику
-timestamp=1672071989,kind=MOVE_OBJECT,x=495,y=180,obj_id=8ac109f919
-timestamp=1672081494,kind=ADD_TEXT,x=421,y=296,obj_id=cb383b166a,text=новый текст по клику
-timestamp=1672081497,kind=MOVE_OBJECT,x=244,y=87,obj_id=f8116a66ff
-timestamp=1672082302,kind=MOVE_OBJECT,x=350,y=155,obj_id=834aaacb7e
-timestamp=1672082303,kind=MOVE_OBJECT,x=334,y=139,obj_id=834aaacb7e
-timestamp=1672082304,kind=MOVE_OBJECT,x=334,y=139,obj_id=834aaacb7e
-timestamp=1672082304,kind=ADD_TEXT,x=380,y=150,obj_id=baa8ba43a4,text=новый текст по клику
-timestamp=1672082304,kind=MOVE_OBJECT,x=334,y=139,obj_id=834aaacb7e
-timestamp=1672082305,kind=MOVE_OBJECT,x=467,y=319,obj_id=baa8ba43a4
-timestamp=1672082306,kind=MOVE_OBJECT,x=428,y=18,obj_id=834aaacb7e
-timestamp=1672082307,kind=MOVE_OBJECT,x=470,y=73,obj_id=f8116a66ff
-timestamp=1672083564,kind=MOVE_OBJECT,x=85,y=365,obj_id=fc6f40b1e4
-timestamp=1672083566,kind=ADD_TEXT,x=249,y=315,obj_id=9d0f023007,text=новый текст по клику
+timestamp=1670602610,kind=ADD_HUMAN,x=489,y=144,obj_id=3791fadb95
+timestamp=1670602610,kind=ADD_HUMAN,x=489,y=144,obj_id=aboba
+timestamp=1672092791,kind=MOVE_OBJECT,x=489,y=144,obj_id=3791fadb95
+timestamp=1672093118,kind=MOVE_OBJECT,x=656,y=19,obj_id=aboba
+timestamp=1672093274,kind=MOVE_OBJECT,x=675,y=-1,obj_id=aboba
+timestamp=1672093282,kind=MOVE_OBJECT,x=679,y=2,obj_id=aboba
+timestamp=1672093363,kind=MOVE_OBJECT,x=658,y=18,obj_id=aboba
+timestamp=1672093371,kind=MOVE_OBJECT,x=658,y=16,obj_id=aboba
+timestamp=1672093383,kind=MOVE_OBJECT,x=659,y=17,obj_id=aboba
+timestamp=1672093441,kind=MOVE_OBJECT,x=668,y=16,obj_id=aboba
+timestamp=1672093454,kind=MOVE_OBJECT,x=674,y=3,obj_id=aboba
+timestamp=1672093595,kind=MOVE_OBJECT,x=573,y=136,obj_id=aboba
+timestamp=1672093703,kind=MOVE_OBJECT,x=668,y=17,obj_id=aboba
+timestamp=1672093708,kind=MOVE_OBJECT,x=665,y=58,obj_id=aboba
+timestamp=1672093715,kind=MOVE_OBJECT,x=667,y=53,obj_id=aboba
+timestamp=1672093716,kind=MOVE_OBJECT,x=667,y=56,obj_id=aboba
+timestamp=1672093814,kind=MOVE_OBJECT,x=600,y=231,obj_id=aboba
+timestamp=1672093885,kind=MOVE_OBJECT,x=678,y=-14,obj_id=aboba
+timestamp=1672093959,kind=MOVE_OBJECT,x=657,y=59,obj_id=aboba
+timestamp=1672093971,kind=MOVE_OBJECT,x=664,y=18,obj_id=aboba
+timestamp=1672093987,kind=MOVE_OBJECT,x=677,y=468,obj_id=3791fadb95
+timestamp=1672094167,kind=MOVE_OBJECT,x=399,y=300,obj_id=fc6f40b1e4
+timestamp=1672094171,kind=MOVE_OBJECT,x=258,y=11,obj_id=fc6f40b1e4
+timestamp=1672094242,kind=MOVE_OBJECT,x=4,y=2,obj_id=fc6f40b1e4
+timestamp=1672094420,kind=MOVE_OBJECT,x=481,y=90,obj_id=3791fadb95
+timestamp=1672094427,kind=MOVE_OBJECT,x=510,y=157,obj_id=3791fadb95
+timestamp=1672094434,kind=MOVE_OBJECT,x=466,y=223,obj_id=3791fadb95
+timestamp=1672094448,kind=MOVE_OBJECT,x=690,y=336,obj_id=3791fadb95
+timestamp=1672094461,kind=MOVE_OBJECT,x=466,y=221,obj_id=3791fadb95
+timestamp=1672094542,kind=MOVE_OBJECT,x=688,y=338,obj_id=3791fadb95
+timestamp=1672094549,kind=MOVE_OBJECT,x=468,y=220,obj_id=3791fadb95
+timestamp=1672094562,kind=MOVE_OBJECT,x=497,y=129,obj_id=aboba
+timestamp=1672094692,kind=MOVE_OBJECT,x=676,y=54,obj_id=aboba
+timestamp=1672094747,kind=MOVE_OBJECT,x=664,y=16,obj_id=aboba
+timestamp=1672094752,kind=MOVE_OBJECT,x=665,y=17,obj_id=aboba
+timestamp=1672094796,kind=MOVE_OBJECT,x=335,y=406,obj_id=386624f9d1
+timestamp=1672094801,kind=ADD_HUMAN,x=621,y=187,obj_id=a7d528f186
+timestamp=1672094802,kind=ADD_HUMAN,x=565,y=208,obj_id=9f809f2c4c
+timestamp=1672094846,kind=ADD_HUMAN,x=258,y=266,obj_id=c5775409a9
+timestamp=1672094856,kind=ADD_HUMAN,x=498,y=391,obj_id=6bac2751be
+timestamp=1672094864,kind=ADD_HUMAN,x=109,y=301,obj_id=e009177bef
+timestamp=1672094869,kind=MOVE_OBJECT,x=64,y=278,obj_id=31cef23cf7
