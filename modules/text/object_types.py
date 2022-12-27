@@ -8,10 +8,13 @@ class TextObject(objects_storage.Object):
         super().__init__(ctx, id)
         self._font_size = 14
         self._ctx.canvas.create_text(kwargs['x'], kwargs['y'], text=kwargs['text'], tags=[id, 'text'],
-                                     font=('sans-serif', self._font_size))
+                                     font=self.get_font())
 
     def update(self, **kwargs):
         self._ctx.canvas.itemconfig(self.id, **kwargs)
+
+    def get_font(self):
+        return 'sans-serif', self._font_size
 
     def scale(self, scale_factor: float):
         self._font_size *= scale_factor

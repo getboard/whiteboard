@@ -41,8 +41,11 @@ class ObjectsStorage:
     def register_object_type(self, type_name: str, type_class: typing.Type[Object]):
         self._object_types[type_name] = type_class
 
-    def get_by_id(self, object_id: str):
+    def get_by_id(self, object_id: str) -> Object:
         return self._objects[object_id]
+
+    def get_opt_by_id(self, object_id: str) -> typing.Optional[Object]:
+        return self._objects.get(object_id)
 
     def get_objects(self) -> dict[str, Object]:
         return self._objects
