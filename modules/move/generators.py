@@ -14,7 +14,7 @@ def on_move_object(ctx: context.Context, event: tkinter.Event):
     # TODO: ofc that's bad
     obj: typing.Optional[objects_storage.Object] = None
     for tag in tags.split():
-        if tag in ctx.objects_storage.objects:
+        if tag in ctx.objects_storage.get_objects():
             obj = ctx.objects_storage.get_by_id(tag)
             break
     assert obj is not None

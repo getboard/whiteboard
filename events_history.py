@@ -30,27 +30,27 @@ class EventInfo:
 
 
 class EventsHistory:
-    events: list[EventInfo]
+    _events: list[EventInfo]
 
     def __init__(self):
-        self.events = []
+        self._events = []
 
     def add_event(self, kind: str, **event_kwargs):
         event_info = EventInfo()
         event_info.timestamp = int(time.time())
         event_info.kind = kind
         event_info.kwargs = event_kwargs
-        self.events.append(event_info)
+        self._events.append(event_info)
 
     def save_to_file(self, path: str):
         with open(path, 'w') as file:
-            for event in self.events:
+            for event in self._events:
                 file.write(event.serialize() + '\n')
 
     def load_from_file_and_apply(self, ctx: context.Context, path: str):
         with open(path, 'r') as file:
             for line in file:
                 event_info = EventInfo.parse(line.strip())
-                self.events.append(event_info)
+                self._events.append(event_info)
                 handler = ctx.event_handlers.get_handler(event_info.kind)
                 handler.apply(ctx, **event_info.kwargs)
