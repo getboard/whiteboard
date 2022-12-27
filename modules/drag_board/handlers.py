@@ -1,21 +1,14 @@
 import tkinter
-import typing
 
 import context
-import objects_storage
 
 
 def on_drag_start(ctx: context.Context, event: tkinter.Event):
-    objs = ctx.canvas.find_withtag('current')
-    if objs:
-        obj = objs[0]
-        tags = ctx.canvas.itemcget(obj, 'tags')
-        # TODO: ofc that's bad
-        obj: typing.Optional[objects_storage.Object]
-        for tag in tags.split():
-            if tag in ctx.objects_storage.get_objects():
-                obj = ctx.objects_storage.get_by_id(tag)
-                break
+    tags = ctx.canvas.itemcget('current', 'tags')
+    if tags:
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_by_id(obj_id)
+
         actual_x = int(ctx.canvas.canvasx(event.x))
         actual_y = int(ctx.canvas.canvasy(event.y))
         obj.last_drag_event_x = actual_x
