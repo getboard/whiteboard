@@ -29,6 +29,10 @@ class Object:
     def scale(self, scale_factor: float):
         raise NotImplementedError("it's an abstract class")
 
+    def show_text(self, txt, **kwargs):
+        pass
+        # raise NotImplementedError("it's an abstract class")
+
 
 class ObjectsStorage:
     _objects: dict[str, Object]
