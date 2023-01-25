@@ -8,8 +8,8 @@ import typing
 class Object:
     id: str
     _ctx: context.Context
-    _last_drag_event_x: typing.Optional[int]
-    _last_drag_event_y: typing.Optional[int]
+    last_drag_event_x: typing.Optional[int]
+    last_drag_event_y: typing.Optional[int]
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         self._ctx = ctx
@@ -28,6 +28,10 @@ class Object:
 
     def scale(self, scale_factor: float):
         raise NotImplementedError("it's an abstract class")
+
+    def show_text(self, txt, **kwargs):
+        pass
+        # raise NotImplementedError("it's an abstract class")
 
 
 class ObjectsStorage:
@@ -52,7 +56,8 @@ class ObjectsStorage:
 
     def create(self, ctx, type_name: str, **kwargs) -> str:
         obj_id = kwargs.get('obj_id', uuid.uuid4().hex[:10])
-        self._objects[obj_id] = self._object_types[type_name](ctx, obj_id, **kwargs)
+        self._objects[obj_id] = self._object_types[type_name](
+            ctx, obj_id, **kwargs)
         return obj_id
 
     def update(self, object_id: str, **kwargs):

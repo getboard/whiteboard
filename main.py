@@ -11,7 +11,6 @@ import modules.text
 import modules.move
 import modules.zooming
 import modules.drag_board
-import modules.human
 
 
 def create_context(root: tkinter.Tk) -> context.Context:

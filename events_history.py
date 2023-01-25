@@ -25,7 +25,9 @@ class EventInfo:
     def serialize(self) -> str:
         res = f"timestamp={self.timestamp},kind={self.kind}"
         if self.kwargs:
-            res += ',' + ','.join([f"{key}={value}" for key, value in self.kwargs.items()])
+            res += ',' + \
+                ','.join([f"{key}={value}" for key,
+                         value in self.kwargs.items()])
         return res
 
 
