@@ -13,9 +13,11 @@ def on_move_object(ctx: context.Context, event: tkinter.Event):
     if obj is None:
         return
 
-    obj.move(actual_x - obj.last_drag_event_x, actual_y - obj.last_drag_event_y)
+    obj.move(actual_x - obj.last_drag_event_x,
+             actual_y - obj.last_drag_event_y)
     obj.last_drag_event_x = actual_x
     obj.last_drag_event_y = actual_y
     if event.type == tkinter.EventType.ButtonRelease:
         x, y, _, _ = ctx.canvas.bbox(obj_id)
-        ctx.events_history.add_event('MOVE_OBJECT', x=int(x), y=int(y), obj_id=obj.id)
+        ctx.events_history.add_event(
+            'MOVE_OBJECT', x=int(x), y=int(y), obj_id=obj.id)

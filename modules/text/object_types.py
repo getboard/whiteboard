@@ -25,8 +25,10 @@ class TextObject(objects_storage.Object):
     def scale(self, scale_factor: float):
         self._font_size *= scale_factor
         self._width *= scale_factor
-        self._ctx.canvas.itemconfig(self.id, font=('sans-serif', int(self._font_size)), width=int(self._width))
-        self._textbox.config(font=('sans-serif', int(self._font_size)), width=int(self._width))
+        self._ctx.canvas.itemconfig(self.id, font=(
+            'sans-serif', int(self._font_size)), width=int(self._width))
+        self._textbox.config(
+            font=('sans-serif', int(self._font_size)), width=int(self._width))
 
     def show_text(self, txt, **kwargs):
         self._textbox.delete(1.0, "end")
