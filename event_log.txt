@@ -1,9 +1,0 @@
-timestamp=1670531593,kind=ADD_TEXT,x=100,y=100,obj_id=386624f9d1,text=it works!
-timestamp=1670531593,kind=ADD_TEXT,x=200,y=200,obj_id=31cef23cf7,text=текст на русском
-timestamp=1674393831,kind=ADD_TEXT,x=285,y=257,obj_id=d437e5f1d5,text=новый текст по клику
-timestamp=1674393832,kind=MOVE_OBJECT,x=212,y=260,obj_id=d437e5f1d5
-timestamp=1674393833,kind=MOVE_OBJECT,x=212,y=260,obj_id=d437e5f1d5
-timestamp=1674393833,kind=MOVE_OBJECT,x=212,y=260,obj_id=d437e5f1d5
-timestamp=1674393833,kind=ADD_TEXT,x=357,y=267,obj_id=600738401b,text=новый текст по клику
-timestamp=1674393833,kind=MOVE_OBJECT,x=212,y=260,obj_id=d437e5f1d5
-timestamp=1674393835,kind=MOVE_OBJECT,x=285,y=291,obj_id=600738401b
