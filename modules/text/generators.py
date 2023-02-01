@@ -1,6 +1,7 @@
 import tkinter
 
 import context
+from . import object_types
 
 
 def on_add_text(ctx: context.Context, event: tkinter.Event, **kwargs):
@@ -34,6 +35,6 @@ def on_double_click(ctx: context.Context, event: tkinter.Event, **kwargs):
         height = bounds[3] - bounds[1]
         txt = ctx.canvas.itemcget(obj_id, 'text')
         ctx.canvas.itemconfig(obj_id, text="")
-        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        obj: object_types.TextObject = ctx.objects_storage.get_opt_by_id(obj_id)
         obj.show_text(txt, x=event.x, y=event.y, width=width,
                       height=height, anchor="center")
