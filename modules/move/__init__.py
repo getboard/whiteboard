@@ -5,10 +5,11 @@ from . import handlers
 
 
 def bind_generators(ctx: context.Context):
-    ctx.canvas.tag_bind('all', '<B1-Motion>',
-                        lambda event: generators.on_move_object(ctx, event))
-    ctx.canvas.tag_bind('all', '<ButtonRelease-1>',
-                        lambda event: generators.on_move_object(ctx, event))
+    # ctx.canvas.tag_bind('all', '<B1-Motion>',
+    #                     lambda event: generators.on_move_object(ctx, event))
+    # ctx.canvas.tag_bind('all', '<ButtonRelease-1>',
+    #                     lambda event: generators.on_move_object(ctx, event))
+    pass  # TODO
 
 
 def register_handlers(ctx: context.Context):

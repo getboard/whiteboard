@@ -50,6 +50,12 @@ class State:
     def on_leave(self, ctx: Dict, event: tkinter.Event):
         self._on_leave(ctx, event)
 
+    def __str__(self):
+        # Ещё бы хорошо тут контекст выводить
+        # Но кажется логичнее хранить контекст в машине
+        # Можем обсудить
+        return self._name
+
 
 class StateMachine:
     _states: List[State]
@@ -74,13 +80,14 @@ class StateMachine:
         return dict()
 
     def _start_listening(self, canvas: tkinter.Canvas):
-        # TODO
-        pass
+        canvas.bind('<ButtonPress-1>', self.handle_event)
+        # TODO: add more binds
 
     def add_state(self, state: State):
         self._states.append(state)
 
     def handle_event(self, event: tkinter.Event):
+        print("I'm here, cur_state is", self._cur_state)
         # Сначала выходы, а уже потом закидываем в текущий стейт
         # Если поматчились с переходом, то вызываем _cur_state.on_leave(_cur_state_context)
         # _cur_state_context = self._make_empty_context()
