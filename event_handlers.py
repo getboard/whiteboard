@@ -1,4 +1,5 @@
-import typing
+from typing import Type
+from typing import Dict
 
 
 class EventHandler:
@@ -8,13 +9,13 @@ class EventHandler:
 
 
 class EventHandlers:
-    handlers: typing.Dict[str, typing.Type[EventHandler]]
+    handlers: Dict[str, Type[EventHandler]]
 
     def __init__(self):
         self.handlers = dict()
 
-    def register_handler(self, handler_name: str, handler_type: typing.Type[EventHandler]):
+    def register_handler(self, handler_name: str, handler_type: Type[EventHandler]):
         self.handlers[handler_name] = handler_type
 
-    def get_handler(self, kind: str) -> typing.Type[EventHandler]:
+    def get_handler(self, kind: str) -> Type[EventHandler]:
         return self.handlers[kind]
