@@ -14,15 +14,35 @@ def on_add_text(ctx: context.Context, event: tkinter.Event, **kwargs):
 
 
 def on_update_text(ctx: context.Context, event: tkinter.Event, **kwargs):
-    text = ctx.canvas.focus_get()
-    if text.master is not None and text.widgetName == 'text':
-        name = repr(text).split('.')[3][:-1]
-        obj = ctx.objects_storage.get_opt_by_id(name)
-        text.update()
-        width = text.winfo_width()
-        obj.update(text=text.get("1.0", "end-1c"), width=width)
-        ctx.events_history.add_event(
-            'EDIT_TEXT', obj_id=name, new_text=text.get("1.0", "end-1c"))
+    item = ctx.canvas.focus()
+    if not item:
+        return
+    tags = ctx.canvas.itemcget(item, 'tags')
+    ctx.canvas.focus_set()
+
+    if (tags):
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        if (tags.split()[1] == "text"):
+            # name = repr(text).split('.')[3][:-1]
+            # obj = ctx.objects_storage.get_opt_by_id(name)
+            # text.update()
+            # width = text.winfo_width()
+            # obj.update(text=text.get("1.0", "end-1c"), width=width)
+            txt = obj.get_text()
+            ctx.events_history.add_event(
+                'EDIT_TEXT', obj_id=obj_id, new_text=txt)
+
+
+    # text = ctx.canvas.focus_get()
+    # if text.master is not None and text.widgetName == 'text':
+    #     name = repr(text).split('.')[3][:-1]
+    #     obj = ctx.objects_storage.get_opt_by_id(name)
+    #     text.update()
+    #     width = text.winfo_width()
+    #     obj.update(text=text.get("1.0", "end-1c"), width=width)
+    #     ctx.events_history.add_event(
+    #         'EDIT_TEXT', obj_id=name, new_text=text.get("1.0", "end-1c"))
 
 
 def on_double_click(ctx: context.Context, event: tkinter.Event, **kwargs):
@@ -38,3 +58,143 @@ def on_double_click(ctx: context.Context, event: tkinter.Event, **kwargs):
         obj: object_types.TextObject = ctx.objects_storage.get_opt_by_id(obj_id)
         obj.show_text(txt, x=event.x, y=event.y, width=width,
                       height=height, anchor="center")
+
+
+def set_focus(ctx, event):
+    # ctx.canvas.focus("")
+    print('ab')
+    # item = ctx.canvas.focus()
+    # tags = ctx.canvas.itemcget(item, 'tags')
+    # if not tags:
+    tags = ctx.canvas.itemcget('current', 'tags')
+
+    if (tags):
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        # if item:
+        # if (tags.split()[1] == "text"):
+        #     if True:
+        x = ctx.canvas.canvasx(event.x)
+        y = ctx.canvas.canvasy(event.y)
+        bbox = ctx.canvas.bbox(obj.get_text_id())
+
+        ctx.canvas.icursor(obj.get_text_id(), "@%d,%d" % (bbox[2], bbox[3]))
+        ctx.canvas.select_clear()
+        # items = ctx.canvas.find_withtag("highlight")
+        obj.highlight()
+
+    else:
+        # ctx.canvas.focus("")
+        ctx.canvas.delete("highlight")
+    # return None
+
+
+def set_cursor(ctx, event):
+    tags = ctx.canvas.itemcget('current', 'tags')
+    if (tags):
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        if (tags.split()[1] == "text"):
+            ctx.canvas.focus("")
+            ctx.canvas.focus_set()
+            ctx.canvas.focus(obj.get_text_id())
+            # ctx.canvas.delete("highlight")
+            obj.highlight()
+
+
+def on_key(ctx, event):
+    item = ctx.canvas.focus()
+    tags = ctx.canvas.itemcget(item, 'tags')
+
+    if (tags):
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        if (tags.split()[1] == "text"):
+            if item and event.char >= " ":
+                _ = ctx.canvas.index(obj.get_text_id(), "insert")
+                selection = ctx.canvas.select_item()
+                if selection:
+                    ctx.canvas.dchars(obj.get_text_id(), "sel.first", "sel.last")
+                ctx.canvas.insert(obj.get_text_id(), "insert", event.char)
+                obj.highlight()
+
+
+def on_left(ctx, event):
+    item = ctx.canvas.focus()
+    if not item:
+        return
+    tags = ctx.canvas.itemcget(item, 'tags')
+
+    if (tags):
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        if (tags.split()[1] == "text"):
+            new_index = ctx.canvas.index(obj.get_text_id(), "insert") - 1
+            ctx.canvas.icursor(obj.get_text_id(), new_index)
+            ctx.canvas.select_clear()
+
+
+def on_right(ctx, event):
+    item = ctx.canvas.focus()
+    if not item:
+        return
+    tags = ctx.canvas.itemcget(item, 'tags')
+
+    if (tags):
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        if (tags.split()[1] == "text"):
+            new_index = ctx.canvas.index(obj.get_text_id(), "insert") + 1
+            ctx.canvas.icursor(obj.get_text_id(), new_index)
+            ctx.canvas.select_clear()
+
+
+def on_backspace(ctx, event):
+    item = ctx.canvas.focus()
+    if not item:
+        return
+    tags = ctx.canvas.itemcget(item, 'tags')
+
+    if (tags):
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        if (tags.split()[1] == "text"):
+            selection = ctx.canvas.select_item()
+            if selection:
+                ctx.canvas.dchars(obj.get_text_id(), "sel.first", "sel.last")
+                ctx.canvas.select_clear()
+            else:
+                insert = ctx.canvas.index(obj.get_text_id(), "insert")
+                if insert > 0:
+                    ctx.canvas.dchars(obj.get_text_id(), insert - 1, insert)
+            obj.highlight()
+
+
+def on_return(ctx, event):
+    item = ctx.canvas.focus()
+    if not item:
+        return
+    tags = ctx.canvas.itemcget(item, 'tags')
+
+    if (tags):
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        if (tags.split()[1] == "text"):
+            ctx.canvas.icursor(obj.get_text_id(), "insert")
+            ctx.canvas.insert(obj.get_text_id(), "insert", '\n')
+            # self.app.canvas.delete(f"highlight{self.text_id}")
+            obj.highlight()
+
+
+def focus_out(ctx, event):
+    item = ctx.canvas.focus()
+    if not item:
+        return
+    tags = ctx.canvas.itemcget(item, 'tags')
+
+    if (tags):
+        obj_id = tags.split()[0]
+        obj = ctx.objects_storage.get_opt_by_id(obj_id)
+        if (tags.split()[1] == "text"):
+            print('a')
+    return None
