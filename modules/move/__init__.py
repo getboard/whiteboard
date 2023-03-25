@@ -1,15 +1,12 @@
 import context
 import modules
-from . import generators
 from . import handlers
 
+from modules.move.states import move_object
 
-def bind_generators(ctx: context.Context):
-    # ctx.canvas.tag_bind('all', '<B1-Motion>',
-    #                     lambda event: generators.on_move_object(ctx, event))
-    # ctx.canvas.tag_bind('all', '<ButtonRelease-1>',
-    #                     lambda event: generators.on_move_object(ctx, event))
-    pass  # TODO
+
+def create_states(ctx: context.Context):
+    ctx.state_machine.add_state(move_object.create_state(ctx.state_machine))
 
 
 def register_handlers(ctx: context.Context):
@@ -19,5 +16,5 @@ def register_handlers(ctx: context.Context):
 
 @modules.modules.register_module('move')
 def init_module(ctx: context.Context):
+    create_states(ctx)
     register_handlers(ctx)
-    bind_generators(ctx)

@@ -18,15 +18,14 @@ def create_context(root: tkinter.Tk) -> context.Context:
     logger = logging.Logger("global_logger")
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
     canvas.place(x=50, y=50)
-    state_machine = StateMachine(canvas)
-    return context.Context(
-        events_history.EventsHistory(),
-        event_handlers.EventHandlers(),
-        objects_storage.ObjectsStorage(),
-        logger,
-        canvas,
-        state_machine,
-    )
+    ctx = context.Context()
+    ctx.events_history = events_history.EventsHistory()
+    ctx.event_handlers = event_handlers.EventHandlers()
+    ctx.objects_storage = objects_storage.ObjectsStorage(ctx)
+    ctx.logger = logger
+    ctx.canvas = canvas
+    ctx.state_machine = StateMachine(ctx)
+    return ctx
 
 
 def main(log_file: str):

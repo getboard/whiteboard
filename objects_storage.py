@@ -7,7 +7,10 @@ import typing
 
 class Object:
     id: str
+    # Странновато, что мы глобальный контекст храним в объектах
     _ctx: context.Context
+    # кажется, что это не должно храниться в объекте
+    # наверное можно унести внутрь контекста состояния MOVE_OBJECT
     last_drag_event_x: typing.Optional[int]
     last_drag_event_y: typing.Optional[int]
 
@@ -31,10 +34,12 @@ class Object:
 
 
 class ObjectsStorage:
+    _ctx: context.Context
     _objects: dict[str, Object]
     _object_types: dict[str, typing.Type[Object]]
 
-    def __init__(self):
+    def __init__(self, ctx: context.Context):
+        self._ctx = ctx
         self._objects = dict()
         self._object_types = dict()
 
@@ -46,6 +51,12 @@ class ObjectsStorage:
 
     def get_opt_by_id(self, object_id: str) -> typing.Optional[Object]:
         return self._objects.get(object_id)
+
+    def get_current_opt(self) -> typing.Optional[Object]:
+        tags = self._ctx.canvas.gettags('current')
+        if not tags:
+            return None
+        return self.get_opt_by_id(tags[0])
 
     def get_objects(self) -> dict[str, Object]:
         return self._objects
