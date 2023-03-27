@@ -2,8 +2,6 @@ from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import List
-
-
 import tkinter
 
 import context
@@ -64,13 +62,7 @@ class StateMachine:
     class _TransitionDescription:
         before: str
         after: str
-        # возможно в предикаты ещё полезно контекст состояния пропихнуть
-        # predicate: Callable[[context.Context, tkinter.Event], bool]
         predicate: Callable[['context.Context', tkinter.Event], bool]
-
-        def __str__(self) -> str:
-            # TODO
-            pass
 
     ROOT_STATE_NAME = 'ROOT'
     _states: Dict[str, State]  # name -> State

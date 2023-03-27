@@ -1,13 +1,14 @@
 from __future__ import annotations
 import uuid
+from typing import Type
+from typing import Optional
 
 import context
-import typing
 
 
 class Object:
     id: str
-    # Странновато, что мы глобальный контекст храним в объектах
+    # TODO: Странновато, что мы глобальный контекст храним в объектах
     _ctx: context.Context
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
@@ -30,23 +31,23 @@ class Object:
 class ObjectsStorage:
     _ctx: context.Context
     _objects: dict[str, Object]
-    _object_types: dict[str, typing.Type[Object]]
+    _object_types: dict[str, Type[Object]]
 
     def __init__(self, ctx: context.Context):
         self._ctx = ctx
         self._objects = dict()
         self._object_types = dict()
 
-    def register_object_type(self, type_name: str, type_class: typing.Type[Object]):
+    def register_object_type(self, type_name: str, type_class: Type[Object]):
         self._object_types[type_name] = type_class
 
     def get_by_id(self, object_id: str) -> Object:
         return self._objects[object_id]
 
-    def get_opt_by_id(self, object_id: str) -> typing.Optional[Object]:
+    def get_opt_by_id(self, object_id: str) -> Optional[Object]:
         return self._objects.get(object_id)
 
-    def get_current_opt(self) -> typing.Optional[Object]:
+    def get_current_opt(self) -> Optional[Object]:
         tags = self._ctx.canvas.gettags('current')
         if not tags:
             return None

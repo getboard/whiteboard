@@ -1,5 +1,4 @@
 from typing import Dict
-
 import tkinter
 
 from state_machine import State
