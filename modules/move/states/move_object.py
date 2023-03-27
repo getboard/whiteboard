@@ -7,6 +7,9 @@ from state_machine import StateMachine
 from context import Context
 
 MOVE_OBJECT_STATE_NAME = 'MOVE_OBJECT'
+LAST_DRAG_EVENT_X = 'last_drag_event_x'
+LAST_DRAG_EVENT_Y = 'last_drag_event_y'
+OBJECT = 'object'
 
 
 def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
@@ -17,24 +20,22 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     if not obj:
         # Залоггировать
         return
-    obj.last_drag_event_x = x
-    obj.last_drag_event_y = y
+
+    state_ctx[LAST_DRAG_EVENT_X] = x
+    state_ctx[LAST_DRAG_EVENT_Y] = y
+    state_ctx[OBJECT] = obj
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
         return
 
-    obj = global_ctx.objects_storage.get_current_opt()
-    if not obj:
-        # Залоггировать
-        return
     x = int(global_ctx.canvas.canvasx(event.x))
     y = int(global_ctx.canvas.canvasy(event.y))
-    obj.move(x - obj.last_drag_event_x,
-             y - obj.last_drag_event_y)
-    obj.last_drag_event_x = x
-    obj.last_drag_event_y = y
+    state_ctx[OBJECT].move(x - state_ctx[LAST_DRAG_EVENT_X],
+                           y - state_ctx[LAST_DRAG_EVENT_Y])
+    state_ctx[LAST_DRAG_EVENT_X] = x
+    state_ctx[LAST_DRAG_EVENT_Y] = y
 
 
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):

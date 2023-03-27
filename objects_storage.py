@@ -9,16 +9,10 @@ class Object:
     id: str
     # Странновато, что мы глобальный контекст храним в объектах
     _ctx: context.Context
-    # кажется, что это не должно храниться в объекте
-    # наверное можно унести внутрь контекста состояния MOVE_OBJECT
-    last_drag_event_x: typing.Optional[int]
-    last_drag_event_y: typing.Optional[int]
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         self._ctx = ctx
         self.id = id
-        self.last_drag_event_x = None
-        self.last_drag_event_y = None
 
     def move(self, delta_x, delta_y):
         self._ctx.canvas.move(self.id, delta_x, delta_y)
