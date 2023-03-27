@@ -22,6 +22,9 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
+    if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
+        return
+
     obj = global_ctx.objects_storage.get_current_opt()
     if not obj:
         # Залоггировать

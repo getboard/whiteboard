@@ -1,17 +1,13 @@
 import modules
 import context
 
-from . import handlers
+from modules.drag_board.states import move_board
 
 
-def bind_on_events(ctx: context.Context):
-    # ctx.canvas.bind('<ButtonPress-1>',
-    #                 lambda event: handlers.on_drag_start(ctx, event))
-    # ctx.canvas.bind(
-    #     '<B1-Motion>', lambda event: handlers.on_dragging(ctx, event))
-    pass  # TODO
+def create_states(ctx: context.Context):
+    ctx.state_machine.add_state(move_board.create_state(ctx.state_machine))
 
 
 @modules.modules.register_module('drag_board')
 def init_module(ctx: context.Context):
-    bind_on_events(ctx)
+    create_states(ctx)
