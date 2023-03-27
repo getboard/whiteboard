@@ -39,16 +39,10 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
 
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
-    obj = global_ctx.objects_storage.get_current_opt()
-    if not obj:
-        # Залоггировать
-        return
-
-    x, y, _, _ = global_ctx.canvas.bbox(obj.id)
+    obj_id = state_ctx[OBJECT].id
+    x, y, _, _ = global_ctx.canvas.bbox(obj_id)
     global_ctx.events_history.add_event(
-        'MOVE_OBJECT', x=int(x), y=int(y), obj_id=obj.id)
-
-    pass
+        'MOVE_OBJECT', x=int(x), y=int(y), obj_id=obj_id)
 
 
 def _predicate_from_root_to_move_object(global_context: Context, event: tkinter.Event) -> bool:
