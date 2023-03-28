@@ -3,11 +3,11 @@ import tkinter
 
 import context
 import events_history
-import modules.modules
 import objects_storage
 import event_handlers
 from state_machine import StateMachine
 
+import modules.modules
 import modules.text
 import modules.move
 import modules.zooming
@@ -43,5 +43,4 @@ def main(log_file: str):
 
 
 if __name__ == '__main__':
-    # FIX: throws exception if file doesn't exist
     main('event_log.txt')

@@ -1,6 +1,6 @@
 import context
 
-__MODULES = dict()
+__MODULES = {}
 
 
 def register_module(module_name: str):

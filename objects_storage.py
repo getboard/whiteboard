@@ -8,23 +8,20 @@ import context
 
 class Object:
     id: str
-    # TODO: Странновато, что мы глобальный контекст храним в объектах
-    _ctx: context.Context
 
-    def __init__(self, ctx: context.Context, id: str, **kwargs):
-        self._ctx = ctx
+    def __init__(self, ctx: context.Context, id: str):
         self.id = id
 
-    def move(self, delta_x, delta_y):
-        self._ctx.canvas.move(self.id, delta_x, delta_y)
+    def move(self, ctx: context.Context, delta_x: int, delta_y: int):
+        ctx.canvas.move(self.id, delta_x, delta_y)
 
-    def move_to(self, x, y):
-        self._ctx.canvas.moveto(self.id, x, y)
+    def move_to(self, ctx: context.Context, x: int, y: int):
+        ctx.canvas.moveto(self.id, x, y)
 
-    def update(self, **kwargs):
+    def update(self, ctx: context.Context, **kwargs):
         raise NotImplementedError('it\'s an abstract class')
 
-    def scale(self, scale_factor: float):
+    def scale(self, ctx: context.Context, scale_factor: float):
         raise NotImplementedError('it\'s an abstract class')
 
 
@@ -35,8 +32,8 @@ class ObjectsStorage:
 
     def __init__(self, ctx: context.Context):
         self._ctx = ctx
-        self._objects = dict()
-        self._object_types = dict()
+        self._objects = {}
+        self._object_types = {}
 
     def register_object_type(self, type_name: str, type_class: Type[Object]):
         self._object_types[type_name] = type_class
@@ -56,11 +53,11 @@ class ObjectsStorage:
     def get_objects(self) -> dict[str, Object]:
         return self._objects
 
-    def create(self, ctx, type_name: str, **kwargs) -> str:
+    def create(self, type_name: str, **kwargs) -> str:
         obj_id = kwargs.get('obj_id', uuid.uuid4().hex[:10])
         self._objects[obj_id] = self._object_types[type_name](
-            ctx, obj_id, **kwargs)
+            self._ctx, obj_id, **kwargs)
         return obj_id
 
     def update(self, object_id: str, **kwargs):
-        self._objects[object_id].update(**kwargs)
+        self._objects[object_id].update(self._ctx, **kwargs)

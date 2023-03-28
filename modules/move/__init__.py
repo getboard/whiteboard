@@ -1,8 +1,7 @@
 import context
 import modules
-from . import handlers
-
 from modules.move.states import move_object
+from . import handlers
 
 
 def create_states(ctx: context.Context):

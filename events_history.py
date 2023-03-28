@@ -12,7 +12,7 @@ class EventInfo:
 
     @classmethod
     def parse(cls, raw: str):
-        kwargs = dict()
+        kwargs = {}
         for raw_pair in raw.split(','):
             key, value = raw_pair.split('=')
             kwargs[key] = value

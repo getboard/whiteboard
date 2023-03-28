@@ -1,31 +1,34 @@
+from __future__ import annotations
 from typing import Dict
 import tkinter
 
 from state_machine import State
 from state_machine import StateMachine
-from context import Context
+import context
 
 MOVE_BOARD_STATE_NAME = 'MOVE_BOARD'
 
 
-def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
+def _on_enter(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
     global_ctx.canvas.scan_mark(event.x, event.y)
 
 
-def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
+def _handle_event(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
     if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
         return
     global_ctx.canvas.scan_dragto(event.x, event.y, gain=1)
 
 
-def _predicate_from_root_to_move_board(global_context: Context, event: tkinter.Event) -> bool:
+def _predicate_from_root_to_move_board(
+        global_context: context.Context, event: tkinter.Event) -> bool:
     if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
         return False
     cur_obj = global_context.objects_storage.get_current_opt()
     return cur_obj is None
 
 
-def _predicate_from_move_board_to_root(global_context: Context, event: tkinter.Event) -> bool:
+def _predicate_from_move_board_to_root(
+        global_context: context.Context, event: tkinter.Event) -> bool:
     return event.type == tkinter.EventType.ButtonRelease and event.state & (1 << 8)
 
 

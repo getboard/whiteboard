@@ -1,4 +1,4 @@
-__MODULES = dict()
+__MODULES = {}
 
 
 def register_module(kind: str):

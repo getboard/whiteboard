@@ -1,4 +1,4 @@
-from typing import Any
+from __future__ import annotations
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -13,12 +13,9 @@ import context
 
 class State:
     _name: str
-    _on_enter: Callable[['context.Context', Dict, tkinter.Event], None]
-    # _handle_event -- вероятно плохое имя.
-    # логично назвать _event_handler, но
-    # сущность с похожим названием уже есть
-    _handle_event: Callable[['context.Context', Dict, tkinter.Event], None]
-    _on_leave: Callable[['context.Context', Dict, tkinter.Event], None]
+    _on_enter: Callable[[context.Context, Dict, tkinter.Event], None]
+    _handle_event: Callable[[context.Context, Dict, tkinter.Event], None]
+    _on_leave: Callable[[context.Context, Dict, tkinter.Event], None]
 
     def __init__(self, name: str):
         self._name = name
@@ -30,25 +27,22 @@ class State:
     def get_name(self) -> str:
         return self._name
 
-    def set_on_enter(self, func: Callable[['context.Context', Dict, tkinter.Event], None]):
+    def set_on_enter(self, func: Callable[[context.Context, Dict, tkinter.Event], None]):
         self._on_enter = func
 
-    def on_enter(self, global_ctx: 'context.Context', state_ctx: Dict, event: tkinter.Event):
+    def on_enter(self, global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
         self._on_enter(global_ctx, state_ctx, event)
 
-    def set_on_enter(self, func: Callable[['context.Context', Dict, tkinter.Event], None]):
-        self._on_enter = func
-
-    def handle_event(self, global_ctx: 'context.Context', state_ctx: Dict, event: tkinter.Event):
-        self._handle_event(global_ctx, state_ctx, event)
-
-    def set_event_handler(self, func: Callable[['context.Context', Dict, tkinter.Event], None]):
+    def set_event_handler(self, func: Callable[[context.Context, Dict, tkinter.Event], None]):
         self._handle_event = func
 
-    def set_on_leave(self, func: Callable[['context.Context', Dict, tkinter.Event], None]):
+    def handle_event(self, global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
+        self._handle_event(global_ctx, state_ctx, event)
+
+    def set_on_leave(self, func: Callable[[context.Context, Dict, tkinter.Event], None]):
         self._on_leave = func
 
-    def on_leave(self, global_ctx: 'context.Context', state_ctx: Dict, event: tkinter.Event):
+    def on_leave(self, global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
         self._on_leave(global_ctx, state_ctx, event)
 
     def __str__(self):
@@ -62,19 +56,19 @@ class StateMachine:
     class _TransitionDescription:
         before: str
         after: str
-        predicate: Callable[['context.Context', tkinter.Event], bool]
+        predicate: Callable[[context.Context, tkinter.Event], bool]
 
     ROOT_STATE_NAME = 'ROOT'
     _states: Dict[str, State]  # name -> State
     _transitions: Dict[str, List[_TransitionDescription]]  # before -> after
     _cur_state: State
     _cur_state_context: Dict
-    _global_context: 'context.Context'
+    _global_context: context.Context
 
-    def __init__(self, context: 'context.Context'):
-        self._global_context = context
-        self._states = dict()
-        self._transitions = dict()
+    def __init__(self, ctx: context.Context):
+        self._global_context = ctx
+        self._states = {}
+        self._transitions = {}
 
         self._cur_state = self._make_root_state()
         self._cur_state_context = self._make_empty_context()
@@ -88,7 +82,7 @@ class StateMachine:
 
     def _make_empty_context(self):
         # classmethod?
-        return dict()
+        return {}
 
     def _start_listening(self):
         self._global_context.canvas.bind('<ButtonPress-1>', self.handle_event)
@@ -102,7 +96,7 @@ class StateMachine:
 
     def add_transition(
             self, before: str, after: str,
-            predicate: Callable[['context.Context', tkinter.Event],
+            predicate: Callable[[context.Context, tkinter.Event],
                                 bool]):
         tr_descr = StateMachine._TransitionDescription()
         tr_descr.before = before

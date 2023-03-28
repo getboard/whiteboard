@@ -12,7 +12,7 @@ class EventHandlers:
     handlers: Dict[str, Type[EventHandler]]
 
     def __init__(self):
-        self.handlers = dict()
+        self.handlers = {}
 
     def register_handler(self, handler_name: str, handler_type: Type[EventHandler]):
         self.handlers[handler_name] = handler_type

@@ -31,7 +31,8 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
     x = int(global_ctx.canvas.canvasx(event.x))
     y = int(global_ctx.canvas.canvasy(event.y))
-    state_ctx[OBJECT].move(x - state_ctx[LAST_DRAG_EVENT_X],
+    state_ctx[OBJECT].move(global_ctx,
+                           x - state_ctx[LAST_DRAG_EVENT_X],
                            y - state_ctx[LAST_DRAG_EVENT_Y])
     state_ctx[LAST_DRAG_EVENT_X] = x
     state_ctx[LAST_DRAG_EVENT_Y] = y
