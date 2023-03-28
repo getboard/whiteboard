@@ -1,5 +1,6 @@
 from __future__ import annotations
 import time
+import os
 
 import context
 
@@ -50,6 +51,8 @@ class EventsHistory:
                 file.write(event.serialize() + '\n')
 
     def load_from_file_and_apply(self, ctx: context.Context, path: str):
+        if not os.path.exists(path) or not os.path.isfile(path):
+            return
         with open(path, 'r') as file:
             for line in file:
                 event_info = EventInfo.parse(line.strip())
