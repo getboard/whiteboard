@@ -15,7 +15,7 @@ import modules.drag_board
 
 
 def create_context(root: tkinter.Tk) -> context.Context:
-    logger = logging.Logger("global_logger")
+    logger = logging.Logger('global_logger')
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
     canvas.place(x=50, y=50)
     ctx = context.Context()
@@ -29,8 +29,8 @@ def create_context(root: tkinter.Tk) -> context.Context:
 
 
 def main(log_file: str):
-    root_window = tkinter.Tk(className="Whiteboard")
-    root_window.geometry("800x600")
+    root_window = tkinter.Tk(className='Whiteboard')
+    root_window.geometry('800x600')
 
     ctx = create_context(root_window)
     modules.modules.init_modules(ctx)
@@ -42,6 +42,6 @@ def main(log_file: str):
     ctx.events_history.save_to_file(log_file)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # FIX: throws exception if file doesn't exist
     main('event_log.txt')

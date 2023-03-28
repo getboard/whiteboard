@@ -20,9 +20,9 @@ def on_update_text(ctx: context.Context, event: tkinter.Event, **kwargs):
         obj = ctx.objects_storage.get_opt_by_id(name)
         text.update()
         width = text.winfo_width()
-        obj.update(text=text.get("1.0", "end-1c"), width=width)
+        obj.update(text=text.get('1.0', 'end-1c'), width=width)
         ctx.events_history.add_event(
-            'EDIT_TEXT', obj_id=name, new_text=text.get("1.0", "end-1c"))
+            'EDIT_TEXT', obj_id=name, new_text=text.get('1.0', 'end-1c'))
 
 
 def on_double_click(ctx: context.Context, event: tkinter.Event, **kwargs):
@@ -34,7 +34,8 @@ def on_double_click(ctx: context.Context, event: tkinter.Event, **kwargs):
         width = bounds[2] - bounds[0]
         height = bounds[3] - bounds[1]
         txt = ctx.canvas.itemcget(obj_id, 'text')
-        ctx.canvas.itemconfig(obj_id, text="")
-        obj: object_types.TextObject = ctx.objects_storage.get_opt_by_id(obj_id)
+        ctx.canvas.itemconfig(obj_id, text='')
+        obj: object_types.TextObject = ctx.objects_storage.get_opt_by_id(
+            obj_id)
         obj.show_text(txt, x=event.x, y=event.y, width=width,
-                      height=height, anchor="center")
+                      height=height, anchor='center')

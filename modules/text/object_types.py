@@ -12,8 +12,14 @@ class TextObject(objects_storage.Object):
         self._width = 100
         self._textbox = tkinter.Text(self._ctx.canvas, font=self.get_font(), highlightcolor='blue',
                                      highlightthickness=1, name=self.id)
-        self._ctx.canvas.create_text(kwargs['x'], kwargs['y'], text=kwargs['text'], tags=[id, 'text'],
-                                     font=self.get_font(), width=self._width)
+        self._ctx.canvas.create_text(
+            kwargs['x'],
+            kwargs['y'],
+            text=kwargs['text'],
+            tags=[id, 'text'],
+            font=self.get_font(),
+            width=self._width,
+        )
 
     def update(self, **kwargs):
         self._ctx.canvas.itemconfig(self.id, **kwargs)
@@ -31,7 +37,7 @@ class TextObject(objects_storage.Object):
             font=('sans-serif', int(self._font_size)), width=int(self._width))
 
     def show_text(self, txt, **kwargs):
-        self._textbox.delete(1.0, "end")
+        self._textbox.delete(1.0, 'end')
         self._textbox.focus_set()
         self._textbox.insert('end', txt)
         self._textbox.place(kwargs)

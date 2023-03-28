@@ -100,7 +100,10 @@ class StateMachine:
     def add_state(self, state: State):
         self._states[state.get_name()] = state
 
-    def add_transition(self, before: str, after: str, predicate: Callable[[tkinter.Event], bool]):
+    def add_transition(
+            self, before: str, after: str,
+            predicate: Callable[['context.Context', tkinter.Event],
+                                bool]):
         tr_descr = StateMachine._TransitionDescription()
         tr_descr.before = before
         tr_descr.after = after

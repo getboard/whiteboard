@@ -5,7 +5,7 @@ from typing import Dict
 class EventHandler:
     @classmethod
     def apply(cls, ctx, **kwargs):
-        raise NotImplementedError("it's an abstract class")
+        raise NotImplementedError('it\'s an abstract class')
 
 
 class EventHandlers:

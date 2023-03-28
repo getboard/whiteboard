@@ -22,10 +22,10 @@ class Object:
         self._ctx.canvas.moveto(self.id, x, y)
 
     def update(self, **kwargs):
-        raise NotImplementedError("it's an abstract class")
+        raise NotImplementedError('it\'s an abstract class')
 
     def scale(self, scale_factor: float):
-        raise NotImplementedError("it's an abstract class")
+        raise NotImplementedError('it\'s an abstract class')
 
 
 class ObjectsStorage:
