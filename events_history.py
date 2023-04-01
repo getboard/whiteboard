@@ -1,5 +1,6 @@
 from __future__ import annotations
 import time
+import os
 
 import context
 
@@ -11,7 +12,7 @@ class EventInfo:
 
     @classmethod
     def parse(cls, raw: str):
-        kwargs = dict()
+        kwargs = {}
         for raw_pair in raw.split(','):
             key, value = raw_pair.split('=')
             kwargs[key] = value
@@ -23,10 +24,10 @@ class EventInfo:
         return event_info
 
     def serialize(self) -> str:
-        res = f"timestamp={self.timestamp},kind={self.kind}"
+        res = f'timestamp={self.timestamp},kind={self.kind}'
         if self.kwargs:
             res += ',' + \
-                ','.join([f"{key}={value}" for key,
+                ','.join([f'{key}={value}' for key,
                          value in self.kwargs.items()])
         return res
 
@@ -50,6 +51,8 @@ class EventsHistory:
                 file.write(event.serialize() + '\n')
 
     def load_from_file_and_apply(self, ctx: context.Context, path: str):
+        if not os.path.exists(path) or not os.path.isfile(path):
+            return
         with open(path, 'r') as file:
             for line in file:
                 event_info = EventInfo.parse(line.strip())

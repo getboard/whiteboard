@@ -8,4 +8,4 @@ class MoveObjectHandler(EventHandler):
         obj_id = kwargs['obj_id']
         x = int(kwargs['x'])
         y = int(kwargs['y'])
-        ctx.objects_storage.get_by_id(obj_id).move_to(x, y)
+        ctx.objects_storage.get_by_id(obj_id).move_to(ctx, x, y)
