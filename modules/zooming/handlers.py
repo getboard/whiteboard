@@ -16,4 +16,4 @@ def zoom_on_wheel(ctx: context.Context, event: tkinter.Event):
 
     ctx.canvas.scale('all', x, y, scale, scale)
     for internal_object in ctx.objects_storage.get_objects().values():
-        internal_object.scale(scale)
+        internal_object.scale(ctx, scale)
