@@ -9,7 +9,8 @@ def create_states(ctx: context.Context):
 
 
 def register_handlers(ctx: context.Context):
-    ctx.event_handlers.register_handler('MOVE_OBJECT', handlers.MoveObjectHandler)
+    ctx.event_handlers.register_handler(
+        'MOVE_OBJECT', handlers.MoveObjectHandler)
 
 
 @modules.modules.register_module('move')
