@@ -88,11 +88,17 @@ class StateMachine:
         self._global_context.canvas.bind('<ButtonPress-1>', self.handle_event)
         self._global_context.canvas.bind('<B1-Motion>', self.handle_event)
 <<<<<<< HEAD
+<<<<<<< HEAD
         self._global_context.canvas.bind('<ButtonRelease-1>', self.handle_event)
         self._global_context.canvas.bind('<Key>', self.handle_event)
         self._global_context.canvas.bind('<Control-ButtonPress-1>', self.handle_event)
 
 =======
+=======
+        self._global_context.canvas.bind('<Key>', self.handle_event)
+        self._global_context.canvas.bind(
+            '<Shift-ButtonPress-1>', self.handle_event)
+>>>>>>> Fixed CRLF
         self._global_context.canvas.bind(
             '<ButtonRelease-1>', self.handle_event)
 >>>>>>> adapt text to SM
