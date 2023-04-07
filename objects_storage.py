@@ -50,6 +50,13 @@ class ObjectsStorage:
             return None
         return self.get_opt_by_id(tags[0])
 
+
+    def get_current_opt_type(self) -> str:
+        tags = self._ctx.canvas.gettags('current')
+        if not tags:
+            return ""
+        return tags[1]  # TODO check this
+
     def get_objects(self) -> dict[str, Object]:
         return self._objects
 
