@@ -1,7 +1,8 @@
 import context
 import modules
 from . import handlers
-from modules.text.states import edit_text, change_text
+from modules.text.states import edit_text
+from modules.text.states import change_text
 from . import object_types
 
 

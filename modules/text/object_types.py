@@ -1,4 +1,3 @@
-import tkinter
 import objects_storage
 
 import context
@@ -24,7 +23,7 @@ class TextObject(objects_storage.Object):
         ctx.canvas.itemconfig(self.id, **kwargs)
 
     def get_font(self):
-        return 'sans-serif', self._font_size
+        return 'sans-serif', int(self._font_size)
 
     def get_text_id(self):
         return self._text_id
@@ -39,8 +38,7 @@ class TextObject(objects_storage.Object):
     def scale(self,  ctx: context.Context,  scale_factor: float):
         self._font_size *= scale_factor
         self._width *= scale_factor
-        ctx.canvas.itemconfig(self._text_id, font=(
-            'sans-serif', int(self._font_size)))
+        ctx.canvas.itemconfig(self._text_id, font=self.get_font())
 
     def highlight(self,  ctx: context.Context):
         # items = self._ctx.canvas.find(self._ids)
