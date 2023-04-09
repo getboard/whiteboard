@@ -5,30 +5,26 @@ from state_machine import State
 from state_machine import StateMachine
 from context import Context
 
-from .. import object_types
-
 
 CHANGE_STICKER_STATE_NAME = 'CHANGE_STICKER'
 STICKER = 'sticker'
 
-def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
+def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     obj = global_ctx.objects_storage.get_current_opt()
     if not obj:
-        global_ctx.canvas.delete("highlight")
-        # Залоггировать
+        global_ctx.canvas.delete('highlight')
+        # пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         return
 
     state_ctx[STICKER] = obj
     obj.last_clicked = 0
-    global_ctx.canvas.focus("")
+    global_ctx.canvas.focus('')
     global_ctx.canvas.focus_set()
     global_ctx.canvas.select_clear()
-    pass
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
-
     if event.type != tkinter.EventType.KeyPress:
         return
     if event.keysym == 'Right':
@@ -47,14 +43,12 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
         return
 
 
-
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
-    global_ctx.canvas.delete("highlight")
-    global_ctx.canvas.focus("")
+    global_ctx.canvas.delete('highlight')
+    global_ctx.canvas.focus('')
     global_ctx.canvas.focus_set()
     cur_obj = state_ctx[STICKER]
     cur_obj.last_clicked = 0
-    pass
 
 
 def _predicate_from_root_to_change_text(global_context: Context, event: tkinter.Event) -> bool:
