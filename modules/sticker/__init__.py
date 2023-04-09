@@ -1,7 +1,8 @@
 import context
 import modules
 from . import handlers
-from modules.sticker.states import edit_sticker_text, change_sticker
+from modules.sticker.states import edit_sticker_text
+from modules.sticker.states import change_sticker
 from . import object_types
 
 

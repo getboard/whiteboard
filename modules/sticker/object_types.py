@@ -24,8 +24,8 @@ class StickerObject(objects_storage.Object):
         args = ctx.canvas.bbox(self._text_id)
         self.adjust_font(ctx)
         arr = [args[i] for i in range(len(args))]
-        arr[0] = (arr[2]+arr[0])/2 - 50
-        arr[1] = (arr[1]+arr[3])/2 - 50
+        arr[0] = (arr[2] + arr[0]) / 2 - 50
+        arr[1] = (arr[1] + arr[3]) / 2 - 50
         arr[2] = arr[0] + 100
         arr[3] = arr[1] + 100
         self.bg = ctx.canvas.create_rectangle(
