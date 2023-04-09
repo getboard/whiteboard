@@ -88,10 +88,8 @@ class StateMachine:
         self._global_context.canvas.bind('<ButtonPress-1>', self.handle_event)
         self._global_context.canvas.bind('<B1-Motion>', self.handle_event)
         self._global_context.canvas.bind('<Key>', self.handle_event)
-        self._global_context.canvas.bind(
-            '<Shift-ButtonPress-1>', self.handle_event)
-        self._global_context.canvas.bind(
-            '<ButtonRelease-1>', self.handle_event)
+        self._global_context.canvas.bind('<Shift-ButtonPress-1>', self.handle_event)
+        self._global_context.canvas.bind('<ButtonRelease-1>', self.handle_event)
         # TODO: add more binds
 
     def add_state(self, state: State):
@@ -117,14 +115,11 @@ class StateMachine:
                     # Залоггировать ошибку
                     return
                 # Залоггировать, что выходим из состояния before
-                self._cur_state.on_leave(
-                    self._global_context, self._cur_state_context, event)
+                self._cur_state.on_leave(self._global_context, self._cur_state_context, event)
                 self._cur_state_context = self._make_empty_context()
                 self._cur_state = after_state
                 # Залоггировать, что входим в состояние after
-                self._cur_state.on_enter(
-                    self._global_context, self._cur_state_context, event)
+                self._cur_state.on_enter(self._global_context, self._cur_state_context, event)
                 return
         # Залоггировать, что ни один предикат не выполнился
-        self._cur_state.handle_event(
-            self._global_context, self._cur_state_context, event)
+        self._cur_state.handle_event(self._global_context, self._cur_state_context, event)
