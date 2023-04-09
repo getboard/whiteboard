@@ -5,16 +5,16 @@ from state_machine import State
 from state_machine import StateMachine
 from context import Context
 
-from .. import object_types
 
 EDIT_TEXT_STATE_NAME = 'EDIT_TEXT'
 TEXT = 'text'
+
 
 def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     obj = global_ctx.objects_storage.get_current_opt()
     if not obj:
         global_ctx.canvas.delete("highlight")
-        # Залоггировать
+        # пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         return
 
     state_ctx[TEXT] = obj
@@ -23,10 +23,9 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     global_ctx.canvas.focus_set()
     bbox = global_ctx.canvas.bbox(obj.get_text_id())
 
-    global_ctx.canvas.icursor(obj.get_text_id(), "@%d,%d" % (bbox[2], bbox[3]))
+    global_ctx.canvas.icursor(obj.get_text_id(), f"@{bbox[2]},{bbox[3]}")
     global_ctx.canvas.focus(obj.get_text_id())
     obj.highlight(global_ctx)
-    pass
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
@@ -54,7 +53,6 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
         cur_obj.highlight(global_ctx)
         return
-
 
     if event.char != "":
         _ = global_ctx.canvas.index(cur_obj.get_text_id(), "insert")
@@ -89,8 +87,6 @@ def _predicate_from_root_to_edit_text(global_context: Context, event: tkinter.Ev
     if global_context.objects_storage.get_current_opt_type() != 'text':
         return False
 
-
-
     if not cur_obj.last_clicked:
         cur_obj.last_clicked = event.time
         cur_obj.highlight(global_context)
@@ -100,6 +96,7 @@ def _predicate_from_root_to_edit_text(global_context: Context, event: tkinter.Ev
     ans = event.time - cur_obj.last_clicked < 500
     cur_obj.last_clicked = event.time
     return ans
+
 
 def _predicate_from_edit_text_to_root(global_context: Context, event: tkinter.Event) -> bool:
     return event.state & (1 << 8)

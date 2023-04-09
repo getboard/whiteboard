@@ -5,18 +5,17 @@ from state_machine import State
 from state_machine import StateMachine
 from context import Context
 
-from .. import object_types
-
 
 CHANGE_TEXT_STATE_NAME = 'CHANGE_TEXT'
 TEXT = 'text'
+
 
 def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
     obj = global_ctx.objects_storage.get_current_opt()
     if not obj:
         global_ctx.canvas.delete("highlight")
-        # Залоггировать
+        # пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         return
 
     state_ctx[TEXT] = obj
@@ -25,7 +24,6 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     global_ctx.canvas.focus_set()
     global_ctx.canvas.select_clear()
     obj.highlight(global_ctx)
-    pass
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
@@ -47,14 +45,12 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
         return
 
 
-
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     global_ctx.canvas.delete("highlight")
     global_ctx.canvas.focus("")
     global_ctx.canvas.focus_set()
     cur_obj = state_ctx[TEXT]
     cur_obj.last_clicked = 0
-    pass
 
 
 def _predicate_from_root_to_change_text(global_context: Context, event: tkinter.Event) -> bool:
