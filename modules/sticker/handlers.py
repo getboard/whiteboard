@@ -8,8 +8,7 @@ class AddStickerHandler(event_handlers.EventHandler):
         y = int(kwargs['y'])
         text = kwargs['text']
         obj_id = kwargs['obj_id']
-        ctx.objects_storage.create(
-            'STICKER', x=x, y=y, text=text, obj_id=obj_id)
+        ctx.objects_storage.create('STICKER', x=x, y=y, text=text, obj_id=obj_id)
 
 
 class EditStickerHandler(event_handlers.EventHandler):

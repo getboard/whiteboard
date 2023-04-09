@@ -6,8 +6,7 @@ from . import object_types
 
 
 def bind_generators(ctx: context.Context):
-    ctx.canvas.bind('<Shift-ButtonPress-1>',
-                    lambda event: generators.on_add_text(ctx, event))
+    ctx.canvas.bind('<Shift-ButtonPress-1>', lambda event: generators.on_add_text(ctx, event))
     # ctx.canvas.bind(
     #     '<Double-1>', lambda event: generators.on_double_click(ctx, event))
     # ctx.canvas.bind(

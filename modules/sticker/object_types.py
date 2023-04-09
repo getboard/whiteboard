@@ -18,9 +18,14 @@ class StickerObject(objects_storage.Object):
         # self._ids = None TODO remove
         # self._textbox = tkinter.Text(self._ctx.canvas, font=self.get_font(), highlightcolor='blue',
         #                              highlightthickness=1, name=self.id)
-        self._text_id = ctx.canvas.create_text(kwargs['x'], kwargs['y'], text=kwargs['text'],
-                                               tags=[id, 'sticker'],
-                                               font=self.get_font(), width=self._width)
+        self._text_id = ctx.canvas.create_text(
+            kwargs['x'],
+            kwargs['y'],
+            text=kwargs['text'],
+            tags=[id, 'sticker'],
+            font=self.get_font(),
+            width=self._width,
+        )
         args = ctx.canvas.bbox(self._text_id)
         self.adjust_font(ctx)
         arr = [args[i] for i in range(len(args))]
@@ -28,8 +33,7 @@ class StickerObject(objects_storage.Object):
         arr[1] = (arr[1] + arr[3]) / 2 - 50
         arr[2] = arr[0] + 100
         arr[3] = arr[1] + 100
-        self.bg = ctx.canvas.create_rectangle(
-            arr, fill='#c6def1', tags=[id, 'sticker'])
+        self.bg = ctx.canvas.create_rectangle(arr, fill='#c6def1', tags=[id, 'sticker'])
         ctx.canvas.tag_lower(self.bg, self._text_id)
 
     def get_font(self):
@@ -42,15 +46,16 @@ class StickerObject(objects_storage.Object):
     def get_text_id(self):
         return self._text_id
 
-    def get_text(self,  ctx: context.Context):
+    def get_text(self, ctx: context.Context):
         text = ctx.canvas.itemcget(self._text_id, 'text')
         return text
 
-    def scale(self,  ctx: context.Context, scale_factor: float):
+    def scale(self, ctx: context.Context, scale_factor: float):
         self._font_size *= scale_factor
         self._width *= scale_factor
-        ctx.canvas.itemconfig(self._text_id, font=(
-            'sans-serif', int(self._font_size)), width=int(self._width))
+        ctx.canvas.itemconfig(
+            self._text_id, font=('sans-serif', int(self._font_size)), width=int(self._width)
+        )
         # self._textbox.config(font=('sans-serif', int(self._font_size)))
 
     # def show_text(self, txt, **kwargs):
@@ -71,20 +76,19 @@ class StickerObject(objects_storage.Object):
     #     # self._ctx.canvas.delete('highlight')
     #     # self.highlight()
 
-    def adjust_font(self,  ctx: context.Context, larger=True):
+    def adjust_font(self, ctx: context.Context, larger=True):
         _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         # y1 = self._ctx.canvas.canvasx(y1)
         # y2 = self._ctx.canvas.canvasy(y2)
         if larger:
-            while abs(y1-y2) > self._width:
+            while abs(y1 - y2) > self._width:
                 self._font_size /= 1.05
-                ctx.canvas.itemconfig(self._text_id, font=(
-                    'sans-serif', int(self._font_size)))
+                ctx.canvas.itemconfig(self._text_id, font=('sans-serif', int(self._font_size)))
                 _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
                 # y1 = self._ctx.canvas.canvasx(y1)
                 # y2 = self._ctx.canvas.canvasy(y2)
         else:
-            while abs(y1-y2) < self._width * 0.7:
+            while abs(y1 - y2) < self._width * 0.7:
                 self._font_size *= 1.05
                 ctx.canvas.itemconfig(self._text_id, font=self.get_font())
                 _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
