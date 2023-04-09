@@ -10,13 +10,16 @@ class TextObject(objects_storage.Object):
     # _ids: int
     last_clicked: int
 
-    def __init__(self,  ctx: context.Context, id: str, **kwargs):
+    def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(ctx, id)
         self._font_size = 14
         self._width = 100
         self._ids = None
         self.last_clicked = False  # ��������� ������ ������ ���� �����
-        self._text_id = ctx.canvas.create_text(kwargs['x'], kwargs['y'], text=kwargs['text'], tags=[id, 'text'],
+        self._text_id = ctx.canvas.create_text(kwargs['x'],
+                                               kwargs['y'],
+                                               text=kwargs['text'],
+                                               tags=[id, 'text'],
                                                font=self.get_font())
 
     def update(self,  ctx: context.Context, **kwargs):
@@ -42,12 +45,12 @@ class TextObject(objects_storage.Object):
 
     def highlight(self,  ctx: context.Context):
         # items = self._ctx.canvas.find(self._ids)
-        # self._ctx.canvas.tag_bind(self._text_id, "<FocusOut>", self.focus_out)
+        # self._ctx.canvas.tag_bind(self._text_id, '<FocusOut>', self.focus_out)
         if self._ids not in ctx.canvas.find_all():
-            ctx.canvas.delete("highlight")
-            self._ids = ctx.canvas.create_rectangle((0, 0, 0, 0), fill="white",
-                                                    outline="blue",
-                                                    dash=".", tags=[self.id, 'text', 'highlight'])
+            ctx.canvas.delete('highlight')
+            self._ids = ctx.canvas.create_rectangle((0, 0, 0, 0), fill='white',
+                                                    outline='blue',
+                                                    dash='.', tags=[self.id, 'text', 'highlight'])
             ctx.canvas.lower(self._ids, self._text_id)
         else:
             # ids = items[0]
