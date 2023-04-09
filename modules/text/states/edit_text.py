@@ -13,17 +13,17 @@ TEXT = 'text'
 def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     obj = global_ctx.objects_storage.get_current_opt()
     if not obj:
-        global_ctx.canvas.delete("highlight")
+        global_ctx.canvas.delete('highlight')
         # �������������
         return
 
     state_ctx[TEXT] = obj
     obj.last_clicked = 0
-    global_ctx.canvas.focus("")
+    global_ctx.canvas.focus('')
     global_ctx.canvas.focus_set()
     bbox = global_ctx.canvas.bbox(obj.get_text_id())
 
-    global_ctx.canvas.icursor(obj.get_text_id(), f"@{bbox[2]},{bbox[3]}")
+    global_ctx.canvas.icursor(obj.get_text_id(), f'@{bbox[2]},{bbox[3]}')
     global_ctx.canvas.focus(obj.get_text_id())
     obj.highlight(global_ctx)
 
@@ -35,50 +35,51 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
         return
 
     if event.keysym == 'Right':
-        new_index = global_ctx.canvas.index(cur_obj.get_text_id(), "insert") + 1
+        new_index = global_ctx.canvas.index(
+            cur_obj.get_text_id(), 'insert') + 1
         global_ctx.canvas.icursor(cur_obj.get_text_id(), new_index)
         global_ctx.canvas.select_clear()
         return
 
     if event.keysym == 'Left':
-        new_index = global_ctx.canvas.index(cur_obj.get_text_id(), "insert") - 1
+        new_index = global_ctx.canvas.index(
+            cur_obj.get_text_id(), 'insert') - 1
         global_ctx.canvas.icursor(cur_obj.get_text_id(), new_index)
         global_ctx.canvas.select_clear()
         return
 
     if event.keysym == 'BackSpace':
-        insert = global_ctx.canvas.index(cur_obj.get_text_id(), "insert")
+        insert = global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
         if insert > 0:
             global_ctx.canvas.dchars(cur_obj.get_text_id(), insert - 1, insert)
 
         cur_obj.highlight(global_ctx)
         return
 
-    if event.char != "":
-        _ = global_ctx.canvas.index(cur_obj.get_text_id(), "insert")
-        global_ctx.canvas.insert(cur_obj.get_text_id(), "insert", event.char)
+    if event.char != '':
+        _ = global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
+        global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', event.char)
         cur_obj.highlight(global_ctx)
         return
 
 
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
-    global_ctx.canvas.delete("highlight")
-    global_ctx.canvas.focus("")
+    global_ctx.canvas.delete('highlight')
+    global_ctx.canvas.focus('')
     global_ctx.canvas.focus_set()
     cur_obj = state_ctx[TEXT]
     cur_obj.last_clicked = 0
     obj_id = cur_obj.id
     txt = cur_obj.get_text(global_ctx)
-    global_ctx.events_history.add_event('EDIT_TEXT', obj_id=obj_id, new_text=txt)
-    pass
+    global_ctx.events_history.add_event(
+        'EDIT_TEXT', obj_id=obj_id, new_text=txt)
 
 
 def _predicate_from_root_to_edit_text(global_context: Context, event: tkinter.Event) -> bool:
-
     if event.state & (1 << 8) == 0:
         return False
 
-    global_context.canvas.delete("highlight")
+    global_context.canvas.delete('highlight')
 
     cur_obj = global_context.objects_storage.get_current_opt()
     if cur_obj is None:

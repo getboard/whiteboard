@@ -53,7 +53,7 @@ class ObjectsStorage:
     def get_current_opt_type(self) -> str:
         tags = self._ctx.canvas.gettags('current')
         if not tags or len(tags) < 2:
-            return ""
+            return ''
 
         return tags[1]
 
