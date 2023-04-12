@@ -6,6 +6,7 @@ import tkinter
 
 import context
 
+
 # TODO: наверное надо по разным файлам растащить
 # TODO: наверное файл переименовать, поскольку клэшатся имена локальных переменных
 # (локальные переменные state_machine с именем модуля state_machine)
@@ -87,8 +88,9 @@ class StateMachine:
     def _start_listening(self):
         self._global_context.canvas.bind('<ButtonPress-1>', self.handle_event)
         self._global_context.canvas.bind('<B1-Motion>', self.handle_event)
-        self._global_context.canvas.bind(
-            '<ButtonRelease-1>', self.handle_event)
+        self._global_context.canvas.bind('<ButtonRelease-1>', self.handle_event)
+        self._global_context.canvas.master.bind('<Control-Key>', self.handle_event)
+        self._global_context.canvas.bind('<ButtonPress-3>', self.handle_event)
         # TODO: add more binds
 
     def add_state(self, state: State):
@@ -96,8 +98,7 @@ class StateMachine:
 
     def add_transition(
             self, before: str, after: str,
-            predicate: Callable[[context.Context, tkinter.Event],
-                                bool]):
+            predicate: Callable[[context.Context, tkinter.Event], bool]):
         tr_descr = StateMachine._TransitionDescription()
         tr_descr.before = before
         tr_descr.after = after
