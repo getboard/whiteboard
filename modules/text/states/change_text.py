@@ -14,7 +14,6 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     obj = global_ctx.objects_storage.get_current_opt()
     if not obj:
         global_ctx.canvas.delete('highlight')
-        # �������������
         return
 
     state_ctx[TEXT] = obj
@@ -77,9 +76,7 @@ def _predicate_from_change_text_to_root(global_context: Context, event: tkinter.
 
 def create_state(state_machine):
     state = State(CHANGE_TEXT_STATE_NAME)
-    # state.set_on_enter(_on_enter)
     state.set_event_handler(_handle_event)
-    # state.set_on_leave(_on_leave)
     state_machine.add_transition(
         StateMachine.ROOT_STATE_NAME, CHANGE_TEXT_STATE_NAME, _predicate_from_root_to_change_text)
     state_machine.add_transition(
