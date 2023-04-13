@@ -7,7 +7,6 @@ class TextObject(objects_storage.Object):
     _font_size: float
     _width: float
     _text_id: int
-    # _ids: int
     last_clicked: int
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
@@ -15,7 +14,7 @@ class TextObject(objects_storage.Object):
         self._font_size = 14
         self._width = 100
         self._ids = None
-        self.last_clicked = False  # ��������� ������ ������ ���� �����
+        self.last_clicked = False
         self._text_id = ctx.canvas.create_text(
             kwargs['x'], kwargs['y'], text=kwargs['text'], tags=[id, 'text'], font=self.get_font()
         )
@@ -29,9 +28,6 @@ class TextObject(objects_storage.Object):
     def get_text_id(self):
         return self._text_id
 
-    # def get_clicked(self):
-    #     return self._click
-
     def get_text(self, ctx: context.Context):
         text = ctx.canvas.itemcget(self._text_id, 'text')
         return text
@@ -42,8 +38,6 @@ class TextObject(objects_storage.Object):
         ctx.canvas.itemconfig(self._text_id, font=self.get_font())
 
     def highlight(self, ctx: context.Context):
-        # items = self._ctx.canvas.find(self._ids)
-        # self._ctx.canvas.tag_bind(self._text_id, '<FocusOut>', self.focus_out)
         if self._ids not in ctx.canvas.find_all():
             ctx.canvas.delete('highlight')
             self._ids = ctx.canvas.create_rectangle(
@@ -55,7 +49,6 @@ class TextObject(objects_storage.Object):
             )
             ctx.canvas.lower(self._ids, self._text_id)
         else:
-            # ids = items[0]
             ctx.canvas.lower(self._ids, self._text_id)
 
         # resize the highlight
