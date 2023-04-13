@@ -13,8 +13,8 @@ class TextObject(objects_storage.Object):
         super().__init__(ctx, id)
         self._font_size = 14
         self._width = 100
-        self._ids = None
-        self.last_clicked = False
+        self._highlight_id = 0
+        self.last_clicked = 0
         self._text_id = ctx.canvas.create_text(
             kwargs['x'], kwargs['y'], text=kwargs['text'], tags=[id, 'text'], font=self.get_font()
         )
@@ -38,20 +38,20 @@ class TextObject(objects_storage.Object):
         ctx.canvas.itemconfig(self._text_id, font=self.get_font())
 
     def highlight(self, ctx: context.Context):
-        if self._ids not in ctx.canvas.find_all():
+        if self._highlight_id not in ctx.canvas.find_all():
             ctx.canvas.delete('highlight')
-            self._ids = ctx.canvas.create_rectangle(
+            self._highlight_id = ctx.canvas.create_rectangle(
                 (0, 0, 0, 0),
                 fill='white',
                 outline='blue',
                 dash='.',
                 tags=[self.id, 'text', 'highlight'],
             )
-            ctx.canvas.lower(self._ids, self._text_id)
-        else:
-            ctx.canvas.lower(self._ids, self._text_id)
+        ctx.canvas.lower(self._highlight_id, self._text_id)
+
 
         # resize the highlight
         bbox = ctx.canvas.bbox(self._text_id)
-        rect_bbox = (bbox[0] - 4, bbox[1] - 4, bbox[2] + 4, bbox[3] + 4)
-        ctx.canvas.coords(self._ids, rect_bbox)
+        OFFSET = 4
+        rect_bbox = (bbox[0] - OFFSET, bbox[1] - OFFSET, bbox[2] + OFFSET, bbox[3] + OFFSET)
+        ctx.canvas.coords(self._highlight_id, rect_bbox)
