@@ -30,7 +30,8 @@ class StickerObject(objects_storage.Object):
         arr[1] = (arr[1] + arr[3]) / 2 - 50
         arr[2] = arr[0] + 100
         arr[3] = arr[1] + 100
-        self.bg = ctx.canvas.create_rectangle(arr, fill='#c6def1', tags=[id, 'sticker'])
+        COLOR = '#c6def1'
+        self.bg = ctx.canvas.create_rectangle(arr, fill=COLOR, tags=[id, 'sticker'])
         ctx.canvas.tag_lower(self.bg, self._text_id)
 
     def get_font(self):
