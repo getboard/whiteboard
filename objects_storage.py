@@ -2,27 +2,44 @@ from __future__ import annotations
 import uuid
 from typing import Type
 from typing import Optional
+from typing import Dict
 
 import context
 
 
 class Object:
     id: str
+    _observers: Dict[str, Object]
 
     def __init__(self, ctx: context.Context, id: str):
         self.id = id
+        self._observers = dict()
 
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
         ctx.canvas.move(self.id, delta_x, delta_y)
+        self.notify(ctx)
 
     def move_to(self, ctx: context.Context, x: int, y: int):
         ctx.canvas.moveto(self.id, x, y)
+        self.notify(ctx)
 
     def update(self, ctx: context.Context, **kwargs):
         raise NotImplementedError('it\'s an abstract class')
 
     def scale(self, ctx: context.Context, scale_factor: float):
         raise NotImplementedError('it\'s an abstract class')
+
+    def attach(self, obj: Object):
+        if obj.id not in self._observers:
+            self._observers[obj.id] = obj
+
+    def detach(self, obj: Type[Object]):
+        if obj.id in self._observers:
+            self._observers.pop(obj.id)
+
+    def notify(self, ctx: context.Context):
+        for observer in self._observers.values():
+            observer.update(ctx, obj_id=self.id)
 
 
 class ObjectsStorage:
@@ -55,8 +72,7 @@ class ObjectsStorage:
 
     def create(self, type_name: str, **kwargs) -> str:
         obj_id = kwargs.get('obj_id', uuid.uuid4().hex[:10])
-        self._objects[obj_id] = self._object_types[type_name](
-            self._ctx, obj_id, **kwargs)
+        self._objects[obj_id] = self._object_types[type_name](self._ctx, obj_id, **kwargs)
         return obj_id
 
     def update(self, object_id: str, **kwargs):

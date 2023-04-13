@@ -12,6 +12,7 @@ import modules.text
 import modules.move
 import modules.zooming
 import modules.drag_board
+import modules.connector
 
 
 def create_context(root: tkinter.Tk) -> context.Context:
