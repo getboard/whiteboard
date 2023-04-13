@@ -54,7 +54,7 @@ class ObjectsStorage:
         tags = self._ctx.canvas.gettags('current')
         if not tags:
             return ''
-        return tags[1]  # TODO check this
+        return tags[1]
 
     def get_objects(self) -> dict[str, Object]:
         return self._objects

@@ -15,7 +15,6 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     obj = global_ctx.objects_storage.get_current_opt()
     if not obj:
         global_ctx.canvas.delete('highlight')
-        # �������������
         return
 
     state_ctx[STICKER] = obj
