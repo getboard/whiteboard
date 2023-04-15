@@ -17,7 +17,6 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
         return
 
     state_ctx[TEXT] = obj
-    obj.last_clicked = 0
     global_ctx.canvas.focus('')
     bbox = global_ctx.canvas.bbox(obj.get_text_id())
     global_ctx.canvas.icursor(obj.get_text_id(), f'@{bbox[2]},{bbox[3]}')
@@ -82,12 +81,9 @@ def _predicate_from_root_to_edit_text(global_context: Context, event: tkinter.Ev
     if global_context.objects_storage.get_current_opt_type() != 'text':
         return False
 
-    if not cur_obj.last_clicked:
-        cur_obj.last_clicked = event.time
-        cur_obj.highlight(global_context)
-        return False
-
-    ans = event.time - cur_obj.last_clicked < 500
+    cur_obj.highlight(global_context)
+    DOUBLE_CLICK_THRESHOLD_MS = 500
+    ans = event.time - cur_obj.last_clicked < DOUBLE_CLICK_THRESHOLD_MS
     cur_obj.last_clicked = event.time
     return ans
 
