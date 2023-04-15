@@ -9,7 +9,7 @@ class TextObject(objects_storage.Object):
     _highlight_id: int
     _text_id: int
     last_clicked: int
-    
+
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(ctx, id)
         self._font_size = 14
@@ -53,6 +53,5 @@ class TextObject(objects_storage.Object):
         # resize the highlight
         bbox = ctx.canvas.bbox(self._text_id)
         OFFSET = 4
-        rect_bbox = (bbox[0] - OFFSET, bbox[1] - OFFSET,
-                     bbox[2] + OFFSET, bbox[3] + OFFSET)
+        rect_bbox = (bbox[0] - OFFSET, bbox[1] - OFFSET, bbox[2] + OFFSET, bbox[3] + OFFSET)
         ctx.canvas.coords(self._highlight_id, rect_bbox)
