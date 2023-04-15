@@ -26,6 +26,7 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
+    # Motion with Left mouse button pressed
     if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
         return
 
@@ -46,6 +47,7 @@ def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
 
 def _predicate_from_root_to_move_object(global_context: Context, event: tkinter.Event) -> bool:
+    # Motion with Left mouse button pressed
     if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
         return False
     cur_obj = global_context.objects_storage.get_current_opt()
@@ -53,7 +55,8 @@ def _predicate_from_root_to_move_object(global_context: Context, event: tkinter.
 
 
 def _predicate_from_move_object_to_root(global_context: Context, event: tkinter.Event) -> bool:
-    return event.type == tkinter.EventType.ButtonRelease and event.state & (1 << 8)
+    # Release Left mouse button
+    return event.type == tkinter.EventType.ButtonRelease and event.num == 1
 
 
 def create_state(state_machine: StateMachine) -> State:
