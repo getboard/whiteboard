@@ -1,6 +1,5 @@
 from typing import Dict
 import tkinter
-
 from state_machine import State
 from state_machine import StateMachine
 from context import Context
@@ -11,7 +10,7 @@ EDIT_CONNECTOR_STATE_NAME = 'EDIT_CONNECTOR'
 CONNECTOR = 'connector'
 
 
-def _on_enter(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
+def _on_enter(_: Context, __: Dict, ___: tkinter.Event):
     pass
 
 
@@ -27,14 +26,15 @@ def _handle_event(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
         else:
             point1 = (actual_x, actual_y)
         point2 = (actual_x, actual_y)
-        obj_id = global_ctx.objects_storage.create('CONNECTOR',
-                                                   start=point1,
-                                                   end=point2)
+        obj_id = global_ctx.objects_storage.create(
+            'CONNECTOR',
+            start=point1,
+            end=point2
+        )
         connector = global_ctx.objects_storage.get_opt_by_id(obj_id)
         state_ctx[CONNECTOR] = connector
     else:
-        point = (actual_x, actual_y)
-        state_ctx[CONNECTOR].update(global_ctx, end=point)
+        state_ctx[CONNECTOR].update(global_ctx, end=(actual_x, actual_y))
 
 
 def _on_leave(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
@@ -53,14 +53,22 @@ def _on_leave(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
     if cur_obj is not None:
         state_ctx[CONNECTOR].update(global_ctx, end=cur_obj)
 
-    obj_id = state_ctx[CONNECTOR].id
-    x, y, _, _ = global_ctx.canvas.bbox(obj_id)
+    obj: Connector = state_ctx[CONNECTOR]
+    x, y, _, _ = global_ctx.canvas.bbox(obj.id)
     state_ctx.pop(CONNECTOR)
-    # global_ctx.events_history.add_event('CONNECTOR', x=int(x), y=int(y), obj_id=obj_id)
+    global_ctx.events_history.add_event(
+        'ADD_CONNECTOR',
+        obj_id=obj.id,
+        start=obj.obj_start_for_event,
+        end=obj.obj_end_for_event,
+        start_pos=obj.start_pos,
+        end_pos=obj.end_pos,
+        snap_to=obj.snap_to,
+    )
 
 
 def _predicate_from_root_to_connector(_: Context, event: tkinter.Event) -> bool:
-    return event.type == tkinter.EventType.KeyPress and event.state == 4 and event.keysym == 'p'
+    return event.type == tkinter.EventType.KeyPress and event.state == 4 and event.keysym == 'c'
 
 
 def _predicate_from_move_connector_to_root(_: Context, event: tkinter.Event) -> bool:

@@ -11,7 +11,6 @@ def create_states(ctx: context.Context):
 
 def register_handlers(ctx: context.Context):
     ctx.event_handlers.register_handler('ADD_CONNECTOR', handlers.AddConnectorHandler)
-    ctx.event_handlers.register_handler('EDIT_CONNECTOR', handlers.EditConnectorHandler)
 
 
 def register_object_types(ctx: context.Context):
