@@ -19,7 +19,6 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     state_ctx[TEXT] = obj
     obj.last_clicked = 0
     global_ctx.canvas.focus('')
-    global_ctx.canvas.focus_set()
     bbox = global_ctx.canvas.bbox(obj.get_text_id())
 
     global_ctx.canvas.icursor(obj.get_text_id(), f'@{bbox[2]},{bbox[3]}')
@@ -28,11 +27,11 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
-    cur_obj = state_ctx[TEXT]
-
     if event.type != tkinter.EventType.Key:
         return
 
+    cur_obj = state_ctx[TEXT]
+    
     if event.keysym == 'Right':
         new_index = global_ctx.canvas.index(
             cur_obj.get_text_id(), 'insert') + 1
@@ -55,17 +54,16 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
         cur_obj.highlight(global_ctx)
         return
 
-    if event.char != '':
-        _ = global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
-        global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', event.char)
-        cur_obj.highlight(global_ctx)
+    if event.char == '':
         return
+    global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
+    global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', event.char)
+    cur_obj.highlight(global_ctx)
 
 
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     global_ctx.canvas.delete('highlight')
     global_ctx.canvas.focus('')
-    global_ctx.canvas.focus_set()
     cur_obj = state_ctx[TEXT]
     cur_obj.last_clicked = 0
     obj_id = cur_obj.id
@@ -75,7 +73,8 @@ def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
 
 def _predicate_from_root_to_edit_text(global_context: Context, event: tkinter.Event) -> bool:
-    if event.state & (1 << 8) == 0:
+    # Release Left mouse button
+    if event.type != tkinter.EventType.ButtonRelease or event.num != 1:
         return False
 
     global_context.canvas.delete('highlight')
@@ -90,7 +89,6 @@ def _predicate_from_root_to_edit_text(global_context: Context, event: tkinter.Ev
     if not cur_obj.last_clicked:
         cur_obj.last_clicked = event.time
         cur_obj.highlight(global_context)
-
         return False
 
     ans = event.time - cur_obj.last_clicked < 500
@@ -99,7 +97,8 @@ def _predicate_from_root_to_edit_text(global_context: Context, event: tkinter.Ev
 
 
 def _predicate_from_edit_text_to_root(global_context: Context, event: tkinter.Event) -> bool:
-    return event.state & (1 << 8)
+    # Release Left mouse button
+    return event.type == tkinter.EventType.ButtonRelease and event.num == 1
 
 
 def create_state(state_machine):

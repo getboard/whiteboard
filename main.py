@@ -34,6 +34,7 @@ def main(log_file: str):
     root_window.geometry('800x600')
 
     ctx = create_context(root_window)
+    ctx.canvas.focus_set()
     modules.modules.init_modules(ctx)
 
     ctx.events_history.load_from_file_and_apply(ctx, log_file)
