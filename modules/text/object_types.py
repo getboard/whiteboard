@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 import objects_storage
 
 import context
@@ -6,7 +9,7 @@ import context
 class TextObject(objects_storage.Object):
     _font_size: float
     _width: float
-    _highlight_id: int
+    _highlight_id: Optional[int]
     _text_id: int
     last_clicked: int
 
@@ -14,7 +17,7 @@ class TextObject(objects_storage.Object):
         super().__init__(ctx, id)
         self._font_size = 14
         self._width = 100
-        self._highlight_id = 0
+        self._highlight_id = None
         self._text_id = ctx.canvas.create_text(
             kwargs['x'], kwargs['y'], text=kwargs['text'], tags=[id, 'text'], font=self.get_font()
         )
