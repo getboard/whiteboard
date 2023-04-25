@@ -116,14 +116,11 @@ class StateMachine:
                     # Залоггировать ошибку
                     return
                 # Залоггировать, что выходим из состояния before
-                self._cur_state.on_leave(
-                    self._global_context, self._cur_state_context, event)
+                self._cur_state.on_leave(self._global_context, self._cur_state_context, event)
                 self._cur_state_context = self._make_empty_context()
                 self._cur_state = after_state
                 # Залоггировать, что входим в состояние after
-                self._cur_state.on_enter(
-                    self._global_context, self._cur_state_context, event)
+                self._cur_state.on_enter(self._global_context, self._cur_state_context, event)
                 return
         # Залоггировать, что ни один предикат не выполнился
-        self._cur_state.handle_event(
-            self._global_context, self._cur_state_context, event)
+        self._cur_state.handle_event(self._global_context, self._cur_state_context, event)
