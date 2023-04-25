@@ -47,11 +47,12 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
         cur_obj.adjust_font(global_ctx, False)
         return
 
-    if event.char != '':
-        _ = global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
-        cur_obj.adjust_font(global_ctx)
-        global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', event.char)
+    if event.char == '':
         return
+
+    global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
+    cur_obj.adjust_font(global_ctx)
+    global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', event.char)
 
 
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):

@@ -21,7 +21,8 @@ def _handle_event(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
 
 
 def _predicate_from_root_to_move_board(
-        global_context: context.Context, event: tkinter.Event) -> bool:
+    global_context: context.Context, event: tkinter.Event
+) -> bool:
     # Motion with Left mouse button pressed
     if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
         return False
@@ -30,7 +31,8 @@ def _predicate_from_root_to_move_board(
 
 
 def _predicate_from_move_board_to_root(
-        global_context: context.Context, event: tkinter.Event) -> bool:
+    global_context: context.Context, event: tkinter.Event
+) -> bool:
     # Release Left mouse button
     return event.type == tkinter.EventType.ButtonRelease and event.num == 1
 
@@ -40,7 +42,9 @@ def create_state(state_machine: StateMachine) -> State:
     state.set_on_enter(_on_enter)
     state.set_event_handler(_handle_event)
     state_machine.add_transition(
-        StateMachine.ROOT_STATE_NAME, MOVE_BOARD_STATE_NAME, _predicate_from_root_to_move_board)
+        StateMachine.ROOT_STATE_NAME, MOVE_BOARD_STATE_NAME, _predicate_from_root_to_move_board
+    )
     state_machine.add_transition(
-        MOVE_BOARD_STATE_NAME, StateMachine.ROOT_STATE_NAME, _predicate_from_move_board_to_root)
+        MOVE_BOARD_STATE_NAME, StateMachine.ROOT_STATE_NAME, _predicate_from_move_board_to_root
+    )
     return state
