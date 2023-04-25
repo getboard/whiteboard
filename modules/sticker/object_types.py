@@ -51,16 +51,14 @@ class StickerObject(objects_storage.Object):
     def scale(self, ctx: context.Context, scale_factor: float):
         self._font_size *= scale_factor
         self._width *= scale_factor
-        ctx.canvas.itemconfig(
-            self._text_id, font=('sans-serif', int(self._font_size)), width=int(self._width)
-        )
+        ctx.canvas.itemconfig(self._text_id, font=self.get_font(), width=int(self._width))
 
     def adjust_font(self, ctx: context.Context, larger=True):
         _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         if larger:
             while abs(y1 - y2) > self._width:
                 self._font_size /= 1.05
-                ctx.canvas.itemconfig(self._text_id, font=('sans-serif', int(self._font_size)))
+                ctx.canvas.itemconfig(self._text_id, font=self.get_font())
                 _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         else:
             while abs(y1 - y2) < self._width * 0.7:

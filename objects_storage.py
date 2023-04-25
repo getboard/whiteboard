@@ -44,6 +44,12 @@ class ObjectsStorage:
     def get_opt_by_id(self, object_id: str) -> Optional[Object]:
         return self._objects.get(object_id)
 
+    def get_current(self) -> Object:
+        tags = self._ctx.canvas.gettags('current')
+        if not tags:
+            raise KeyError('No tags for current object')
+        return self.get_by_id(tags[0])
+
     def get_current_opt(self) -> Optional[Object]:
         tags = self._ctx.canvas.gettags('current')
         if not tags:
