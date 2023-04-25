@@ -12,10 +12,6 @@ TEXT = 'text'
 
 def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     obj = global_ctx.objects_storage.get_current_opt()
-    if not obj:
-        global_ctx.canvas.delete('highlight')
-        return
-
     state_ctx[TEXT] = obj
     global_ctx.canvas.focus('')
     bbox = global_ctx.canvas.bbox(obj.get_text_id())
