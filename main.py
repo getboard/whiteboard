@@ -9,6 +9,7 @@ from state_machine import StateMachine
 
 import modules.modules
 import modules.text
+import modules.sticker
 import modules.move
 import modules.zooming
 import modules.drag_board

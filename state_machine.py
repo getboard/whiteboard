@@ -88,6 +88,9 @@ class StateMachine:
         self._global_context.canvas.bind('<ButtonPress-1>', self.handle_event)
         self._global_context.canvas.bind('<B1-Motion>', self.handle_event)
         self._global_context.canvas.bind('<ButtonRelease-1>', self.handle_event)
+        self._global_context.canvas.bind('<Key>', self.handle_event)
+        self._global_context.canvas.bind('<Control-ButtonPress-1>', self.handle_event)
+
         # TODO: add more binds
 
     def add_state(self, state: State):
