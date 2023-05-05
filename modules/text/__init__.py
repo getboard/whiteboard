@@ -20,8 +20,13 @@ def register_object_types(ctx: context.Context):
     ctx.objects_storage.register_object_type('TEXT', object_types.TextObject)
 
 
+def register_module_menu(ctx: context.Context):
+    ctx.menu.add_command_to_menu('text')
+
+
 @modules.modules.register_module('text')
 def init_module(ctx: context.Context):
     create_states(ctx)
     register_handlers(ctx)
     register_object_types(ctx)
+    register_module_menu(ctx)
