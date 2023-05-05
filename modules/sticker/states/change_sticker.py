@@ -5,7 +5,6 @@ from state_machine import State
 from state_machine import StateMachine
 from context import Context
 
-
 CHANGE_STICKER_STATE_NAME = 'CHANGE_STICKER'
 STICKER = 'sticker'
 
@@ -30,10 +29,11 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
 
 def _predicate_from_root_to_change_text(global_context: Context, event: tkinter.Event) -> bool:
-    if event.state & (1 << 8) == 0 and event.state & 4 == 0:
+    if event.state & (1 << 8) == 0 and event.state & 4 == 0 or \
+            global_context.menu.current_state != 'sticker':
         return False
 
-    if event.state & (1 << 8) and event.state & 4:
+    if event.state & (1 << 8) and event.state & 4 or global_context.menu.current_state == 'sticker':
         actual_x = int(global_context.canvas.canvasx(event.x))
         actual_y = int(global_context.canvas.canvasy(event.y))
 
@@ -43,13 +43,14 @@ def _predicate_from_root_to_change_text(global_context: Context, event: tkinter.
         global_context.events_history.add_event(
             'ADD_STICKER', x=actual_x, y=actual_y, obj_id=obj_id, text='new sticker'
         )
-
+        global_context.menu.make_root_state()
         return True
     return False
 
 
 def _predicate_from_change_text_to_root(global_context: Context, event: tkinter.Event) -> bool:
-    return event.state & (1 << 8)
+    return event.type == tkinter.EventType.ButtonRelease and event.num == 1 \
+        or global_context.menu.current_state != 'sticker'
 
 
 def create_state(state_machine):
