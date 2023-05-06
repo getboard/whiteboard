@@ -58,20 +58,19 @@ def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     global_ctx.canvas.delete('highlight')
     global_ctx.canvas.focus('')
     cur_obj = state_ctx[TEXT]
-    cur_obj.last_clicked = 0
     obj_id = cur_obj.id
     txt = cur_obj.get_text(global_ctx)
     global_ctx.events_history.add_event('EDIT_TEXT', obj_id=obj_id, new_text=txt)
 
 
-def _predicate_from_submenu_to_edit_text(global_context: Context, event: tkinter.Event) -> bool:
+def _predicate_from_context_to_edit_text(global_context: Context, event: tkinter.Event) -> bool:
     # Release Left mouse button
     if event.type != tkinter.EventType.ButtonRelease or event.num != 1:
         return False
     cur_obj: Optional[Object] = global_context.objects_storage.get_current_opt()
     if cur_obj is None:
         return False
-    if not global_context.canvas.find_withtag(f'submenu{cur_obj.id}'):
+    if not cur_obj.is_focused:
         return False
     if not isinstance(cur_obj, TextObject):
         return False
@@ -90,7 +89,7 @@ def create_state(state_machine):
     state.set_event_handler(_handle_event)
     state.set_on_leave(_on_leave)
     state_machine.add_transition(
-        StateMachine.SUBMENU_STATE_NAME, EDIT_TEXT_STATE_NAME, _predicate_from_submenu_to_edit_text
+        StateMachine.CONTEXT_STATE_NAME, EDIT_TEXT_STATE_NAME, _predicate_from_context_to_edit_text
     )
     state_machine.add_transition(
         EDIT_TEXT_STATE_NAME, StateMachine.ROOT_STATE_NAME, _predicate_from_edit_text_to_root
