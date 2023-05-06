@@ -1,5 +1,5 @@
+from tkinter import font
 from typing import Optional
-
 
 import objects_storage
 
@@ -7,27 +7,50 @@ import context
 
 
 class TextObject(objects_storage.Object):
-    _font_size: float
-    _width: float
+    _initial_font_size: int
     _highlight_id: Optional[int]
     _text_id: int
-    last_clicked: int
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(ctx, id)
-        self._font_size = 14
-        self._width = 100
         self._highlight_id = None
+        self._initial_font_size = 14
         self._text_id = ctx.canvas.create_text(
-            kwargs['x'], kwargs['y'], text=kwargs['text'], tags=[id, 'text'], font=self.get_font()
+            kwargs['x'], kwargs['y'],
+            text=kwargs['text'],
+            tags=[id, 'text'],
+            font=self.get_default_font()
         )
-        self.last_clicked = 0
+
+    def get_property_value(self, ctx: context.Context, property_name: str):
+        if property_name == 'font':
+            return self.get_font(ctx)
+        value = ctx.canvas.itemcget(self._text_id, property_name)
+        return value
 
     def update(self, ctx: context.Context, **kwargs):
+        if 'font' in kwargs:
+            f = font.Font(None, kwargs['font']).actual()
+            self._initial_font_size = f['size']
+            kwargs['font'] = (
+                f['family'],
+                int(f['size'] * self.scale_factor),
+                f['weight'],
+                f['slant']
+            )
         ctx.canvas.itemconfig(self.id, **kwargs)
 
-    def get_font(self):
-        return 'sans-serif', int(self._font_size)
+    def get_default_font(self):
+        return 'Arial', self._initial_font_size
+
+    def get_font(self, ctx: context.Context, scaled=False):
+        scale_factor = 1.0
+        if scaled:
+            scale_factor *= self.scale_factor
+        font_str = ctx.canvas.itemcget(self._text_id, 'font')
+        f = font.Font(None, font_str).actual()
+        f['size'] = int((self._initial_font_size * scale_factor))
+        return f['family'], f['size'], f['weight'], f['slant']
 
     def get_text_id(self):
         return self._text_id
@@ -37,9 +60,8 @@ class TextObject(objects_storage.Object):
         return text
 
     def scale(self, ctx: context.Context, scale_factor: float):
-        self._font_size *= scale_factor
-        self._width *= scale_factor
-        ctx.canvas.itemconfig(self._text_id, font=self.get_font())
+        self.scale_factor *= scale_factor
+        ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
     def highlight(self, ctx: context.Context):
         if self._highlight_id not in ctx.canvas.find_all():
