@@ -1,23 +1,34 @@
 from enum import Enum
-from tkinter import ttk, StringVar
-
-# import context
+from tkinter import font
+from typing import List, Union
 
 
 class PropertyType(Enum):
-    FONT = 0
     TEXT = 1
-    COLOR = 2
-    NUMBER = 3
-    LINE_TYPE = 4
-    LINE_WIDTH = 5
-    TEXT_ALIGNMENT = 6
+    NUMBER = 2
+    FONT = 3
+    COLOR = 4
+    TEXT_ALIGNMENT = 5
+    LINE_WIDTH = 6
+    LINE_TYPE = 7
 
 
-class Property:
+class PropertyOptions(Enum):
+    FONT_NAME = 0
+    FONT_SIZE = 1
+    FONT_WEIGHT = 2
+    FONT_STYLE = 3
+
+
+class PropertyModule:
     _property_type: PropertyType
     _property_update_name: str
     _property_name: str
+    _property_restriction: Union[List[List], List, None]
+    _property_option_cnt: int
+    _property_default: Union[str, int, tuple, None]
+    _property_options: List[PropertyOptions]
+    _options_visibility: List[bool]
     _is_hidden: bool
 
     def __init__(
@@ -25,12 +36,39 @@ class Property:
             property_type: PropertyType,
             property_name: str,
             property_update_name: str,
-            is_hidden: bool
+            is_hidden: bool,
+            property_options: Union[List[PropertyOptions], None] = None
     ):
         self._property_type = property_type
         self._property_name = property_name
         self._property_update_name = property_update_name
         self._is_hidden = is_hidden
+        if property_options:
+            self._property_options = property_options
+            self._property_options.sort(key=lambda x: x.value)
+        else:
+            self._property_options = []
+        self._property_restriction = None
+        self._property_option_cnt = 0
+        self._options_visibility = []
+        self.init_restrictions()
+        self.init_options_visibility()
+
+    @property
+    def options_visibility(self):
+        return self._options_visibility
+
+    @property
+    def property_restriction(self):
+        return self._property_restriction
+
+    @property
+    def property_option_cnt(self):
+        return self._property_option_cnt
+
+    @property
+    def property_default(self):
+        return self._property_default
 
     @property
     def property_type(self):
@@ -48,123 +86,75 @@ class Property:
     def is_hidden(self):
         return self._is_hidden
 
-    # def init_widget(self, ctx: context.Context):
-    #     if self._property_type == PropertyType.FONT:
-    #         font_var = self.init_font(ctx)
-    #         size_var = self.init_size(ctx)
-    #         style_var = self.init_style(ctx)
-    #         for f in [font_var, style_var, size_var]:
-    #             f.trace("w", lambda _, __, ___: self.update_property(ctx, **{
-    #                 self.property_update_name: (
-    #                     font_var.get(), int(size_var.get()), style_var.get())
-    #             }))
-    #     elif self._property_type == PropertyType.TEXT:
-    #         pass
-    #     elif self._property_type == PropertyType.COLOR:
-    #         color_var = self.init_color(ctx)
-    #         color_var.trace("w", lambda _, __, ___: self.update_property(ctx, **{
-    #             self.property_update_name: color_var.get()
-    #         }))
-    #     elif self._property_type == PropertyType.NUMBER:
-    #         pass
-    #     elif self._property_type == PropertyType.LINE_TYPE:
-    #         pass
-    #     elif self._property_type == PropertyType.LINE_WIDTH:
-    #         pass
-    #     elif self._property_type == PropertyType.TEXT_ALIGNMENT:
-    #         pass
-    #
-    # @property
-    # def obj_id(self):
-    #     return self._obj_id
+    def init_options_visibility(self):
+        if self.is_hidden:
+            return
+        if not self._property_options and self.property_option_cnt > 1:
+            self._options_visibility = [True] * self.property_option_cnt
+            return
+        if self._property_type == PropertyType.FONT:
+            options_values = [p.value for p in self._property_options]
+            for i in range(self.property_option_cnt):
+                if i in options_values:
+                    self._options_visibility.append(True)
+                else:
+                    self._options_visibility.append(False)
 
-    # @property
-    # def cur_value(self):
-    #     return self._cur_value
-    #
-    # def init_font(self, ctx: context.Context):
-    #     font_var = StringVar()
-    #     font = ctx.objects_storage.get_by_id(self.obj_id).get_property_value(ctx, 'font').split()
-    #     if len(font) >= 1:
-    #         cur_value = font[0]
-    #     else:
-    #         cur_value = 'sans-serif'
-    #     font_names = ['Arial', 'Courier', 'Times New Roman', 'sans-serif']
-    #     get_index = 0
-    #     for i in range(len(font_names)):
-    #         if font_names[i] == cur_value:
-    #             get_index = i
-    #     font_combobox = ttk.Combobox(ctx.property_bar, textvariable=font_var, values=font_names)
-    #     font_combobox.current(get_index)
-    #     font_combobox.pack(pady=5)
-    #     return font_var
-    #
-    # def init_size(self, ctx: context.Context):
-    #     size_var = StringVar()
-    #     font = ctx.objects_storage.get_by_id(self.obj_id).get_property_value(ctx, 'font').split()
-    #     if len(font) >= 2:
-    #         cur_value = int(font[1])
-    #     else:
-    #         cur_value = 14
-    #     font_sizes = list(range(8, cur_value, 2)) + list(range(cur_value, 65, 2))
-    #     get_index = 0
-    #     for i in range(len(font_sizes)):
-    #         if font_sizes[i] <= cur_value:
-    #             get_index = i
-    #
-    #     size_combobox = ttk.Combobox(ctx.property_bar, textvariable=size_var, values=font_sizes)
-    #     size_combobox.current(get_index)
-    #     size_combobox.pack(pady=5)
-    #     return size_var
-    #
-    # def init_style(self, ctx: context.Context):
-    #     style_var = StringVar()
-    #     font = ctx.objects_storage.get_by_id(self.obj_id).get_property_value(ctx, 'font').split()
-    #     if len(font) >= 3:
-    #         cur_value = font[2]
-    #     else:
-    #         cur_value = 'normal'
-    #     font_styles = ['normal', 'bold', 'italic']
-    #     get_index = 0
-    #     for i in range(len(font_styles)):
-    #         if font_styles[i] == cur_value:
-    #             get_index = i
-    #    style_combobox = ttk.Combobox(ctx.property_bar, textvariable=style_var, values=font_styles)
-    #     style_combobox.current(get_index)
-    #     style_combobox.pack(pady=5)
-    #     return style_var
-    #
-    # def init_color(self, ctx: context.Context):
-    #     color_var = StringVar()
-    #     cur_value = ctx.objects_storage.get_by_id(self.obj_id).get_property_value(
-    #         ctx,
-    #         self._property_update_name
-    #     ).split()
-    #     colors = ["black", "blue", "red", "green", "brown"]
-    #     get_index = 0
-    #     for i in range(len(colors)):
-    #         if colors[i] == cur_value:
-    #             get_index = i
-    #     style_combobox = ttk.Combobox(ctx.property_bar, textvariable=color_var, values=colors)
-    #     style_combobox.current(get_index)
-    #     style_combobox.pack(pady=5)
-    #     return color_var
-    #
-    # def update_property(self, ctx: context.Context, **kwargs):
-    #     ctx.objects_storage.get_by_id(self.obj_id).update(ctx, **kwargs)
-    #     ctx.events_history.add_event('UPDATE_OBJECT', obj_id=self.obj_id, **kwargs)
-    #     # ctx.objects_storage.get_by_id(self.obj_id).draw_rect(ctx)
-    #
-    # def remove_property(self):
-    #     self._property_widget.destroy()
-    #
-    # # def show_menu(self, ctx: context.Context):
-    # #     ctx.property_bar.pack(fill="both", side="right", expand=False, padx=10, pady=10)
-    # #     self.init_menu(ctx)
-    # #     ctx.objects_storage.get_by_id(self.obj_id).draw_rect(ctx)
-    # #
-    # # def destroy_menu(self, ctx: context.Context):
-    # #     ctx.property_bar.pack_forget()
-    # #     for child in ctx.property_bar.winfo_children():
-    # #         child.destroy()
-    # #     ctx.objects_storage.get_by_id(self.obj_id).remove_rect(ctx)
+    def init_restrictions(self):
+        if self._property_type == PropertyType.FONT:
+            set_of_families = set(f for f in font.families() if len(f.split()) == 1)
+            self._property_restriction = [
+                sorted(s for s in set_of_families if not s.startswith('@')),
+                list(range(8, 65, 2)),
+                ['normal', 'bold'],
+                ['roman', 'italic']
+            ]
+            self._property_default = ('Arial', 14, 'normal', 'roman')
+            self._property_option_cnt = 4
+        elif self._property_type == PropertyType.TEXT:
+            self._property_restriction = None
+            self._property_default = None
+            self._property_option_cnt = 0
+        elif self._property_type == PropertyType.NUMBER:
+            self._property_restriction = None
+            self._property_default = None
+            self._property_option_cnt = 0
+        elif self._property_type == PropertyType.COLOR:
+            self._property_restriction = ['black', 'red', 'green', 'blue']
+            self._property_default = 'black'
+            self._property_option_cnt = 1
+        elif self._property_type == PropertyType.TEXT_ALIGNMENT:
+            self._property_restriction = ['black', 'red', 'green', 'blue']
+            self._property_default = 'black'
+            self._property_option_cnt = 1
+        elif self._property_type == PropertyType.LINE_WIDTH:
+            self._property_restriction = [1, 2, 3, 4, 5]  # width
+            self._property_default = 1
+            self._property_option_cnt = 1
+        elif self._property_type == PropertyType.LINE_TYPE:  # dash
+            self._property_restriction = ['solid', 'dotted', 'dashed']
+            self._property_default = 'solid'
+            self._property_option_cnt = 1
+        else:
+            self._property_restriction = None
+            self._property_default = None
+            self._property_option_cnt = 0
+
+    def parse_value(self, value: str):
+        if self._property_type == PropertyType.FONT:
+            f = font.Font(None, value).actual()
+            return f['family'], f['size'], f['weight'], f['slant']
+        elif self._property_type == PropertyType.TEXT:
+            return value
+        elif self._property_type == PropertyType.NUMBER:
+            return int(value)
+        elif self._property_type == PropertyType.COLOR:
+            return value
+        elif self._property_type == PropertyType.TEXT_ALIGNMENT:
+            return value
+        elif self._property_type == PropertyType.LINE_WIDTH:
+            return int(value)
+        elif self._property_type == PropertyType.LINE_TYPE:  # dash
+            return value
+        else:
+            return None
