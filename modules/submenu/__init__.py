@@ -1,7 +1,7 @@
 import context
 import modules
+from modules.submenu import handlers
 from modules.submenu.states import submenu
-from . import handlers
 
 
 def create_states(ctx: context.Context):
@@ -9,7 +9,7 @@ def create_states(ctx: context.Context):
 
 
 def register_handlers(ctx: context.Context):
-    ctx.event_handlers.register_handler('EDIT_OBJECT', handlers.SubmenuHandler)
+    ctx.event_handlers.register_handler('UPDATE_OBJECT', handlers.UpdateObjectHandler)
 
 
 @modules.modules.register_module('submenu')
