@@ -1,10 +1,11 @@
-from typing import Dict
+from typing import Dict, Optional
 import tkinter
 
+from modules.text.object_types import TextObject
+from objects_storage import Object
 from state_machine import State
 from state_machine import StateMachine
 from context import Context
-
 
 EDIT_TEXT_STATE_NAME = 'EDIT_TEXT'
 TEXT = 'text'
@@ -63,25 +64,19 @@ def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     global_ctx.events_history.add_event('EDIT_TEXT', obj_id=obj_id, new_text=txt)
 
 
-def _predicate_from_root_to_edit_text(global_context: Context, event: tkinter.Event) -> bool:
+def _predicate_from_submenu_to_edit_text(global_context: Context, event: tkinter.Event) -> bool:
     # Release Left mouse button
     if event.type != tkinter.EventType.ButtonRelease or event.num != 1:
         return False
-
-    global_context.canvas.delete('highlight')
-
-    cur_obj = global_context.objects_storage.get_current_opt()
+    cur_obj: Optional[Object] = global_context.objects_storage.get_current_opt()
     if cur_obj is None:
         return False
-
-    if global_context.objects_storage.get_current_opt_type() != 'text':
+    if not global_context.canvas.find_withtag(f'submenu{cur_obj.id}'):
         return False
-
+    if not isinstance(cur_obj, TextObject):
+        return False
     cur_obj.highlight(global_context)
-    DOUBLE_CLICK_THRESHOLD_MS = 500
-    ans = event.time - cur_obj.last_clicked < DOUBLE_CLICK_THRESHOLD_MS
-    cur_obj.last_clicked = event.time
-    return ans
+    return True
 
 
 def _predicate_from_edit_text_to_root(global_context: Context, event: tkinter.Event) -> bool:
@@ -95,7 +90,7 @@ def create_state(state_machine):
     state.set_event_handler(_handle_event)
     state.set_on_leave(_on_leave)
     state_machine.add_transition(
-        StateMachine.ROOT_STATE_NAME, EDIT_TEXT_STATE_NAME, _predicate_from_root_to_edit_text
+        StateMachine.SUBMENU_STATE_NAME, EDIT_TEXT_STATE_NAME, _predicate_from_submenu_to_edit_text
     )
     state_machine.add_transition(
         EDIT_TEXT_STATE_NAME, StateMachine.ROOT_STATE_NAME, _predicate_from_edit_text_to_root

@@ -13,6 +13,7 @@ import modules.sticker
 import modules.move
 import modules.zooming
 import modules.drag_board
+import modules.submenu
 
 
 def create_context(root: tkinter.Tk) -> context.Context:
