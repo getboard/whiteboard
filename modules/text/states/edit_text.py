@@ -18,7 +18,7 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     bbox = global_ctx.canvas.bbox(obj.get_text_id())
     global_ctx.canvas.icursor(obj.get_text_id(), f'@{bbox[2]},{bbox[3]}')
     global_ctx.canvas.focus(obj.get_text_id())
-    obj.highlight(global_ctx)
+    obj.draw_rect(global_ctx)
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
@@ -44,22 +44,22 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
         if insert > 0:
             global_ctx.canvas.dchars(cur_obj.get_text_id(), insert - 1, insert)
 
-        cur_obj.highlight(global_ctx)
+        cur_obj.draw_rect(global_ctx)
         return
 
     if event.char == '':
         return
     global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
     global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', event.char)
-    cur_obj.highlight(global_ctx)
+    cur_obj.draw_rect(global_ctx)
 
 
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
-    global_ctx.canvas.delete('highlight')
     global_ctx.canvas.focus('')
     cur_obj = state_ctx[TEXT]
     obj_id = cur_obj.id
     txt = cur_obj.get_text(global_ctx)
+    cur_obj.remove_rect(global_ctx)
     global_ctx.events_history.add_event('EDIT_TEXT', obj_id=obj_id, new_text=txt)
 
 
@@ -74,7 +74,6 @@ def _predicate_from_context_to_edit_text(global_context: Context, event: tkinter
         return False
     if not isinstance(cur_obj, TextObject):
         return False
-    cur_obj.highlight(global_context)
     return True
 
 

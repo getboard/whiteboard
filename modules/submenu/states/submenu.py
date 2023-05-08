@@ -19,10 +19,6 @@ def _on_enter(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
     state_ctx[SUBMENU].show_menu(global_ctx)
 
 
-def _handle_event(global_ctx: Context, __: Dict, ___: tkinter.Event):
-    pass
-
-
 def _on_leave(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
     if SUBMENU in state_ctx:
         state_ctx[SUBMENU].destroy_menu(global_ctx)
@@ -55,7 +51,6 @@ def _predicate_from_context_to_context(global_context: Context, event: tkinter.E
 def create_state(state_machine: StateMachine) -> State:
     state = State(StateMachine.CONTEXT_STATE_NAME)
     state.set_on_enter(_on_enter)
-    state.set_event_handler(_handle_event)
     state.set_on_leave(_on_leave)
     state_machine.add_transition(
         StateMachine.ROOT_STATE_NAME,

@@ -62,21 +62,3 @@ class TextObject(objects_storage.Object):
     def scale(self, ctx: context.Context, scale_factor: float):
         self.scale_factor *= scale_factor
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
-
-    def highlight(self, ctx: context.Context):
-        if self._highlight_id not in ctx.canvas.find_all():
-            ctx.canvas.delete('highlight')
-            self._highlight_id = ctx.canvas.create_rectangle(
-                (0, 0, 0, 0),
-                fill='white',
-                outline='blue',
-                dash='.',
-                tags=[self.id, 'text', 'highlight'],
-            )
-        ctx.canvas.lower(self._highlight_id, self._text_id)
-
-        # resize the highlight
-        bbox = ctx.canvas.bbox(self._text_id)
-        OFFSET = 4
-        rect_bbox = (bbox[0] - OFFSET, bbox[1] - OFFSET, bbox[2] + OFFSET, bbox[3] + OFFSET)
-        ctx.canvas.coords(self._highlight_id, rect_bbox)

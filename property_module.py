@@ -143,7 +143,7 @@ class PropertyModule:
     def parse_value(self, value: str):
         if self._property_type == PropertyType.FONT:
             f = font.Font(None, value).actual()
-            return f['family'], f['size'], f['weight'], f['slant']
+            return f['family'].split()[0], f['size'], f['weight'], f['slant']
         elif self._property_type == PropertyType.TEXT:
             return value
         elif self._property_type == PropertyType.NUMBER:

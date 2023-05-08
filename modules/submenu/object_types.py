@@ -38,6 +38,8 @@ class Submenu:
             property_module.property_update_name
         )
         parsed_value = property_module.parse_value(prop_value)
+        print(prop_value)
+        print(parsed_value)
         if not parsed_value:
             return
 

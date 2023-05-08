@@ -20,7 +20,6 @@ import modules.submenu
 def create_context(root: tkinter.Tk) -> context.Context:
     logger = logging.Logger('global_logger')
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
-    # canvas.place(x=50, y=50)
     canvas.pack(side="left", fill="both", expand=False)
     ctx = context.Context()
     ctx.events_history = events_history.EventsHistory()
