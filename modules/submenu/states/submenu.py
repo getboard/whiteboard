@@ -11,18 +11,13 @@ SUBMENU = 'SUBMENU'
 
 
 def _on_enter(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
-    obj = global_ctx.objects_storage.get_current_opt()
-    if not obj:
-        # Залоггировать
-        return
+    obj = global_ctx.objects_storage.get_current()
     state_ctx[SUBMENU] = Submenu(obj.id, global_ctx)
     state_ctx[SUBMENU].show_menu(global_ctx)
 
 
 def _on_leave(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
-    if SUBMENU in state_ctx:
-        state_ctx[SUBMENU].destroy_menu(global_ctx)
-        state_ctx.pop(SUBMENU)
+    state_ctx[SUBMENU].destroy_menu(global_ctx)
 
 
 def _predicate_from_root_to_context(global_ctx: Context, event: tkinter.Event) -> bool:

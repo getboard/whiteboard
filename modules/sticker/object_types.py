@@ -9,14 +9,10 @@ class StickerObject(objects_storage.Object):
     _initial_font_size: int
     _width: float
     _text_id: int
-    _adjust_factor: float
-    last_clicked: int
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(ctx, id)
         self._width = 100
-        self.last_clicked = 0
-        self._adjust_factor = 1.0
         self._initial_font_size = 14
         self._text_id = ctx.canvas.create_text(
             kwargs['x'],
@@ -81,14 +77,17 @@ class StickerObject(objects_storage.Object):
     def adjust_font(self, ctx: context.Context, larger=True):
         _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         width = self.get_width(ctx, scaled=True)
+        floated_size = 1.0 * self._initial_font_size
         if larger:
             while abs(y1 - y2) > width:
-                self._initial_font_size = int(self._initial_font_size / 1.05)
+                floated_size /= 1.05
+                self._initial_font_size = int(floated_size)
                 ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
                 _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         else:
             while abs(y1 - y2) < width * 0.7:
-                self._initial_font_size = int(self._initial_font_size * 1.05)
+                floated_size *= 1.05
+                self._initial_font_size = int(floated_size)
                 ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
                 _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
                 y1 = ctx.canvas.canvasx(y1)
