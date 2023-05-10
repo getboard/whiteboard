@@ -66,12 +66,14 @@ class StickerObject(Object):
     def init_properties(self):
         self.properties[self.FONT_FAMILY_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_FAMILY,
+            property_description="Шрифт",
             getter=self.get_font_family,
             setter=self.set_font_family
         )
 
         self.properties[self.FONT_SIZE_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_SIZE,
+            property_description="Размер шрифта",
             getter=self.get_font_size,
             setter=None,
             is_hidden=True
@@ -79,30 +81,35 @@ class StickerObject(Object):
 
         self.properties[self.FONT_WEIGHT_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_WEIGHT,
+            property_description="Насыщенность шрифта",
             getter=self.get_font_weight,
             setter=self.set_font_weight
         )
 
         self.properties[self.FONT_SLANT_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_SLANT,
+            property_description="Наклон шрифта",
             getter=self.get_font_slant,
             setter=self.set_font_slant
         )
 
         self.properties[self.FONT_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
+            property_description="Цвет шрифта",
             getter=self.get_font_color,
             setter=self.set_font_color
         )
 
         self.properties[self.BG_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
+            property_description="Цвет карточки",
             getter=self.get_bg_color,
             setter=self.set_bg_color
         )
 
         self.properties[self.WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.NUMBER,
+            property_description="Длина карточки",
             getter=self.get_width,
             setter=self.set_width,
             restrictions=list(range(100, 300, 50))
@@ -110,6 +117,7 @@ class StickerObject(Object):
 
         self.properties[self.X_PROPERTY_NAME] = Property(
             property_type=PropertyType.NUMBER,
+            property_description="X",
             getter=self.get_x,
             setter=None,
             restrictions='default',
@@ -119,6 +127,7 @@ class StickerObject(Object):
         self.properties[self.Y_PROPERTY_NAME] = Property(
             property_type=PropertyType.NUMBER,
             getter=self.get_y,
+            property_description="Y",
             setter=None,
             restrictions='default',
             is_hidden=True

@@ -35,6 +35,12 @@ class Submenu:
         if not restrictions:
             restrictions = [parsed_value]
         get_index = self.get_index(restrictions, parsed_value)
+        label = ttk.Label(
+            ctx.property_bar,
+            text=prop_value.property_description,
+            justify="left",
+            anchor='w'
+        )
         combobox = ttk.Combobox(
             ctx.property_bar,
             textvariable=string_var,
@@ -42,6 +48,7 @@ class Submenu:
             state="readonly"
         )
         combobox.current(get_index)
+        self._property_widgets.append(label)
         self._property_widgets.append(combobox)
         string_var.trace(
             "w", lambda *_: self.update_property(
@@ -67,7 +74,7 @@ class Submenu:
     def show_menu(self, ctx: context.Context):
         ctx.objects_storage.get_by_id(self.obj_id).draw_rect(ctx)
         for w in self._property_widgets:
-            w.pack(pady=5)
+            w.pack(pady=1, fill="both")
 
     def destroy_menu(self, ctx: context.Context):
         ctx.objects_storage.get_by_id(self.obj_id).remove_rect(ctx)

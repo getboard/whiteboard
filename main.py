@@ -35,7 +35,7 @@ def create_context(root: tkinter.Tk) -> context.Context:
 
 def main(log_file: str):
     root_window = tkinter.Tk(className='Whiteboard')
-    root_window.geometry('800x600')
+    root_window.geometry('870x600')
 
     ctx = create_context(root_window)
     ctx.canvas.focus_set()

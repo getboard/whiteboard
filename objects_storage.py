@@ -26,6 +26,7 @@ class PropertyType(Enum):
 
 class Property:
     _property_type: PropertyType
+    _property_description: str
     _getter: Callable[[context.Context], Any]
     _setter: Union[Callable[[context.Context, Any], None], None]
     _restrictions: List[Any]
@@ -34,12 +35,14 @@ class Property:
     def __init__(
             self,
             property_type: PropertyType,
+            property_description: str,
             getter: Callable[[context.Context], Any],
             setter: Union[Callable[[context.Context, Any], None], None],
             restrictions: Union[List[Any], Literal['default']] = 'default',
             is_hidden: bool = False
     ):
         self._property_type = property_type
+        self._property_description = property_description
         self._getter = getter
         self._setter = setter
         self._is_hidden = is_hidden
@@ -81,6 +84,10 @@ class Property:
     @property
     def property_type(self):
         return self._property_type
+
+    @property
+    def property_description(self):
+        return self._property_description
 
     @property
     def getter(self):
