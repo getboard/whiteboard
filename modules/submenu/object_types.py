@@ -2,7 +2,7 @@ from tkinter import ttk, StringVar
 from typing import List
 
 import context
-from property_module import PropertyModule
+from objects_storage import Property, PropertyType
 
 
 class Submenu:
@@ -15,12 +15,10 @@ class Submenu:
         self.init_widgets(ctx)
 
     def init_widgets(self, ctx: context.Context):
-        properties = ctx.objects_storage.get_properties_by_id(self.obj_id)
-        for prop in properties:
-            if prop.property_option_cnt == 1 and not prop.is_hidden:
-                self.init_property(ctx, prop)
-            elif prop.property_option_cnt > 1 and not prop.is_hidden:
-                self.init_property_with_options(ctx, prop)
+        properties = ctx.objects_storage.get_by_id(self.obj_id).properties
+        for prop_name, prop_value in properties.items():
+            if not prop_value.is_hidden:
+                self.init_property(ctx, prop_name, prop_value)
 
     @staticmethod
     def get_index(values, to_check):
@@ -30,63 +28,39 @@ class Submenu:
                 index = i
         return index
 
-    def init_property_with_options(self, ctx, property_module: PropertyModule):
-        string_vars = [StringVar() for _ in range(property_module.property_option_cnt)]
-
-        prop_value = ctx.objects_storage.get_by_id(self.obj_id).get_property_value(
-            ctx,
-            property_module.property_update_name
-        )
-        parsed_value = property_module.parse_value(prop_value)
-        if not parsed_value:
-            return
-
-        for i in range(property_module.property_option_cnt):
-            if property_module.options_visibility[i]:
-                restriction = property_module.property_restriction[i]
-                get_index = self.get_index(restriction, parsed_value[i])
-                combobox = ttk.Combobox(
-                    ctx.property_bar,
-                    textvariable=string_vars[i],
-                    values=restriction
-                )
-                combobox.current(get_index)
-                self._property_widgets.append(combobox)
-            else:
-                string_vars[i].set(parsed_value[i])
-
-        for i in range(property_module.property_option_cnt):
-            if property_module.options_visibility[i]:
-                string_vars[i].trace("w", lambda *_: self.update_property(ctx, **{
-                    property_module.property_update_name:
-                        property_module.parse_value(' '.join((s.get()) for s in string_vars))
-                }))
-
-    def init_property(self, ctx: context.Context, property_module: PropertyModule):
+    def init_property(self, ctx: context.Context, prop_name: str, prop_value: Property):
         string_var = StringVar()
-        prop_value = ctx.objects_storage.get_by_id(self.obj_id).get_property_value(
-            ctx,
-            property_module.property_update_name
-        )
-        parsed_value = property_module.parse_value(prop_value)
-        if not parsed_value:
-            return
-
-        restriction = property_module.property_restriction
-        get_index = self.get_index(restriction, parsed_value)
+        parsed_value = prop_value.getter()
+        restrictions = prop_value.restrictions
+        if not restrictions:
+            restrictions = [parsed_value]
+        get_index = self.get_index(restrictions, parsed_value)
         combobox = ttk.Combobox(
             ctx.property_bar,
             textvariable=string_var,
-            values=restriction
+            values=restrictions,
+            state="readonly"
         )
         combobox.current(get_index)
         self._property_widgets.append(combobox)
-        string_var.trace("w", lambda *_: self.update_property(ctx, **{
-            property_module.property_update_name: property_module.parse_value(string_var.get())
-        }))
+        string_var.trace(
+            "w", lambda *_: self.update_property(
+                ctx,
+                prop_name,
+                prop_value,
+                string_var.get()
+            )
+        )
 
-    def update_property(self, ctx: context.Context, **kwargs):
-        ctx.objects_storage.get_by_id(self.obj_id).update(ctx, **kwargs)
+    def update_property(
+            self,
+            ctx: context.Context,
+            prop_name: str,
+            prop_value: Property,
+            value: str
+    ):
+        prop_value.setter(ctx, value)
+        kwargs = {prop_name: prop_value.getter()}
         ctx.events_history.add_event('UPDATE_OBJECT', obj_id=self.obj_id, **kwargs)
         ctx.objects_storage.get_by_id(self.obj_id).draw_rect(ctx)
 
