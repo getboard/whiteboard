@@ -37,6 +37,7 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     )
     state_ctx[LAST_DRAG_EVENT_X] = x
     state_ctx[LAST_DRAG_EVENT_Y] = y
+    global_ctx.canvas.configure(background='white')
 
 
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
