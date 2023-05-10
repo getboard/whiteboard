@@ -1,6 +1,5 @@
 import context
 import modules
-from property_module import PropertyModule, PropertyType
 from . import handlers
 from modules.text.states import edit_text
 from modules.text.states import change_text
@@ -21,17 +20,8 @@ def register_object_types(ctx: context.Context):
     ctx.objects_storage.register_object_type('TEXT', object_types.TextObject)
 
 
-def register_object_properties(ctx: context.Context):
-    properties = [
-        PropertyModule(PropertyType.COLOR, 'Цвет шрифта', 'fill', False),
-        PropertyModule(PropertyType.FONT, 'Фонт', 'font', False)
-    ]
-    ctx.objects_storage.register_object_module_properties('TEXT', properties)
-
-
 @modules.modules.register_module('text')
 def init_module(ctx: context.Context):
     create_states(ctx)
     register_handlers(ctx)
     register_object_types(ctx)
-    register_object_properties(ctx)

@@ -1,6 +1,6 @@
 import context
 import modules
-from property_module import PropertyType, PropertyModule, PropertyOptions
+# from property_module import PropertyType, PropertyModule, PropertyOptions
 from . import handlers
 from modules.sticker.states import edit_sticker_text
 from modules.sticker.states import change_sticker
@@ -21,21 +21,21 @@ def register_object_types(ctx: context.Context):
     ctx.objects_storage.register_object_type('STICKER', object_types.StickerObject)
 
 
-def register_object_properties(ctx: context.Context):
-    properties = [
-        PropertyModule(PropertyType.COLOR, 'Цвет карточки', 'fill', False),
-        PropertyModule(
-            PropertyType.FONT,
-            'Фонт',
-            'font',
-            False,
-            [
-                PropertyOptions.FONT_NAME,
-                PropertyOptions.FONT_STYLE,
-                PropertyOptions.FONT_WEIGHT
-            ])
-    ]
-    ctx.objects_storage.register_object_module_properties('STICKER', properties)
+# def register_object_properties(ctx: context.Context):
+#     properties = [
+#         PropertyModule(PropertyType.COLOR, 'Цвет карточки', 'fill', False),
+#         PropertyModule(
+#             PropertyType.FONT,
+#             'Фонт',
+#             'font',
+#             False,
+#             [
+#                 PropertyOptions.FONT_NAME,
+#                 PropertyOptions.FONT_STYLE,
+#                 PropertyOptions.FONT_WEIGHT
+#             ])
+#     ]
+#     ctx.objects_storage.register_object_module_properties('STICKER', properties)
 
 
 @modules.modules.register_module('sticker')
@@ -43,4 +43,4 @@ def init_module(ctx: context.Context):
     create_states(ctx)
     register_handlers(ctx)
     register_object_types(ctx)
-    register_object_properties(ctx)
+    # register_object_properties(ctx)
