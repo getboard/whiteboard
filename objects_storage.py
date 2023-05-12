@@ -74,9 +74,9 @@ class Property:
                     'pink', 'violet', 'red', 'light blue', 'dark blue', 'black']
         elif self._property_type == PropertyType.TEXT_ALIGNMENT:
             return ["left", "center", "right"]
-        elif self._property_type == PropertyType.LINE_WIDTH:  # width
+        elif self._property_type == PropertyType.LINE_WIDTH:
             return [1, 2, 3, 4, 5]
-        elif self._property_type == PropertyType.LINE_TYPE:  # dash
+        elif self._property_type == PropertyType.LINE_TYPE:
             return ['solid', 'dotted', 'dashed']
         else:
             return []
