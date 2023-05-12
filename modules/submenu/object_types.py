@@ -21,7 +21,11 @@ class Submenu:
                 self.init_property(ctx, prop_name, prop_value)
 
     @staticmethod
-    def get_index(values, to_check):
+    def get_index(values: List, to_check):
+        """
+            get index of "to_check" in "values"
+            if not present, return 0
+        """
         index = 0
         for i in range(len(values)):
             if values[i] == to_check:
@@ -34,7 +38,7 @@ class Submenu:
         restrictions = prop_value.restrictions
         if not restrictions:
             restrictions = [parsed_value]
-        get_index = self.get_index(restrictions, parsed_value)
+        parsed_value_index_opt = self.get_index(restrictions, parsed_value)
         label = ttk.Label(
             ctx.property_bar,
             text=prop_value.property_description,
@@ -47,7 +51,7 @@ class Submenu:
             values=restrictions,
             state="readonly"
         )
-        combobox.current(get_index)
+        combobox.current(parsed_value_index_opt)
         self._property_widgets.append(label)
         self._property_widgets.append(combobox)
         string_var.trace(

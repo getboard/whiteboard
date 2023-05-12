@@ -7,5 +7,6 @@ class UpdateObjectHandler(event_handlers.EventHandler):
     def apply(cls, ctx: context.Context, **kwargs):
         obj_id = kwargs['obj_id']
         kwargs.pop('obj_id')
+        obj = ctx.objects_storage.get_by_id(obj_id)
         for prop_name, prop_value in kwargs.items():
-            ctx.objects_storage.get_by_id(obj_id).properties[prop_name].setter(ctx, prop_value)
+            obj.properties[prop_name].setter(ctx, prop_value)

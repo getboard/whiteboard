@@ -21,6 +21,7 @@ def _on_leave(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
 
 
 def _predicate_from_root_to_context(global_ctx: Context, event: tkinter.Event) -> bool:
+    # Release Left mouse button
     if event.type != tkinter.EventType.ButtonRelease or event.num != 1:
         return False
     cur_obj = global_ctx.objects_storage.get_current_opt()
@@ -28,19 +29,19 @@ def _predicate_from_root_to_context(global_ctx: Context, event: tkinter.Event) -
 
 
 def _predicate_from_context_to_root(global_context: Context, event: tkinter.Event) -> bool:
+    # Release Left mouse button
     if event.type != tkinter.EventType.ButtonRelease or event.num != 1:
         return False
-    tags = global_context.canvas.gettags('current')
-    return not tags
+    cur_obj = global_context.objects_storage.get_current_opt()
+    return cur_obj is None
 
 
 def _predicate_from_context_to_context(global_context: Context, event: tkinter.Event) -> bool:
+    # Release Left mouse button
     if event.type != tkinter.EventType.ButtonRelease or event.num != 1:
         return False
     cur_obj: Optional[Object] = global_context.objects_storage.get_current_opt()
-    if not cur_obj:
-        return False
-    return True
+    return cur_obj is not None
 
 
 def create_state(state_machine: StateMachine) -> State:
