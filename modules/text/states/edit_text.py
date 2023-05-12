@@ -15,10 +15,10 @@ def _on_enter(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     obj = global_ctx.objects_storage.get_current()
     state_ctx[TEXT] = obj
     global_ctx.canvas.focus('')
+    global_ctx.canvas.focus_set()
     bbox = global_ctx.canvas.bbox(obj.get_text_id())
     global_ctx.canvas.icursor(obj.get_text_id(), f'@{bbox[2]},{bbox[3]}')
     global_ctx.canvas.focus(obj.get_text_id())
-    obj.draw_rect(global_ctx)
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
@@ -43,15 +43,12 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
         insert = global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
         if insert > 0:
             global_ctx.canvas.dchars(cur_obj.get_text_id(), insert - 1, insert)
-
-        cur_obj.draw_rect(global_ctx)
         return
 
     if event.char == '':
         return
     global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
     global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', event.char)
-    cur_obj.draw_rect(global_ctx)
 
 
 def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):

@@ -120,31 +120,38 @@ class Object:
     def move_to(self, ctx: context.Context, x: int, y: int):
         ctx.canvas.moveto(self.id, x, y)
 
-    def draw_rect(self, ctx: context.Context):
+    def get_rect_args(self, ctx: context.Context):
         OFFSET = 3
-        COLOR = 'black'
-        REC_WIDTH = 2
         obj_bbox = ctx.canvas.bbox(self.id)
-        rect = [
+        return [
             obj_bbox[0] - OFFSET,
             obj_bbox[1] - OFFSET,
             obj_bbox[2] + OFFSET,
             obj_bbox[3] + OFFSET
         ]
-        if self.is_focused:
-            ctx.canvas.coords(f'rectangle{self.id}', *rect)
+
+    def is_rect_drawn(self, ctx: context.Context) -> bool:
+        obj_id = f'rectangle{self.id}'
+        return bool(ctx.canvas.gettags(obj_id))
+
+    def draw_rect(self, ctx: context.Context):
+        COLOR = 'black'
+        REC_WIDTH = 2
+        rect = self.get_rect_args(ctx)
+        obj_id = f'rectangle{self.id}'
+        if self.is_rect_drawn(ctx):
+            ctx.canvas.coords(obj_id, *rect)
         else:
             ctx.canvas.create_rectangle(
-                rect,
+                *rect,
                 outline=COLOR,
                 width=REC_WIDTH,
-                tags=[f'rectangle{self.id}']
+                tags=obj_id
             )
-            self.is_focused = True
 
     def remove_rect(self, ctx: context.Context):
-        ctx.canvas.delete(f'rectangle{self.id}')
-        self.is_focused = False
+        obj_id = f'rectangle{self.id}'
+        ctx.canvas.delete(obj_id)
 
     def update(self, ctx: context.Context, **kwargs):
         raise NotImplementedError("it's an abstract class")

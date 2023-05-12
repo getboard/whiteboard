@@ -74,14 +74,12 @@ def _predicate_from_context_to_edit_text(global_context: Context, event: tkinter
         return False
     if not cur_obj.is_focused:
         return False
-    if not isinstance(cur_obj, StickerObject):
-        return False
-    return True
+    return isinstance(cur_obj, StickerObject)
 
 
 def _predicate_from_edit_text_to_root(global_context: Context, event: tkinter.Event) -> bool:
     # Left mouse button pressed
-    return event.state & (1 << 8)
+    return bool(event.state & (1 << 8))
 
 
 def create_state(state_machine):
