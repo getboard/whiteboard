@@ -223,7 +223,7 @@ class StickerObject(Object):
     def adjust_font(self, ctx: context.Context, larger=True):
         _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         width = self.get_width(scaled=True)
-        floated_size = 1.0 * self._font_size
+        floated_size = float(self._font_size)
         if larger:
             while abs(y1 - y2) > width:
                 floated_size /= 1.05
