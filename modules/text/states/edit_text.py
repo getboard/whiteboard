@@ -72,9 +72,7 @@ def _predicate_from_context_to_edit_text(global_context: Context, event: tkinter
         return False
     if not cur_obj.is_focused:
         return False
-    if not isinstance(cur_obj, TextObject):
-        return False
-    return True
+    return isinstance(cur_obj, TextObject)
 
 
 def _predicate_from_edit_text_to_root(global_context: Context, event: tkinter.Event) -> bool:
