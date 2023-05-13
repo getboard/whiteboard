@@ -7,6 +7,7 @@ from context import Context
 
 CHANGE_TEXT_STATE_NAME = 'CHANGE_TEXT'
 TEXT = 'text'
+MENU_ENTRY_NAME = 'text'
 
 
 def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
@@ -27,9 +28,9 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
 
 
 def _predicate_from_root_to_change_text(global_context: Context, event: tkinter.Event) -> bool:
-    # Press Shift + Left mouse button
-    if (event.type != tkinter.EventType.ButtonPress or event.num != 1 or event.state & 1 == 0) \
-            and global_context.menu.current_state != 'text':
+    # Press Left mouse button with text menu state
+    if event.type != tkinter.EventType.ButtonPress or event.num != 1 \
+            or global_context.menu.current_state != MENU_ENTRY_NAME:
         return False
 
     actual_x = int(global_context.canvas.canvasx(event.x))
@@ -38,19 +39,22 @@ def _predicate_from_root_to_change_text(global_context: Context, event: tkinter.
     global_context.events_history.add_event(
         'ADD_TEXT', x=actual_x, y=actual_y, obj_id=obj_id, text='new text'
     )
-    global_context.menu.make_root_state()
     return True
+
+
+def _on_leave(global_context: 'Context', state_ctx: Dict, event: tkinter.Event):
+    global_context.menu.set_root_state()
 
 
 def _predicate_from_change_text_to_root(global_context: Context, event: tkinter.Event) -> bool:
     # Release left mouse button
-    return event.type == tkinter.EventType.ButtonRelease and event.num == 1 \
-        or global_context.menu.current_state != 'text'
+    return event.type == tkinter.EventType.ButtonRelease and event.num == 1
 
 
 def create_state(state_machine):
     state = State(CHANGE_TEXT_STATE_NAME)
     state.set_event_handler(_handle_event)
+    state.set_on_leave(_on_leave)
     state_machine.add_transition(
         StateMachine.ROOT_STATE_NAME, CHANGE_TEXT_STATE_NAME, _predicate_from_root_to_change_text
     )
