@@ -21,7 +21,8 @@ def register_object_types(ctx: context.Context):
 
 
 def register_module_menu(ctx: context.Context):
-    ctx.menu.add_command_to_menu('sticker')
+    STICKER_MODULE_NAME = 'sticker'
+    ctx.menu.add_command_to_menu(STICKER_MODULE_NAME)
 
 
 @modules.modules.register_module('sticker')
