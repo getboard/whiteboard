@@ -14,6 +14,8 @@ def create_states(ctx: context.Context):
 def register_handlers(ctx: context.Context):
     ctx.event_handlers.register_handler('ADD_TEXT', handlers.AddTextHandler)
     ctx.event_handlers.register_handler('EDIT_TEXT', handlers.EditTextHandler)
+    ctx.event_handlers.register_handler('CHANGE_FONT_TEXT', handlers.ChangeFontTextHandler)
+    ctx.event_handlers.register_handler('CHANGE_FONT_SIZE_TEXT', handlers.ChangeFontSizeTextHandler)
 
 
 def register_object_types(ctx: context.Context):

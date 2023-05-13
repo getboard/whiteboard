@@ -12,6 +12,7 @@ class StickerObject(objects_storage.Object):
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(ctx, id)
         self._font_size = 14
+        self._font = 'sans-serif'
         self._width = 100
         self.last_clicked = 0
 
@@ -30,12 +31,12 @@ class StickerObject(objects_storage.Object):
         arr[1] = (arr[1] + arr[3]) / 2 - 50
         arr[2] = arr[0] + 100
         arr[3] = arr[1] + 100
-        COLOR = '#c6def1'
-        self.bg = ctx.canvas.create_rectangle(arr, fill=COLOR, tags=[id, 'sticker'])
+        self._color = '#c6def1'
+        self.bg = ctx.canvas.create_rectangle(arr, fill=self._color, tags=[id, 'sticker'])
         ctx.canvas.tag_lower(self.bg, self._text_id)
 
     def get_font(self):
-        return 'sans-serif', int(self._font_size)
+        return self._font, int(self._font_size)
 
     def update(self, ctx: context.Context, **kwargs):
         ctx.canvas.itemconfig(self._text_id, **kwargs)
@@ -67,3 +68,31 @@ class StickerObject(objects_storage.Object):
                 _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
                 y1 = ctx.canvas.canvasx(y1)
                 y2 = ctx.canvas.canvasy(y2)
+
+    def get_attribute(self):
+        font = self.get_font()
+        attributes = {"id": self.id,
+                      "name": "sticker",
+                      "color": self._color,
+                      "font": font[0],
+                      "font-size": font[1]}
+
+        return attributes
+
+    def change_attribute(self, ctx, key, value) -> bool:
+        attributes = set(["color", "font", "font-size"])
+        if key not in attributes:
+            return False
+        if key == "color":
+            ctx.canvas.itemconfig(self.bg, fill=value)
+            self._color = value
+            pass
+        if key == "font":
+            ctx.canvas.itemconfig(self._text_id, font=(value, self._font_size))
+            self._font = value
+        if key == "font-size":
+            ctx.canvas.itemconfig(self._text_id, font=(self._font_size, int(value)))
+            self._font_size = int(value)
+            pass
+
+        return True

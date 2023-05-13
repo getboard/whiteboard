@@ -24,6 +24,12 @@ class Object:
     def scale(self, ctx: context.Context, scale_factor: float):
         raise NotImplementedError("it's an abstract class")
 
+    def get_attribute(self) -> dict:
+        raise NotImplementedError("it's an abstract class")
+
+    def change_attribute(self, ctx: context.Context,key, value) -> bool:
+        raise NotImplementedError("it's an abstract class")
+
 
 class ObjectsStorage:
     _ctx: context.Context
