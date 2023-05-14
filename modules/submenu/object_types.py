@@ -23,8 +23,8 @@ class Submenu:
     @staticmethod
     def get_index(values: List, to_check):
         """
-            get index of "to_check" in "values"
-            if not present, return 0
+        get index of "to_check" in "values"
+        if not present, return 0
         """
         index = 0
         for i in range(len(values)):
@@ -40,35 +40,20 @@ class Submenu:
             restrictions = [parsed_value]
         parsed_value_index = self.get_index(restrictions, parsed_value)
         label = ttk.Label(
-            ctx.property_bar,
-            text=prop_value.property_description,
-            justify="left",
-            anchor='w'
+            ctx.property_bar, text=prop_value.property_description, justify='left', anchor='w'
         )
         combobox = ttk.Combobox(
-            ctx.property_bar,
-            textvariable=string_var,
-            values=restrictions,
-            state="readonly"
+            ctx.property_bar, textvariable=string_var, values=restrictions, state='readonly'
         )
         combobox.current(parsed_value_index)
         self._property_widgets.append(label)
         self._property_widgets.append(combobox)
         string_var.trace(
-            "w", lambda *_: self.update_property(
-                ctx,
-                prop_name,
-                prop_value,
-                string_var.get()
-            )
+            'w', lambda *_: self.update_property(ctx, prop_name, prop_value, string_var.get())
         )
 
     def update_property(
-            self,
-            ctx: context.Context,
-            prop_name: str,
-            prop_value: Property,
-            value: str
+        self, ctx: context.Context, prop_name: str, prop_value: Property, value: str
     ):
         prop_value.setter(ctx, value)
         kwargs = {prop_name: prop_value.getter()}
@@ -80,7 +65,7 @@ class Submenu:
         obj.draw_rect(ctx)
         obj.is_focused = True
         for w in self._property_widgets:
-            w.pack(pady=1, fill="both")
+            w.pack(pady=1, fill='both')
 
     def destroy_menu(self, ctx: context.Context):
         obj = ctx.objects_storage.get_by_id(self.obj_id)

@@ -5,10 +5,12 @@ from typing import Callable, Union, Any, List, Literal
 
 import context
 
+
 class PropertyType(Enum):
     """
     Нужен, для того чтобы ставить единые ограничения на свойства
     """
+
     TEXT = 1
     NUMBER = 2
     FONT_SIZE = 3
@@ -30,13 +32,13 @@ class Property:
     _is_hidden: bool
 
     def __init__(
-            self,
-            property_type: PropertyType,
-            property_description: str,
-            getter: Callable[['context.Context'], Any],
-            setter: Union[Callable[['context.Context', Any], None], None],
-            restrictions: Union[List[Any], Literal['default']] = 'default',
-            is_hidden: bool = False
+        self,
+        property_type: PropertyType,
+        property_description: str,
+        getter: Callable[['context.Context'], Any],
+        setter: Union[Callable[['context.Context', Any], None], None],
+        restrictions: Union[List[Any], Literal['default']] = 'default',
+        is_hidden: bool = False,
     ):
         self._property_type = property_type
         self._property_description = property_description
@@ -66,11 +68,26 @@ class Property:
             STEP = 2
             return list(range(MIN_SIZE, MAX_SIZE, STEP))
         elif self._property_type == PropertyType.COLOR:
-            return ['gray', 'light yellow', 'yellow', 'orange', 'light green',
-                    'green', 'dark green', 'cyan', 'light pink', 'pink',
-                    'pink', 'violet', 'red', 'light blue', 'dark blue', 'black']
+            return [
+                'gray',
+                'light yellow',
+                'yellow',
+                'orange',
+                'light green',
+                'green',
+                'dark green',
+                'cyan',
+                'light pink',
+                'pink',
+                'pink',
+                'violet',
+                'red',
+                'light blue',
+                'dark blue',
+                'black',
+            ]
         elif self._property_type == PropertyType.TEXT_ALIGNMENT:
-            return ["left", "center", "right"]
+            return ['left', 'center', 'right']
         elif self._property_type == PropertyType.LINE_WIDTH:
             return [1, 2, 3, 4, 5]
         elif self._property_type == PropertyType.LINE_TYPE:

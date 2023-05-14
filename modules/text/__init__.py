@@ -7,6 +7,7 @@ from . import object_types
 
 from .consts import TEXT_MENU_ENTRY_NAME
 
+
 def create_states(ctx: context.Context):
     ctx.state_machine.add_state(create_text.create_state(ctx.state_machine))
     ctx.state_machine.add_state(edit_text.create_state(ctx.state_machine))

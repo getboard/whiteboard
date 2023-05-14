@@ -11,8 +11,11 @@ CREATE_STICKER_STATE_NAME = 'CREATE_STICKER'
 
 def _predicate_from_root_to_create_sticker(global_context: Context, event: tkinter.Event) -> bool:
     # Press Left mouse button with sticker menu state
-    if event.type != tkinter.EventType.ButtonPress or event.num != 1 \
-            or global_context.menu.current_state != STICKER_MENU_ENTRY_NAME:
+    if (
+        event.type != tkinter.EventType.ButtonPress
+        or event.num != 1
+        or global_context.menu.current_state != STICKER_MENU_ENTRY_NAME
+    ):
         return False
 
     actual_x = int(global_context.canvas.canvasx(event.x))
@@ -40,9 +43,13 @@ def create_state(state_machine):
     state = State(CREATE_STICKER_STATE_NAME)
     state.set_on_leave(_on_leave)
     state_machine.add_transition(
-        StateMachine.ROOT_STATE_NAME, CREATE_STICKER_STATE_NAME, _predicate_from_root_to_create_sticker
+        StateMachine.ROOT_STATE_NAME,
+        CREATE_STICKER_STATE_NAME,
+        _predicate_from_root_to_create_sticker,
     )
     state_machine.add_transition(
-        CREATE_STICKER_STATE_NAME, StateMachine.ROOT_STATE_NAME, _predicate_from_create_sticker_to_root
+        CREATE_STICKER_STATE_NAME,
+        StateMachine.ROOT_STATE_NAME,
+        _predicate_from_create_sticker_to_root,
     )
     return state

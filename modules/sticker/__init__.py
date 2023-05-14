@@ -6,6 +6,7 @@ from modules.sticker.states import edit_sticker
 from . import object_types
 from .consts import STICKER_MENU_ENTRY_NAME
 
+
 def create_states(ctx: context.Context):
     ctx.state_machine.add_state(create_sticker.create_state(ctx.state_machine))
     ctx.state_machine.add_state(edit_sticker.create_state(ctx.state_machine))
