@@ -10,8 +10,10 @@ class Menu:
     def __init__(self, root: tkinter.Tk):
         self._menubar = tkinter.Menu(root)
         # by default, we add select
-        self._menubar.add_command(label=self.MENU_ROOT_STATE,
-                                  command=lambda: self.set_selected_state(self.MENU_ROOT_STATE))
+        self._menubar.add_command(
+            label=self.MENU_ROOT_STATE,
+            command=lambda: self.set_selected_state(self.MENU_ROOT_STATE),
+        )
         self.set_root_state()
         root.config(menu=self._menubar)
 

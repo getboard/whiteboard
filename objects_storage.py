@@ -7,6 +7,7 @@ import context
 
 from properties import Property
 
+
 class Object:
     id: str
     is_focused: bool
@@ -32,7 +33,7 @@ class Object:
             obj_bbox[0] - OFFSET,
             obj_bbox[1] - OFFSET,
             obj_bbox[2] + OFFSET,
-            obj_bbox[3] + OFFSET
+            obj_bbox[3] + OFFSET,
         ]
 
     def _is_rect_drawn(self, ctx: context.Context) -> bool:
@@ -47,12 +48,7 @@ class Object:
         if self._is_rect_drawn(ctx):
             ctx.canvas.coords(obj_id, *rect)
         else:
-            ctx.canvas.create_rectangle(
-                *rect,
-                outline=COLOR,
-                width=REC_WIDTH,
-                tags=obj_id
-            )
+            ctx.canvas.create_rectangle(*rect, outline=COLOR, width=REC_WIDTH, tags=obj_id)
 
     def remove_rect(self, ctx: context.Context):
         obj_id = f'rectangle{self.id}'

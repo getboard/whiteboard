@@ -45,7 +45,7 @@ class StickerObject(Object):
             tags=[id, 'sticker'],
             fill=self.get_font_color(),
             width=self.get_width(scaled=True),
-            font=self.get_font(scaled=True)
+            font=self.get_font(scaled=True),
         )
         arr = self.create_note_coords(ctx)
         self._bg_color = 'light yellow'
@@ -66,71 +66,71 @@ class StickerObject(Object):
     def init_properties(self):
         self.properties[self.FONT_FAMILY_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_FAMILY,
-            property_description="Шрифт",
+            property_description='Шрифт',
             getter=self.get_font_family,
-            setter=self.set_font_family
+            setter=self.set_font_family,
         )
 
         self.properties[self.FONT_SIZE_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_SIZE,
-            property_description="Размер шрифта",
+            property_description='Размер шрифта',
             getter=self.get_font_size,
             setter=None,
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[self.FONT_WEIGHT_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_WEIGHT,
-            property_description="Насыщенность шрифта",
+            property_description='Насыщенность шрифта',
             getter=self.get_font_weight,
-            setter=self.set_font_weight
+            setter=self.set_font_weight,
         )
 
         self.properties[self.FONT_SLANT_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_SLANT,
-            property_description="Наклон шрифта",
+            property_description='Наклон шрифта',
             getter=self.get_font_slant,
-            setter=self.set_font_slant
+            setter=self.set_font_slant,
         )
 
         self.properties[self.FONT_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
-            property_description="Цвет шрифта",
+            property_description='Цвет шрифта',
             getter=self.get_font_color,
-            setter=self.set_font_color
+            setter=self.set_font_color,
         )
 
         self.properties[self.BG_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
-            property_description="Цвет карточки",
+            property_description='Цвет карточки',
             getter=self.get_bg_color,
-            setter=self.set_bg_color
+            setter=self.set_bg_color,
         )
 
         self.properties[self.WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.NUMBER,
-            property_description="Длина карточки",
+            property_description='Длина карточки',
             getter=self.get_width,
             setter=self.set_width,
-            restrictions=list(range(100, 300, 50))
+            restrictions=list(range(100, 300, 50)),
         )
 
         self.properties[self.X_PROPERTY_NAME] = Property(
             property_type=PropertyType.NUMBER,
-            property_description="X",
+            property_description='X',
             getter=self.get_x,
             setter=None,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[self.Y_PROPERTY_NAME] = Property(
             property_type=PropertyType.NUMBER,
             getter=self.get_y,
-            property_description="Y",
+            property_description='Y',
             setter=None,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
     def get_font_size(self):
@@ -215,9 +215,7 @@ class StickerObject(Object):
     def scale(self, ctx: context.Context, scale_factor: float):
         self.scale_factor *= scale_factor
         ctx.canvas.itemconfig(
-            self._text_id,
-            font=self.get_font(scaled=True),
-            width=self.get_width(scaled=True)
+            self._text_id, font=self.get_font(scaled=True), width=self.get_width(scaled=True)
         )
 
     def adjust_font(self, ctx: context.Context, larger=True):

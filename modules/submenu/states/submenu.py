@@ -51,16 +51,16 @@ def create_state(state_machine: StateMachine) -> State:
     state_machine.add_transition(
         StateMachine.ROOT_STATE_NAME,
         StateMachine.CONTEXT_STATE_NAME,
-        _predicate_from_root_to_context
+        _predicate_from_root_to_context,
     )
     state_machine.add_transition(
         StateMachine.CONTEXT_STATE_NAME,
         StateMachine.CONTEXT_STATE_NAME,
-        _predicate_from_context_to_context
+        _predicate_from_context_to_context,
     )
     state_machine.add_transition(
         StateMachine.CONTEXT_STATE_NAME,
         StateMachine.ROOT_STATE_NAME,
-        _predicate_from_context_to_root
+        _predicate_from_context_to_root,
     )
     return state
