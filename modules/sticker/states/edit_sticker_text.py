@@ -1,11 +1,12 @@
-from typing import Dict
+from typing import Dict, Optional
 import tkinter
 
+from objects_storage import Object
 from state_machine import State
 from state_machine import StateMachine
 from context import Context
 
-from .. import object_types
+from ..object_types import StickerObject
 
 EDIT_STICKER_TEXT_STATE_NAME = 'EDIT_STICKER_TEXT'
 STICKER = 'sticker'
@@ -64,26 +65,21 @@ def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     global_ctx.events_history.add_event('EDIT_STICKER', obj_id=obj_id, new_text=txt)
 
 
-def _predicate_from_root_to_edit_text(global_context: Context, event: tkinter.Event) -> bool:
-    # Left mouse button pressed
-    if event.state & (1 << 8) == 0:
+def _predicate_from_context_to_edit_text(global_context: Context, event: tkinter.Event) -> bool:
+    # Release Left mouse button
+    if event.type != tkinter.EventType.ButtonRelease or event.num != 1:
         return False
-
-    cur_obj = global_context.objects_storage.get_current_opt()
+    cur_obj: Optional[Object] = global_context.objects_storage.get_current_opt()
     if cur_obj is None:
         return False
-
-    if global_context.objects_storage.get_current_opt_type() != 'sticker':
+    if not cur_obj.is_focused:
         return False
-
-    ans = event.time - cur_obj.last_clicked < 500
-    cur_obj.last_clicked = event.time
-    return ans
+    return isinstance(cur_obj, StickerObject)
 
 
 def _predicate_from_edit_text_to_root(global_context: Context, event: tkinter.Event) -> bool:
     # Left mouse button pressed
-    return event.state & (1 << 8)
+    return bool(event.state & (1 << 8))
 
 
 def create_state(state_machine):
@@ -92,9 +88,9 @@ def create_state(state_machine):
     state.set_event_handler(_handle_event)
     state.set_on_leave(_on_leave)
     state_machine.add_transition(
-        StateMachine.ROOT_STATE_NAME,
+        StateMachine.CONTEXT_STATE_NAME,
         EDIT_STICKER_TEXT_STATE_NAME,
-        _predicate_from_root_to_edit_text,
+        _predicate_from_context_to_edit_text,
     )
     state_machine.add_transition(
         EDIT_STICKER_TEXT_STATE_NAME,

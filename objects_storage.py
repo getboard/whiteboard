@@ -1,22 +1,62 @@
 from __future__ import annotations
 import uuid
-from typing import Type
+from typing import Type, Dict
 from typing import Optional
 
 import context
 
+from properties import Property
 
 class Object:
     id: str
+    is_focused: bool
+    scale_factor: float
+    properties: Dict[str, Property]
 
-    def __init__(self, ctx: context.Context, id: str):
+    def __init__(self, _: context.Context, id: str, **kwargs):
         self.id = id
+        self.is_focused = False
+        self.scale_factor = 1.0
+        self.properties = {}
 
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
         ctx.canvas.move(self.id, delta_x, delta_y)
 
     def move_to(self, ctx: context.Context, x: int, y: int):
         ctx.canvas.moveto(self.id, x, y)
+
+    def _get_rect_args(self, ctx: context.Context):
+        OFFSET = 3
+        obj_bbox = ctx.canvas.bbox(self.id)
+        return [
+            obj_bbox[0] - OFFSET,
+            obj_bbox[1] - OFFSET,
+            obj_bbox[2] + OFFSET,
+            obj_bbox[3] + OFFSET
+        ]
+
+    def _is_rect_drawn(self, ctx: context.Context) -> bool:
+        obj_id = f'rectangle{self.id}'
+        return bool(ctx.canvas.gettags(obj_id))
+
+    def draw_rect(self, ctx: context.Context):
+        COLOR = 'black'
+        REC_WIDTH = 2
+        rect = self._get_rect_args(ctx)
+        obj_id = f'rectangle{self.id}'
+        if self._is_rect_drawn(ctx):
+            ctx.canvas.coords(obj_id, *rect)
+        else:
+            ctx.canvas.create_rectangle(
+                *rect,
+                outline=COLOR,
+                width=REC_WIDTH,
+                tags=obj_id
+            )
+
+    def remove_rect(self, ctx: context.Context):
+        obj_id = f'rectangle{self.id}'
+        ctx.canvas.delete(obj_id)
 
     def update(self, ctx: context.Context, **kwargs):
         raise NotImplementedError("it's an abstract class")

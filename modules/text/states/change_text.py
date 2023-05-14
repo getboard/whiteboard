@@ -38,7 +38,6 @@ def _predicate_from_root_to_change_text(global_context: Context, event: tkinter.
     global_context.events_history.add_event(
         'ADD_TEXT', x=actual_x, y=actual_y, obj_id=obj_id, text='new text'
     )
-    global_context.objects_storage.get_by_id(obj_id).highlight(global_context)
     return True
 
 

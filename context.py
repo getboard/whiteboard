@@ -1,6 +1,8 @@
 import logging
 import tkinter
 
+from tkinter import ttk
+
 from events_history import EventsHistory
 from event_handlers import EventHandlers
 from objects_storage import ObjectsStorage
@@ -14,3 +16,4 @@ class Context:
     logger: logging.Logger
     canvas: tkinter.Canvas
     state_machine: StateMachine
+    property_bar: ttk.Frame

@@ -59,6 +59,7 @@ class StateMachine:
         predicate: Callable[[context.Context, tkinter.Event], bool]
 
     ROOT_STATE_NAME = 'ROOT'
+    CONTEXT_STATE_NAME = 'CONTEXT'
     _states: Dict[str, State]  # name -> State
     _transitions: Dict[str, List[_TransitionDescription]]  # before -> after
     _cur_state: State
