@@ -44,7 +44,7 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     if event.keysym == 'BackSpace':
         insert = global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
         if insert > 0:
-            global_ctx.canvas.dchars(cur_obj.get_text_id(), insert - 1, insert)
+            global_ctx.canvas.dchars(cur_obj.get_text_id(), insert - 1, insert - 1)
         cur_obj.adjust_font(global_ctx, False)
         return
 
