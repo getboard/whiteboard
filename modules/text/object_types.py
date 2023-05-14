@@ -1,8 +1,8 @@
 from typing import Union
 
-from objects_storage import Property, Object, PropertyType
-
 import context
+from objects_storage import Object
+from properties import Property, PropertyType
 
 
 class TextObject(Object):

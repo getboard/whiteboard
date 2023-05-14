@@ -56,7 +56,6 @@ def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     cur_obj = state_ctx[TEXT]
     obj_id = cur_obj.id
     txt = cur_obj.get_text(global_ctx)
-    cur_obj.remove_rect(global_ctx)
     global_ctx.events_history.add_event('EDIT_TEXT', obj_id=obj_id, new_text=txt)
 
 

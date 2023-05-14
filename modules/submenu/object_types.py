@@ -2,7 +2,7 @@ from tkinter import ttk, StringVar
 from typing import List
 
 import context
-from objects_storage import Property, PropertyType
+from properties import Property
 
 
 class Submenu:
@@ -38,7 +38,7 @@ class Submenu:
         restrictions = prop_value.restrictions
         if not restrictions:
             restrictions = [parsed_value]
-        parsed_value_index_opt = self.get_index(restrictions, parsed_value)
+        parsed_value_index = self.get_index(restrictions, parsed_value)
         label = ttk.Label(
             ctx.property_bar,
             text=prop_value.property_description,
@@ -51,7 +51,7 @@ class Submenu:
             values=restrictions,
             state="readonly"
         )
-        combobox.current(parsed_value_index_opt)
+        combobox.current(parsed_value_index)
         self._property_widgets.append(label)
         self._property_widgets.append(combobox)
         string_var.trace(
