@@ -8,7 +8,7 @@ from context import Context
 
 from ..object_types import StickerObject
 
-EDIT_STICKER_TEXT_STATE_NAME = 'EDIT_STICKER_TEXT'
+EDIT_STICKER_STATE_NAME = 'EDIT_STICKER'
 STICKER = 'sticker'
 
 
@@ -83,17 +83,17 @@ def _predicate_from_edit_text_to_root(global_context: Context, event: tkinter.Ev
 
 
 def create_state(state_machine):
-    state = State(EDIT_STICKER_TEXT_STATE_NAME)
+    state = State(EDIT_STICKER_STATE_NAME)
     state.set_on_enter(_on_enter)
     state.set_event_handler(_handle_event)
     state.set_on_leave(_on_leave)
     state_machine.add_transition(
         StateMachine.CONTEXT_STATE_NAME,
-        EDIT_STICKER_TEXT_STATE_NAME,
+        EDIT_STICKER_STATE_NAME,
         _predicate_from_context_to_edit_text,
     )
     state_machine.add_transition(
-        EDIT_STICKER_TEXT_STATE_NAME,
+        EDIT_STICKER_STATE_NAME,
         StateMachine.ROOT_STATE_NAME,
         _predicate_from_edit_text_to_root,
     )

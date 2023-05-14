@@ -81,8 +81,8 @@ class StateMachine:
         self.add_state(root_state)
         return root_state
 
-    def _make_empty_context(self):
-        # classmethod?
+    @staticmethod
+    def _make_empty_context():
         return {}
 
     def _start_listening(self):

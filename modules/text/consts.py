@@ -1,0 +1,1 @@
+TEXT_MENU_ENTRY_NAME = 'text'
