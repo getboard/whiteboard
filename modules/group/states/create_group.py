@@ -1,28 +1,22 @@
 from dataclasses import dataclass
-from typing import Dict, Tuple
+from typing import Dict
 import tkinter
 
 from state_machine import State
 from state_machine import StateMachine
 import context
 from modules.group.consts import GROUP_MENU_ENTRY_NAME
+from modules.group import utils
 
 CREATE_GROUP_STATE_NAME = 'CREATE_GROUP'
 FRAME_TKINTER_OBJECT_TAG = 'group_module_frame_object_tag'
 STATE_CONTEXT_OBJ_DICT_KEY = 'group_module_state_context'
 
 @dataclass
-class ScreenPosition:
-    x: int
-    y: int
-
-@dataclass
 class CreateGroupStateContext:
-    drag_start_pos: ScreenPosition
+    drag_start_pos: utils.ScreenPosition
     frame_was_drawn_before: bool = False
 
-def _build_tkinter_rect(a: ScreenPosition, b: ScreenPosition) -> Tuple[int, int, int, int]:
-    return (a.x, a.y, b.x, b.y)
 
 def _predicate_from_root_to_create_group(global_ctx: context.Context, event: tkinter.Event) -> bool:
     # Press Left mouse button with sticker menu state
@@ -36,15 +30,15 @@ def _handle_event(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
     
     cur_pos_x = int(global_ctx.canvas.canvasx(event.x))
     cur_pos_y = int(global_ctx.canvas.canvasy(event.y))
-    cur_pos = ScreenPosition(cur_pos_x, cur_pos_y)
+    cur_pos = utils.ScreenPosition(cur_pos_x, cur_pos_y)
 
     if STATE_CONTEXT_OBJ_DICT_KEY not in state_ctx:
         # We are first time here
         state_ctx[STATE_CONTEXT_OBJ_DICT_KEY] = CreateGroupStateContext(drag_start_pos=cur_pos, frame_was_drawn_before=False)
         return
-    
+
     state_ctx_obj: CreateGroupStateContext = state_ctx[STATE_CONTEXT_OBJ_DICT_KEY]
-    rect = _build_tkinter_rect(state_ctx_obj.drag_start_pos, cur_pos)
+    rect = utils.Rectangle(state_ctx_obj.drag_start_pos, cur_pos).as_tkinter_rect()
     if state_ctx_obj.frame_was_drawn_before:
         global_ctx.canvas.coords(FRAME_TKINTER_OBJECT_TAG, *rect)
     else:
@@ -54,7 +48,17 @@ def _handle_event(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
         state_ctx_obj.frame_was_drawn_before = True
 
 
+def _create_group(global_ctx: context.Context, state_ctx: Dict):
+    state_ctx_obj: CreateGroupStateContext = state_ctx[STATE_CONTEXT_OBJ_DICT_KEY]
+    # TODO:
+    # 1) gather all object that are intersected by the frame in one list
+    # 2) Create GroupObject
+    # 3) Write new event
+    # 4) PROFIT
+
+
 def _on_leave(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
+    _create_group(global_ctx, state_ctx)
     global_ctx.canvas.delete(FRAME_TKINTER_OBJECT_TAG)
     global_ctx.menu.set_root_state()
 

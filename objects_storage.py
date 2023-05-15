@@ -38,6 +38,7 @@ class Object(pub_sub.Subscriber):
         ctx.pub_sub_broker.publish(ctx, self.id, self.MOVED_TO_NOTIFICATION, x=x, y=y)
 
     def _get_rect_args(self, ctx: context.Context):
+        # TODO: make this public
         OFFSET = 3
         obj_bbox = ctx.canvas.bbox(self.id)
         return [
