@@ -1,4 +1,5 @@
-from typing import Dict
+from dataclasses import dataclass
+from typing import Dict, Tuple
 import tkinter
 
 from state_machine import State
@@ -7,36 +8,58 @@ import context
 from modules.group.consts import GROUP_MENU_ENTRY_NAME
 
 CREATE_GROUP_STATE_NAME = 'CREATE_GROUP'
+FRAME_TKINTER_OBJECT_TAG = 'group_module_frame_object_tag'
+STATE_CONTEXT_OBJ_DICT_KEY = 'group_module_state_context'
 
+@dataclass
+class ScreenPosition:
+    x: int
+    y: int
 
-def _predicate_from_root_to_create_group(global_context: context.Context, event: tkinter.Event) -> bool:
+@dataclass
+class CreateGroupStateContext:
+    drag_start_pos: ScreenPosition
+    frame_was_drawn_before: bool = False
+
+def _build_tkinter_rect(a: ScreenPosition, b: ScreenPosition) -> Tuple[int, int, int, int]:
+    return (a.x, a.y, b.x, b.y)
+
+def _predicate_from_root_to_create_group(global_ctx: context.Context, event: tkinter.Event) -> bool:
     # Press Left mouse button with sticker menu state
-    if (
-        event.type != tkinter.EventType.ButtonPress
-        or event.num != 1
-        or global_context.menu.current_state != GROUP_MENU_ENTRY_NAME
-    ):
-        return False
+    return event.type == tkinter.EventType.ButtonPress and event.num == 1 and global_ctx.menu.current_state == GROUP_MENU_ENTRY_NAME
 
-    actual_x = int(global_context.canvas.canvasx(event.x))
-    actual_y = int(global_context.canvas.canvasy(event.y))
-
-    # TODO create frame here
-    return True
 
 def _handle_event(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
     # Motion with Left mouse button pressed
     if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
         return
-    # TODO: redraw frame here
-    # global_ctx.canvas.scan_dragto(event.x, event.y, gain=1)
+    
+    cur_pos_x = int(global_ctx.canvas.canvasx(event.x))
+    cur_pos_y = int(global_ctx.canvas.canvasy(event.y))
+    cur_pos = ScreenPosition(cur_pos_x, cur_pos_y)
 
-def _on_leave(global_context: context.Context, state_ctx: Dict, event: tkinter.Event):
-    # TODO: create group here
-    global_context.menu.set_root_state()
+    if STATE_CONTEXT_OBJ_DICT_KEY not in state_ctx:
+        # We are first time here
+        state_ctx[STATE_CONTEXT_OBJ_DICT_KEY] = CreateGroupStateContext(drag_start_pos=cur_pos, frame_was_drawn_before=False)
+        return
+    
+    state_ctx_obj: CreateGroupStateContext = state_ctx[STATE_CONTEXT_OBJ_DICT_KEY]
+    rect = _build_tkinter_rect(state_ctx_obj.drag_start_pos, cur_pos)
+    if state_ctx_obj.frame_was_drawn_before:
+        global_ctx.canvas.coords(FRAME_TKINTER_OBJECT_TAG, *rect)
+    else:
+        FRAME_COLOR = 'black'
+        FRAME_WIDTH = 2
+        global_ctx.canvas.create_rectangle(*rect, outline=FRAME_COLOR, width=FRAME_WIDTH, tags=FRAME_TKINTER_OBJECT_TAG)
+        state_ctx_obj.frame_was_drawn_before = True
 
 
-def _predicate_from_create_group_to_root(global_context: context.Context, event: tkinter.Event) -> bool:
+def _on_leave(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
+    global_ctx.canvas.delete(FRAME_TKINTER_OBJECT_TAG)
+    global_ctx.menu.set_root_state()
+
+
+def _predicate_from_create_group_to_root(global_ctx: context.Context, event: tkinter.Event) -> bool:
     # Release left mouse button
     return event.type == tkinter.EventType.ButtonRelease and event.num == 1
 
