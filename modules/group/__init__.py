@@ -2,12 +2,12 @@ import context
 import modules
 from . import handlers
 from . import object_types
+from modules.group.states import create_group
 from .consts import GROUP_MODULE_NAME, GROUP_MENU_ENTRY_NAME
 
 
 def create_states(ctx: context.Context):
-    # TODO
-    pass
+    ctx.state_machine.add_state(create_group.create_state(ctx.state_machine))
 
 
 def register_handlers(ctx: context.Context):
