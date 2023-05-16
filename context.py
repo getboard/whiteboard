@@ -8,6 +8,7 @@ from event_handlers import EventHandlers
 from menu import Menu
 from objects_storage import ObjectsStorage
 from state_machine import StateMachine
+from table import Table
 
 
 class Context:
@@ -19,3 +20,4 @@ class Context:
     state_machine: StateMachine
     property_bar: ttk.Frame
     menu: Menu
+    table: Table

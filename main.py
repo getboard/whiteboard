@@ -16,12 +16,18 @@ import modules.move
 import modules.zooming
 import modules.drag_board
 import modules.submenu
+from table import Table
 
 
 def create_context(root: tkinter.Tk) -> context.Context:
+    canvas_width = 700
+    property_bar_width = 150
+    common_height = root.winfo_height()
+    table_width = root.winfo_width() - canvas_width - property_bar_width
     logger = logging.Logger('global_logger')
-    canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
-    canvas.pack(side='left', fill='both', expand=False)
+
+    canvas = tkinter.Canvas(root, width=canvas_width, height=common_height, bg='white')
+    canvas.pack(side="left", fill="both", expand=False)
     ctx = context.Context()
     ctx.events_history = events_history.EventsHistory()
     ctx.event_handlers = event_handlers.EventHandlers()
@@ -29,15 +35,18 @@ def create_context(root: tkinter.Tk) -> context.Context:
     ctx.logger = logger
     ctx.canvas = canvas
     ctx.state_machine = StateMachine(ctx)
-    ctx.property_bar = ttk.Frame(root)
-    ctx.property_bar.pack(fill='both', expand=True, padx=10, pady=10)
-    ctx.menu = menu.Menu(root)
+    ctx.property_bar = ttk.Frame(root, width=property_bar_width, height=common_height)
+    ctx.property_bar.pack(side="left", fill="both", expand=False, padx=10, pady=10)
+    ctx.table = Table(root, table_width, common_height)
     return ctx
 
 
 def main(log_file: str):
     root_window = tkinter.Tk(className='Whiteboard')
-    root_window.geometry('870x600')
+    screen_width = root_window.winfo_screenwidth()
+    screen_height = root_window.winfo_screenheight()
+    panel_height = 75
+    root_window.geometry(f'{screen_width}x{screen_height - panel_height}+0+0')
 
     ctx = create_context(root_window)
     ctx.canvas.focus_set()

@@ -25,8 +25,8 @@ class StickerObject(Object):
     FONT_COLOR_PROPERTY_NAME = 'font_color'
     X_PROPERTY_NAME = 'x'
     Y_PROPERTY_NAME = 'y'
-    WIDTH_PROPERTY_NAME = 'width'
-    BG_COLOR_PROPERTY_NAME = 'bg_color'
+    WIDTH_PROPERTY_NAME = 'sticky_note_width'
+    BG_COLOR_PROPERTY_NAME = 'sticky_note_background_color'
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(ctx, id)

@@ -19,7 +19,7 @@ class TextObject(Object):
     FONT_SIZE_PROPERTY_NAME = 'font_size'
     FONT_WEIGHT_PROPERTY_NAME = 'font_weight'
     FONT_SLANT_PROPERTY_NAME = 'font_slant'
-    FONT_COLOR_PROPERTY_NAME = 'fill'
+    FONT_COLOR_PROPERTY_NAME = 'font_color'
     X_PROPERTY_NAME = 'x'
     Y_PROPERTY_NAME = 'y'
 
