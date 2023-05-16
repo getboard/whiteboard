@@ -1,0 +1,1 @@
+STICKER_MENU_ENTRY_NAME = 'sticker'
