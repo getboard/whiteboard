@@ -5,7 +5,7 @@ import tkinter
 from state_machine import State
 from state_machine import StateMachine
 import context
-import objects_storage
+from modules.group import object_types
 from modules.group.consts import GROUP_MENU_ENTRY_NAME
 import utils.geometry as geometry
 
@@ -68,6 +68,15 @@ def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
     child_object_ids = _get_child_object_ids(global_ctx, group_covering_rect)
     if len(child_object_ids) < 2:
         return
+    
+    obj_id = global_ctx.objects_storage.create(
+        object_types.GROUP_OBJECT_TYPE_NAME, child_ids=child_object_ids,
+    )
+    print(obj_id)
+    # global_context.events_history.add_event(
+    #     'ADD_STICKER', x=actual_x, y=actual_y, obj_id=obj_id, text='new sticker'
+    # )
+
     # TODO: check if there is a group
     # TODO:
     # 2) Create GroupObject

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Optional
 
 
 @dataclass
@@ -34,5 +34,18 @@ class Rectangle:
 
 def are_rects_intersecting(a: Rectangle, b: Rectangle) -> bool:
     # TODO: check this
+    # TODO: rewrite cuz using internal fields
     return a._top_left.x <= b._bottom_right.x and a._bottom_right.x >= b._top_left.x and\
            a._top_left.y <= b._bottom_right.y and a._bottom_right.y >= b._top_left.y
+
+
+def get_min_containing_rect(a: Optional[Rectangle], b: Optional[Rectangle]) -> Optional[Rectangle]:
+    if a is None:
+        return b
+    if b is None:
+        return a
+    
+    # TODO: rewrite cuz using internal fields
+    res_a = ScreenPosition(min(a._top_left.x, b._top_left.x), min(a._top_left.y, b._top_left.y))
+    res_b = ScreenPosition(max(a._bottom_right.x, b._bottom_right.x), max(a._bottom_right.y, b._bottom_right.y))
+    return Rectangle(res_a, res_b)
