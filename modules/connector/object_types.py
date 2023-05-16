@@ -6,23 +6,28 @@ import objects_storage
 
 
 class Connector(objects_storage.Object):
-    _start: objects_storage.Object or typing.Tuple[int, int]
+    _start_id: str
+    _end_id: str
+    _start_position: typing.Tuple[int, int]
+    _end_position: typing.Tuple[int, int]
     _start_x: typing.Literal[-1, 0, 1]
     _start_y: typing.Literal[-1, 0, 1]
     _end_x: typing.Literal[-1, 0, 1]
     _end_y: typing.Literal[-1, 0, 1]
-    _end: objects_storage.Object or typing.Tuple[int, int]
     _snap_to: typing.Literal['r', 'l']
-    _width: int
-    _start_bbox: typing.Tuple[int, int, int, int] or None
-    _end_bbox: typing.Tuple[int, int, int, int] or None
+    _line_width: int
+    _line_color: str
+    _start_bbox: typing.Optional[typing.Tuple[int, int, int, int]]
+    _end_bbox: typing.Optional[typing.Tuple[int, int, int, int]]
 
     def __init__(
             self,
             ctx: context.Context,
             _id: str,
-            start: objects_storage.Object | typing.Tuple[int, int],
-            end: objects_storage.Object | typing.Tuple[int, int],
+            start_id: typing.Optional[str],
+            start_position: typing.Tuple[int, int],
+            end_id: typing.Optional[str],
+            end_position: typing.Tuple[int, int],
             *,
             start_x: typing.Literal[-1, 0, 1] = 0,
             start_y: typing.Literal[-1, 0, 1] = -1,
@@ -32,77 +37,111 @@ class Connector(objects_storage.Object):
             **_
     ):
         super().__init__(ctx, _id)
-        self._start = start
+        self._start_id = start_id
+        self._end_id = end_id
+        self._start_position = start_position
+        self._end_position = end_position
         self._start_x = start_x
         self._start_y = start_y
-        self._end = end
         self._end_x = end_x
         self._end_y = end_y
         self._snap_to = snap_to
-        self._width = 2
+        self._line_width = 2
+        self._line_color = 'black'
         self.update(ctx)
 
-    def update(self, ctx: context.Context, **kwargs):
-        if 'start' in kwargs:
-            self._start = kwargs['start']
-        if 'end' in kwargs:
-            self._end = kwargs['end']
-        if 'snap_to' in kwargs:
-            self._snap_to = kwargs['snap_to']
-        if isinstance(self._start, objects_storage.Object):
-            self._start.attach(self)
-        if isinstance(self._end, objects_storage.Object):
-            self._end.attach(self)
-        ctx.canvas.delete(self.id)
-        self._bezier_curve(ctx)
+    def get_start_id(self):
+        return self._start_id
 
-    @property
-    def obj_start_for_event(self):
-        if not isinstance(self._start, tuple):
-            return self._start.id
-        return "%d; %d" % self._start
+    def get_end_id(self):
+        return self._end_id
 
-    @property
-    def obj_end_for_event(self):
-        if not isinstance(self._end, tuple):
-            return self._end.id
-        return "%d; %d" % self._end
+    def get_start_position(self):
+        return self._start_position
 
-    @property
-    def start_pos(self):
-        return "%d; %d" % (self._start_x, self._start_y)
+    def get_end_position(self):
+        return self._end_position
 
-    @property
-    def end_pos(self):
-        return "%d; %d" % (self._end_x, self._end_y)
+    def get_start_x(self):
+        return self._start_x
 
-    @property
-    def snap_to(self):
+    def get_start_y(self):
+        return self._start_y
+
+    def get_end_x(self):
+        return self._end_x
+
+    def get_end_y(self):
+        return self._end_y
+
+    def get_snap_to(self):
         return self._snap_to
 
+    def get_line_width(self, scaled=False):
+        line_width = self._line_width
+        if scaled:
+            line_width *= self.scale_factor
+        return int(line_width)
+
+    def set_line_width(self, ctx: context.Context, line_width: str):
+        if not line_width.isdigit():
+            return
+        self._line_width = int(line_width)
+        ctx.canvas.itemconfig(self.id, width=self._line_color)
+        return self._line_color
+
+    def get_line_color(self):
+        return self._line_color
+
+    def set_line_color(self, ctx: context.Context, line_color: str):
+        self._line_color = line_color
+        ctx.canvas.itemconfig(self.id, fill=self._line_color)
+        return self._line_color
+
+    def update(self, ctx: context.Context, **kwargs):
+        if 'snap_to' in kwargs:
+            self._snap_to = kwargs['snap_to']
+        if 'end_position' in kwargs:
+            self._end_position = kwargs['end_position']
+        if 'start_position' in kwargs:
+            self._start_position = kwargs['start_position']
+        start = ctx.objects_storage.get_opt_by_id(self._start_id)
+        end = ctx.objects_storage.get_opt_by_id(self._end_id)
+        if start:
+            ctx.broker.subscribe(start.MOVE_EVENT, start.id, self.id)
+        if end:
+            ctx.broker.subscribe(start.MOVE_EVENT, end.id, self.id)
+        self._bezier_curve(ctx)
+
+    def get_notification(self, ctx: context.Context, publisher_id, event, **kwargs):
+        if self.MOVE_EVENT == event:
+            self._bezier_curve(ctx)
+
     def scale(self, ctx: context.Context, scale_factor: float, **kwargs):
-        self._width *= scale_factor
-        ctx.canvas.itemconfig(self.id, width=float(self._width))
+        self.scale_factor *= scale_factor
+        ctx.canvas.itemconfig(self.id, width=self.get_line_width(scaled=True))
 
     def _get_points(self, ctx: context.Context):
-        if isinstance(self._start, tuple):
+        start = ctx.objects_storage.get_opt_by_id(self._start_id)
+        end = ctx.objects_storage.get_opt_by_id(self._end_id)
+        if start:
+            self._start_bbox = ctx.canvas.bbox(self._start_id)
+        else:
             self._start_bbox = (
-                self._start[0],
-                self._start[1],
-                self._start[0],
-                self._start[1]
+                self._start_position[0],
+                self._start_position[1],
+                self._start_position[0],
+                self._start_position[1],
             )
+        if end:
+            self._end_bbox = ctx.canvas.bbox(self._end_id)
         else:
-            self._start_bbox = ctx.canvas.bbox(self._start.id)
-        if isinstance(self._end, tuple):
             self._end_bbox = (
-                self._end[0],
-                self._end[1],
-                self._end[0],
-                self._end[1]
+                self._end_position[0],
+                self._end_position[1],
+                self._end_position[0],
+                self._end_position[1]
             )
-        else:
-            self._end_bbox = ctx.canvas.bbox(self._end.id)
         start_x, start_y = self._get_middles(
             self._start_bbox,
             self._start_x,
@@ -115,45 +154,44 @@ class Connector(objects_storage.Object):
         )
         return start_x, start_y, end_x, end_y
 
-    def _bezier_curve(self, cxt: context.Context):
-        points = self._get_points(cxt)
+    def _bezier_curve(self, ctx: context.Context):
+        ctx.canvas.delete(self.id)
+        points = self._get_points(ctx)
         p0 = points[:2]
         p2 = points[2:]
         p1 = (p0[0], p2[1])
-        last_x = None
-        last_y = None
-        for i in range(100):
-            t = i / 99
+        points_cnt = int(p2[0] - p0[1])
+        points = list(p0)
+        if points_cnt < 100:
+            points_cnt = 100
+        for i in range(points_cnt):
+            t = i / (points_cnt - 1)
             x, y = self._bezier(t, p0, p1, p2)
-            if last_x:
-                cxt.canvas.create_line(last_x, last_y, x, y, width=self._width, tags=self.id)
-                last_x = x
-                last_y = y
-            else:
-                last_x = x
-                last_y = y
-                cxt.canvas.create_line(p0[0], p0[1], x, y, width=self._width, tags=self.id)
+            points.append(x)
+            points.append(y)
+
+        ctx.canvas.create_line(points, width=self._line_width, tags=self.id, smooth=True)
         if p0[0] < p2[0]:
-            cxt.canvas.create_polygon(
-                last_x - 10,
-                last_y - 5,
-                last_x,
-                last_y,
-                last_x - 10,
-                last_y + 5,
-                width=self._width,
+            ctx.canvas.create_polygon(
+                points[-2] - 10,
+                points[-1] - 5,
+                points[-2],
+                points[-1],
+                points[-2] - 10,
+                points[-1] + 5,
+                width=self._line_width,
                 tags=self.id,
                 fill='black'
             )
         else:
-            cxt.canvas.create_polygon(
-                last_x + 10,
-                last_y - 5,
-                last_x,
-                last_y,
-                last_x + 10,
-                last_y + 5,
-                width=self._width,
+            ctx.canvas.create_polygon(
+                points[-2] + 10,
+                points[-1] - 5,
+                points[-2],
+                points[-1],
+                points[-2] + 10,
+                points[-1] + 5,
+                width=self._line_width,
                 tags=self.id,
                 fill='black'
             )

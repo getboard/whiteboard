@@ -7,6 +7,7 @@ from events_history import EventsHistory
 from event_handlers import EventHandlers
 from menu import Menu
 from objects_storage import ObjectsStorage
+from pub_sub import Broker
 from state_machine import StateMachine
 
 
@@ -19,3 +20,4 @@ class Context:
     state_machine: StateMachine
     property_bar: ttk.Frame
     menu: Menu
+    broker: Broker

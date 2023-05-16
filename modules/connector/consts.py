@@ -1,0 +1,1 @@
+CONNECTOR_MENU_ENTRY_NAME = 'connector'

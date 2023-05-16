@@ -7,29 +7,36 @@ from typing import Dict
 import context
 
 from properties import Property
+from pub_sub import Subscriber
 
 
-class Object:
+class Object(Subscriber):
     id: str
     is_focused: bool
     scale_factor: float
     properties: Dict[str, Property]
     _observers: Dict[str, Object]
 
-    def __init__(self, _: context.Context, id: str, **kwargs):
+    MOVE_EVENT = 'CHANGE_POSITION'
+
+    def __init__(self, ctx: context.Context, id: str, **kwargs):
+        super().__init__(id)
         self.id = id
         self.is_focused = False
         self.scale_factor = 1.0
         self.properties = {}
-        self._observers = dict()
+        ctx.broker.add_publisher(self.id)
+        ctx.broker.add_publisher_event(self.id, self.MOVE_EVENT)
+        # self._observers = dict()
 
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
         ctx.canvas.move(self.id, delta_x, delta_y)
-        self.notify(ctx)
+        x, y, _, _ = ctx.canvas.bbox(self.id)
+        ctx.broker.publish(ctx, self.id, self.MOVE_EVENT, x=x, y=y)
 
     def move_to(self, ctx: context.Context, x: int, y: int):
         ctx.canvas.moveto(self.id, x, y)
-        self.notify(ctx)
+        ctx.broker.publish(ctx, self.id, self.MOVE_EVENT, x=x, y=y)
 
     def _get_rect_args(self, ctx: context.Context):
         OFFSET = 3
@@ -65,17 +72,17 @@ class Object:
     def scale(self, ctx: context.Context, scale_factor: float):
         raise NotImplementedError("it's an abstract class")
 
-    def attach(self, obj: Object):
-        if obj.id not in self._observers:
-            self._observers[obj.id] = obj
-
-    def detach(self, obj: Type[Object]):
-        if obj.id in self._observers:
-            self._observers.pop(obj.id)
-
-    def notify(self, ctx: context.Context):
-        for observer in self._observers.values():
-            observer.update(ctx, obj_id=self.id)
+    # def attach(self, obj: Object):
+    #     if obj.id not in self._observers:
+    #         self._observers[obj.id] = obj
+    #
+    # def detach(self, obj: Type[Object]):
+    #     if obj.id in self._observers:
+    #         self._observers.pop(obj.id)
+    #
+    # def notify(self, ctx: context.Context):
+    #     for observer in self._observers.values():
+    #         observer.update(ctx, obj_id=self.id)
 
 
 class ObjectsStorage:
