@@ -56,7 +56,6 @@ def _handle_event(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
 def _get_child_object_ids(global_ctx: context.Context, covering_rect: geometry.Rectangle) -> List[str]:
     ids = []
     for object in global_ctx.objects_storage.get_objects().values():
-        # TODO: check if there is a group
         if geometry.are_rects_intersecting(object.get_frame_rect(global_ctx), covering_rect):
             ids.append(object.id)
     return ids
@@ -69,10 +68,8 @@ def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
     child_object_ids = _get_child_object_ids(global_ctx, group_covering_rect)
     if len(child_object_ids) < 2:
         return
-    
+    # TODO: check if there is a group
     # TODO:
-    # 1) gather all object that are intersected by the frame in one list
-    # 1.1) check if len(ids) > 1
     # 2) Create GroupObject
     # 3) Write new event
     # 4) PROFIT

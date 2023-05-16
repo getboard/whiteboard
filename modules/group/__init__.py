@@ -16,8 +16,7 @@ def register_handlers(ctx: context.Context):
 
 
 def register_object_types(ctx: context.Context):
-    # TODO
-    pass
+    ctx.objects_storage.register_object_type(object_types.GROUP_OBJECT_TYPE_NAME, object_types.GroupObject)
 
 
 def register_module_menu(ctx: context.Context):
