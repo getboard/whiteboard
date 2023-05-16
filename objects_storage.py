@@ -5,6 +5,7 @@ from typing import Optional
 
 import context
 import pub_sub
+import utils.geometry as geometry
 from properties import Property
 
 
@@ -37,16 +38,14 @@ class Object(pub_sub.Subscriber):
         ctx.canvas.moveto(self.id, x, y)
         ctx.pub_sub_broker.publish(ctx, self.id, self.MOVED_TO_NOTIFICATION, x=x, y=y)
 
-    def _get_rect_args(self, ctx: context.Context):
-        # TODO: make this public
+    def get_frame_rect(self, ctx: context.Context) -> geometry.Rectangle: 
         OFFSET = 3
-        obj_bbox = ctx.canvas.bbox(self.id)
-        return [
-            obj_bbox[0] - OFFSET,
-            obj_bbox[1] - OFFSET,
-            obj_bbox[2] + OFFSET,
-            obj_bbox[3] + OFFSET,
-        ]
+        obj_frame = list(ctx.canvas.bbox(self.id))
+        obj_frame[0] -= OFFSET
+        obj_frame[1] -= OFFSET
+        obj_frame[2] += OFFSET
+        obj_frame[3] += OFFSET
+        return geometry.Rectangle.from_tkinter_rect(tuple(obj_frame))
 
     def _is_rect_drawn(self, ctx: context.Context) -> bool:
         obj_id = f'rectangle{self.id}'
@@ -55,12 +54,12 @@ class Object(pub_sub.Subscriber):
     def draw_rect(self, ctx: context.Context):
         COLOR = 'black'
         REC_WIDTH = 2
-        rect = self._get_rect_args(ctx)
+        rect = self.get_frame_rect(ctx)
         obj_id = f'rectangle{self.id}'
         if self._is_rect_drawn(ctx):
             ctx.canvas.coords(obj_id, *rect)
         else:
-            ctx.canvas.create_rectangle(*rect, outline=COLOR, width=REC_WIDTH, tags=obj_id)
+            ctx.canvas.create_rectangle(*rect.as_tkinter_rect(), outline=COLOR, width=REC_WIDTH, tags=obj_id)
 
     def remove_rect(self, ctx: context.Context):
         obj_id = f'rectangle{self.id}'
