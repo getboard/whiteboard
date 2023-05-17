@@ -13,7 +13,7 @@ class EventInfo:
     @classmethod
     def parse(cls, raw: str):
         kwargs = {}
-        for raw_pair in raw.split(','):
+        for raw_pair in raw.split(';'):
             key, value = raw_pair.split('=')
             kwargs[key] = value
 
@@ -24,11 +24,9 @@ class EventInfo:
         return event_info
 
     def serialize(self) -> str:
-        res = f'timestamp={self.timestamp},kind={self.kind}'
+        res = f'timestamp={self.timestamp};kind={self.kind}'
         if self.kwargs:
-            res += ',' + \
-                ','.join([f'{key}={value}' for key,
-                         value in self.kwargs.items()])
+            res += ';' + ';'.join([f'{key}={value}' for key, value in self.kwargs.items()])
         return res
 
 
