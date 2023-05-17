@@ -10,6 +10,7 @@ def create_states(ctx: context.Context):
 
 def register_handlers(ctx: context.Context):
     ctx.event_handlers.register_handler('UPDATE_OBJECT', handlers.UpdateObjectHandler)
+    ctx.event_handlers.register_handler('DELETE_OBJECT', handlers.DeleteObjectHandler)
 
 
 @modules.modules.register_module('submenu')

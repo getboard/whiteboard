@@ -8,16 +8,24 @@ from state_machine import StateMachine
 from context import Context
 
 SUBMENU = 'SUBMENU'
+NEED_TO_DELETE = 'need_to_delete'
 
 
 def _on_enter(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
     obj = global_ctx.objects_storage.get_current()
     state_ctx[SUBMENU] = Submenu(obj.id, global_ctx)
     state_ctx[SUBMENU].show_menu(global_ctx)
+    state_ctx[NEED_TO_DELETE] = False
 
 
-def _on_leave(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
+def _on_leave(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
     state_ctx[SUBMENU].destroy_menu(global_ctx)
+    # Press delete button
+    if event.type != tkinter.EventType.KeyPress or event.keysym != 'Delete':
+        return
+    obj_id = state_ctx[SUBMENU].obj_id
+    global_ctx.objects_storage.remove(obj_id)
+    global_ctx.events_history.add_event('DELETE_OBJECT', obj_id=obj_id)
 
 
 def _predicate_from_root_to_context(global_ctx: Context, event: tkinter.Event) -> bool:
@@ -29,6 +37,9 @@ def _predicate_from_root_to_context(global_ctx: Context, event: tkinter.Event) -
 
 
 def _predicate_from_context_to_root(global_context: Context, event: tkinter.Event) -> bool:
+    # Press delete button
+    if event.type == tkinter.EventType.KeyPress and event.keysym == 'Delete':
+        return True
     # Release Left mouse button
     if event.type != tkinter.EventType.ButtonRelease or event.num != 1:
         return False

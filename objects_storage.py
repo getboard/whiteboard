@@ -106,5 +106,10 @@ class ObjectsStorage:
         self._objects[obj_id] = self._object_types[type_name](self._ctx, obj_id, **kwargs)
         return obj_id
 
+    def remove(self, obj_id: str):
+        if obj_id in self._objects:
+            self._objects.pop(obj_id)
+            self._ctx.canvas.delete(obj_id)
+
     def update(self, object_id: str, **kwargs):
         self._objects[object_id].update(self._ctx, **kwargs)
