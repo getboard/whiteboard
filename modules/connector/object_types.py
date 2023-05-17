@@ -3,6 +3,7 @@ import math
 import typing
 import context
 import objects_storage
+from properties import PropertyType, Property
 
 
 class Connector(objects_storage.Object):
@@ -14,11 +15,23 @@ class Connector(objects_storage.Object):
     _start_y: typing.Literal[-1, 0, 1]
     _end_x: typing.Literal[-1, 0, 1]
     _end_y: typing.Literal[-1, 0, 1]
-    _snap_to: typing.Literal['r', 'l']
+    _snap_to: typing.Literal['first', 'both', 'last']
     _line_width: int
     _line_color: str
     _start_bbox: typing.Optional[typing.Tuple[int, int, int, int]]
     _end_bbox: typing.Optional[typing.Tuple[int, int, int, int]]
+
+    LINE_COLOR_PROPERTY_NAME = 'line_color'
+    LINE_WIDTH_PROPERTY_NAME = 'line_width'
+    STROKE_STYLE_PROPERTY_NAME = 'stroke_style'
+    START_ID_NAME = 'start_id'
+    END_ID_NAME = 'end_id'
+    START_POSITION = 'start_position'
+    END_POSITION = 'end_position'
+    START_X_STICK = 'start_x'
+    START_Y_STICK = 'start_y'
+    END_X_STICK = 'end_x'
+    END_Y_STICK = 'end_y'
 
     def __init__(
             self,
@@ -33,7 +46,7 @@ class Connector(objects_storage.Object):
             start_y: typing.Literal[-1, 0, 1] = -1,
             end_x: typing.Literal[-1, 0, 1] = -1,
             end_y: typing.Literal[-1, 0, 1] = 0,
-            snap_to: typing.Literal['r', 'l'] = 'r',
+            snap_to: typing.Literal['first', 'both', 'last'] = 'last',
             **_
     ):
         super().__init__(ctx, _id)
@@ -48,19 +61,149 @@ class Connector(objects_storage.Object):
         self._snap_to = snap_to
         self._line_width = 2
         self._line_color = 'black'
-        self.update(ctx)
+        self.subscribe_to_move(ctx, self._start_id)
+        self.subscribe_to_move(ctx, self._end_id)
+        self.init_properties()
+        self._bezier_curve(ctx)
+
+    def init_properties(self):
+        self.properties[self.LINE_COLOR_PROPERTY_NAME] = Property(
+            property_type=PropertyType.COLOR,
+            property_description='Цвет',
+            getter=self.get_line_color,
+            setter=self.set_line_color,
+            restrictions='default',
+            is_hidden=False
+        )
+
+        self.properties[self.LINE_WIDTH_PROPERTY_NAME] = Property(
+            property_type=PropertyType.LINE_WIDTH,
+            property_description='Толщина',
+            getter=self.get_line_width,
+            setter=self.set_line_width,
+            restrictions='default',
+            is_hidden=False
+        )
+
+        self.properties[self.STROKE_STYLE_PROPERTY_NAME] = Property(
+            property_type=PropertyType.TEXT,
+            property_description='Толщина',
+            getter=self.get_snap_to,
+            setter=self.set_snap_to,
+            restrictions=['last', 'first', 'both'],
+            is_hidden=False
+        )
+
+        self.properties[self.START_ID_NAME] = Property(
+            property_type=PropertyType.TEXT,
+            property_description='ID стартового объекта',
+            getter=self.get_start_id,
+            setter=self.set_start_id,
+            restrictions='default',
+            is_hidden=True
+        )
+
+        self.properties[self.END_ID_NAME] = Property(
+            property_type=PropertyType.TEXT,
+            property_description='ID конечного объекта',
+            getter=self.get_end_id,
+            setter=self.set_end_id,
+            restrictions='default',
+            is_hidden=True
+        )
+
+        self.properties[self.START_POSITION] = Property(
+            property_type=PropertyType.TEXT,
+            property_description='Стартовая точка',
+            getter=self.get_start_position,
+            setter=self.set_start_position,
+            restrictions='default',
+            is_hidden=True
+        )
+
+        self.properties[self.END_POSITION] = Property(
+            property_type=PropertyType.TEXT,
+            property_description='Конечная точка',
+            getter=self.get_end_position,
+            setter=self.set_end_position,
+            restrictions='default',
+            is_hidden=True
+        )
+
+        self.properties[self.START_X_STICK] = Property(
+            property_type=PropertyType.NUMBER,
+            property_description='Anchor-Start-X',
+            getter=self.get_start_x,
+            setter=None,
+            restrictions='default',
+            is_hidden=True
+        )
+
+        self.properties[self.START_Y_STICK] = Property(
+            property_type=PropertyType.NUMBER,
+            property_description='Anchor-Start-Y',
+            getter=self.get_start_y,
+            setter=None,
+            restrictions='default',
+            is_hidden=True
+        )
+
+        self.properties[self.START_X_STICK] = Property(
+            property_type=PropertyType.NUMBER,
+            property_description='Anchor-End-X',
+            getter=self.get_end_x,
+            setter=None,
+            restrictions='default',
+            is_hidden=True
+        )
+
+        self.properties[self.START_Y_STICK] = Property(
+            property_type=PropertyType.NUMBER,
+            property_description='Anchor-End-Y',
+            getter=self.get_end_y,
+            setter=None,
+            restrictions='default',
+            is_hidden=True
+        )
+
+    def subscribe_to_move(self, ctx: context.Context, pub_id):
+        sub = ctx.objects_storage.get_opt_by_id(pub_id)
+        if sub:
+            ctx.broker.subscribe(sub.MOVE_EVENT, sub.id, self.id)
 
     def get_start_id(self):
         return self._start_id
 
+    def set_start_id(self, ctx: context.Context, value: str):
+        self._start_id = value
+        self.subscribe_to_move(ctx, self._start_id)
+        self._bezier_curve(ctx)
+        points = ctx.canvas.coords(self.id)
+        self._start_position = (int(points[0]), int(points[1]))
+
     def get_end_id(self):
         return self._end_id
+
+    def set_end_id(self, ctx: context.Context, value: str):
+        self._end_id = value
+        self.subscribe_to_move(ctx, self._end_id)
+        self._bezier_curve(ctx)
+        points = ctx.canvas.coords(self.id)
+        self._end_position = (int(points[-2]), int(points[-1]))
 
     def get_start_position(self):
         return self._start_position
 
+    def set_start_position(self, ctx: context.Context, point: tuple[int, int]):
+        self._start_position = point
+        self._bezier_curve(ctx)
+
     def get_end_position(self):
         return self._end_position
+
+    def set_end_position(self, ctx: context.Context, point: tuple[int, int]):
+        self._end_position = point
+        self._bezier_curve(ctx)
 
     def get_start_x(self):
         return self._start_x
@@ -77,6 +220,10 @@ class Connector(objects_storage.Object):
     def get_snap_to(self):
         return self._snap_to
 
+    def set_snap_to(self, ctx: context.Context, value: typing.Literal['first', 'both', 'last']):
+        self._snap_to = value
+        ctx.canvas.itemconfig(self.id, arrow=self._snap_to)
+
     def get_line_width(self, scaled=False):
         line_width = self._line_width
         if scaled:
@@ -87,8 +234,7 @@ class Connector(objects_storage.Object):
         if not line_width.isdigit():
             return
         self._line_width = int(line_width)
-        ctx.canvas.itemconfig(self.id, width=self._line_color)
-        return self._line_color
+        ctx.canvas.itemconfig(self.id, width=self._line_width)
 
     def get_line_color(self):
         return self._line_color
@@ -96,22 +242,11 @@ class Connector(objects_storage.Object):
     def set_line_color(self, ctx: context.Context, line_color: str):
         self._line_color = line_color
         ctx.canvas.itemconfig(self.id, fill=self._line_color)
-        return self._line_color
 
     def update(self, ctx: context.Context, **kwargs):
-        if 'snap_to' in kwargs:
-            self._snap_to = kwargs['snap_to']
-        if 'end_position' in kwargs:
-            self._end_position = kwargs['end_position']
-        if 'start_position' in kwargs:
-            self._start_position = kwargs['start_position']
-        start = ctx.objects_storage.get_opt_by_id(self._start_id)
-        end = ctx.objects_storage.get_opt_by_id(self._end_id)
-        if start:
-            ctx.broker.subscribe(start.MOVE_EVENT, start.id, self.id)
-        if end:
-            ctx.broker.subscribe(start.MOVE_EVENT, end.id, self.id)
-        self._bezier_curve(ctx)
+        for key, value in kwargs.items():
+            if key in self.properties:
+                self.properties[key].setter(ctx, value)
 
     def get_notification(self, ctx: context.Context, publisher_id, event, **kwargs):
         if self.MOVE_EVENT == event:
@@ -167,34 +302,16 @@ class Connector(objects_storage.Object):
         for i in range(points_cnt):
             t = i / (points_cnt - 1)
             x, y = self._bezier(t, p0, p1, p2)
-            points.append(x)
-            points.append(y)
+            points.extend([x, y])
 
-        ctx.canvas.create_line(points, width=self._line_width, tags=self.id, smooth=True)
-        if p0[0] < p2[0]:
-            ctx.canvas.create_polygon(
-                points[-2] - 10,
-                points[-1] - 5,
-                points[-2],
-                points[-1],
-                points[-2] - 10,
-                points[-1] + 5,
-                width=self._line_width,
-                tags=self.id,
-                fill='black'
-            )
-        else:
-            ctx.canvas.create_polygon(
-                points[-2] + 10,
-                points[-1] - 5,
-                points[-2],
-                points[-1],
-                points[-2] + 10,
-                points[-1] + 5,
-                width=self._line_width,
-                tags=self.id,
-                fill='black'
-            )
+        ctx.canvas.create_line(
+            points,
+            width=self._line_width,
+            arrow=self._snap_to,
+            tags=self.id,
+            smooth=True,
+            fill=self._line_color,
+        )
 
     @staticmethod
     def _bezier(t, p0, p1, p2):
@@ -222,5 +339,5 @@ class Connector(objects_storage.Object):
         return x, y
 
     @staticmethod
-    def _distance(p1, p2):
-        return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+    def _distance(point1, point2):
+        return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)

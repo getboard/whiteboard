@@ -55,7 +55,7 @@ def _on_leave(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
                     cur_obj = temp
                     break
     if cur_obj is not None:
-        state_ctx[CONNECTOR].update(global_ctx, end=cur_obj.id)
+        state_ctx[CONNECTOR].update(global_ctx, end_id=cur_obj.id)
 
     obj: Connector = state_ctx[CONNECTOR]
     state_ctx.pop(CONNECTOR)
