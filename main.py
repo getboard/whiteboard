@@ -7,6 +7,7 @@ import events_history
 import objects_storage
 import event_handlers
 import menu
+import pub_sub
 from state_machine import StateMachine
 
 import modules.modules
@@ -32,6 +33,7 @@ def create_context(root: tkinter.Tk) -> context.Context:
     ctx.property_bar = ttk.Frame(root)
     ctx.property_bar.pack(fill='both', expand=True, padx=10, pady=10)
     ctx.menu = menu.Menu(root)
+    ctx.pub_sub_broker = pub_sub.Broker()
     return ctx
 
 
