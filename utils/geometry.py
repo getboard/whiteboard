@@ -22,6 +22,12 @@ class Rectangle:
     def as_tkinter_rect(self) -> Tuple[int, int, int, int]:
         return (self._top_left.x, self._top_left.y, self._bottom_right.x, self._bottom_right.y)
 
+    def get_width(self) -> int:
+        return self._bottom_right.x - self._top_left.x
+
+    def get_height(self) -> int:
+        return self._bottom_right.y - self._top_left.y
+
     @staticmethod
     def from_tkinter_rect(rect: Tuple[int, int, int, int]) -> 'Rectangle':
         a = ScreenPosition(rect[0], rect[1])

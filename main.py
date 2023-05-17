@@ -25,6 +25,7 @@ def create_context(root: tkinter.Tk) -> context.Context:
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
     canvas.pack(side='left', fill='both', expand=False)
     ctx = context.Context()
+    ctx.root = root
     ctx.events_history = events_history.EventsHistory()
     ctx.event_handlers = event_handlers.EventHandlers()
     ctx.objects_storage = objects_storage.ObjectsStorage(ctx)

@@ -1,4 +1,5 @@
 from typing import List
+from PIL import Image, ImageTk
 
 import context
 from objects_storage import Object
@@ -6,6 +7,8 @@ from objects_storage import Object
 import utils.geometry as geometry
 
 GROUP_OBJECT_TYPE_NAME = 'group'
+
+_IMAGES = []
 
 # TODO: use pub-sub for resizing/moving/etc.
 # TODO: deletion mechanism
@@ -17,8 +20,15 @@ class GroupObject(Object):
         self._child_ids = child_ids
 
         invisible_rect = self._get_invisible_rect(ctx)
-        ctx.canvas.create_rectangle(*invisible_rect.as_tkinter_rect(), outline='red', tags=[self.id])
-        # TODO: create rect here
+        # TODO: make it actually invisible
+
+        fill = (0, 0, 255, 100)
+        image = Image.new('RGBA', (invisible_rect.get_width(), invisible_rect.get_height()), fill)
+        _IMAGES.append(ImageTk.PhotoImage(image))
+        # TODO: fix
+        ctx.canvas.create_image(invisible_rect._top_left.x, invisible_rect._top_left.y, image=_IMAGES[-1], anchor='nw', tags=[self.id])
+        ctx.canvas.tag_raise(self.id)
+        
 
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
         # TODO: block pub-sub here
@@ -64,9 +74,4 @@ class GroupObject(Object):
         # TODO: update invisible rect here
 
     def scale(self, ctx: context.Context, scale_factor: float):
-        # TODO: block pub-sub here
-        for child_id in self._child_ids:
-            obj = ctx.objects_storage.get_by_id(child_id)
-            obj.scale(ctx, scale_factor)
-        # TODO: unlock pub-sub here
-        # TODO: update invisible rect here
+        pass
