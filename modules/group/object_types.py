@@ -47,7 +47,11 @@ class GroupObject(Object):
         props = None
         for child_id in self._children_ids:
             child_props = ctx.objects_storage.get_by_id(child_id).properties
-            child_props = set((name, prop.property_type) for (name, prop) in child_props.items() if not prop.is_hidden)
+            child_props = set(
+                (name, prop.property_type)
+                for (name, prop) in child_props.items()
+                if not prop.is_hidden
+            )
             if props == None:
                 props = child_props
             else:
@@ -59,13 +63,17 @@ class GroupObject(Object):
 
     def _init_properties(self, ctx: context.Context):
         property_names = self._get_property_names(ctx)
-        
+
         copy_common_fields_from_id = self._children_ids[0]
         copy_common_fields_from = ctx.objects_storage.get_by_id(copy_common_fields_from_id)
         for prop_name in property_names:
             # Looks like a dirty hack
-            prop_getter = lambda ctx, self=self, prop_name=prop_name: self._get_property(ctx, prop_name)
-            prop_setter = lambda ctx, value, prop_name=prop_name: self._set_property(ctx, prop_name, value)
+            prop_getter = lambda ctx, self=self, prop_name=prop_name: self._get_property(
+                ctx, prop_name
+            )
+            prop_setter = lambda ctx, value, prop_name=prop_name: self._set_property(
+                ctx, prop_name, value
+            )
             child_prop = copy_common_fields_from.properties[prop_name]
             self.properties[prop_name] = properties.Property(
                 property_type=child_prop.property_type,
@@ -73,9 +81,11 @@ class GroupObject(Object):
                 getter=prop_getter,
                 setter=prop_setter,
             )
-    
+
     def _get_property(self, ctx: context.Context, prop_name: str) -> Any:
-        first_child_val = ctx.objects_storage.get_by_id(self._children_ids[0]).properties[prop_name].getter(ctx)
+        first_child_val = (
+            ctx.objects_storage.get_by_id(self._children_ids[0]).properties[prop_name].getter(ctx)
+        )
         for child_id in self._children_ids[1:]:
             obj = ctx.objects_storage.get_by_id(child_id)
             val = obj.properties[prop_name].getter(ctx)
