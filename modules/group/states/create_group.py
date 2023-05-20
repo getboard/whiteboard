@@ -13,6 +13,7 @@ CREATE_GROUP_STATE_NAME = 'CREATE_GROUP'
 FRAME_TKINTER_OBJECT_TAG = 'group_module_frame_object_tag'
 STATE_CONTEXT_OBJ_DICT_KEY = 'group_module_state_context'
 
+
 @dataclass
 class CreateGroupStateContext:
     drag_start_pos: geometry.ScreenPosition
@@ -21,7 +22,11 @@ class CreateGroupStateContext:
 
 def _predicate_from_root_to_create_group(global_ctx: context.Context, event: tkinter.Event) -> bool:
     # Press Left mouse button with sticker menu state
-    return event.type == tkinter.EventType.ButtonPress and event.num == 1 and global_ctx.menu.current_state == GROUP_MENU_ENTRY_NAME
+    return (
+        event.type == tkinter.EventType.ButtonPress
+        and event.num == 1
+        and global_ctx.menu.current_state == GROUP_MENU_ENTRY_NAME
+    )
 
 
 def _get_cur_pos(global_ctx: context.Context, event: tkinter.Event) -> geometry.ScreenPosition:
@@ -34,12 +39,14 @@ def _handle_event(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
     # Motion with Left mouse button pressed
     if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
         return
-    
+
     cur_pos = _get_cur_pos(global_ctx, event)
 
     if STATE_CONTEXT_OBJ_DICT_KEY not in state_ctx:
         # We are first time here
-        state_ctx[STATE_CONTEXT_OBJ_DICT_KEY] = CreateGroupStateContext(drag_start_pos=cur_pos, frame_was_drawn_before=False)
+        state_ctx[STATE_CONTEXT_OBJ_DICT_KEY] = CreateGroupStateContext(
+            drag_start_pos=cur_pos, frame_was_drawn_before=False
+        )
         return
 
     state_ctx_obj: CreateGroupStateContext = state_ctx[STATE_CONTEXT_OBJ_DICT_KEY]
@@ -49,11 +56,15 @@ def _handle_event(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
     else:
         FRAME_COLOR = 'black'
         FRAME_WIDTH = 2
-        global_ctx.canvas.create_rectangle(*rect, outline=FRAME_COLOR, width=FRAME_WIDTH, tags=FRAME_TKINTER_OBJECT_TAG)
+        global_ctx.canvas.create_rectangle(
+            *rect, outline=FRAME_COLOR, width=FRAME_WIDTH, tags=FRAME_TKINTER_OBJECT_TAG
+        )
         state_ctx_obj.frame_was_drawn_before = True
 
 
-def _get_child_object_ids(global_ctx: context.Context, covering_rect: geometry.Rectangle) -> List[str]:
+def _get_child_object_ids(
+    global_ctx: context.Context, covering_rect: geometry.Rectangle
+) -> List[str]:
     ids = []
     for object in global_ctx.objects_storage.get_objects().values():
         if geometry.are_rects_intersecting(object.get_frame_rect(global_ctx), covering_rect):
@@ -64,13 +75,16 @@ def _get_child_object_ids(global_ctx: context.Context, covering_rect: geometry.R
 def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
     state_ctx_obj: CreateGroupStateContext = state_ctx[STATE_CONTEXT_OBJ_DICT_KEY]
 
-    group_covering_rect = geometry.Rectangle(state_ctx_obj.drag_start_pos, _get_cur_pos(global_ctx, event))
+    group_covering_rect = geometry.Rectangle(
+        state_ctx_obj.drag_start_pos, _get_cur_pos(global_ctx, event)
+    )
     child_object_ids = _get_child_object_ids(global_ctx, group_covering_rect)
     if len(child_object_ids) < 2:
         return
-    
+
     obj_id = global_ctx.objects_storage.create(
-        object_types.GROUP_OBJECT_TYPE_NAME, child_ids=child_object_ids,
+        object_types.GROUP_OBJECT_TYPE_NAME,
+        child_ids=child_object_ids,
     )
     print(obj_id)
     # global_context.events_history.add_event(

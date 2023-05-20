@@ -12,41 +12,62 @@ _IMAGES = []
 
 # TODO: use pub-sub for resizing/moving/etc.
 # TODO: deletion mechanism
+# TODO: fix size after child resizes
 class GroupObject(Object):
     _child_ids: List[str]
-    
+
     def __init__(self, ctx: context.Context, id: str, child_ids: List[str]):
         super().__init__(ctx, id)
         self._child_ids = child_ids
 
         invisible_rect = self._get_invisible_rect(ctx)
-        # TODO: make it actually invisible
-
-        fill = (0, 0, 255, 100)
-        image = Image.new('RGBA', (invisible_rect.get_width(), invisible_rect.get_height()), fill)
-        _IMAGES.append(ImageTk.PhotoImage(image))
-        # TODO: fix
-        ctx.canvas.create_image(invisible_rect._top_left.x, invisible_rect._top_left.y, image=_IMAGES[-1], anchor='nw', tags=[self.id])
+        ctx.canvas.create_rectangle(
+            *invisible_rect.as_tkinter_rect(),
+            outline='green',  # TODO: remove after tests
+            fill='gray',  # do not remove
+            stipple='@modules/group/xbms/transparent.xbm',
+            width=2,
+            tags=[
+                self.id,
+            ],
+        )
         ctx.canvas.tag_raise(self.id)
-        
+
+        for child_id in self._child_ids:
+            ctx.pub_sub_broker.subscribe(Object.ENTERED_FOCUS_NOTIFICATION, child_id, self.id)
+            ctx.pub_sub_broker.subscribe(Object.LEFT_FOCUS_NOTIFICATION, child_id, self.id)
+            # TBD: maybe not needed
+            ctx.pub_sub_broker.subscribe(Object.MOVED_TO_NOTIFICATION, child_id, self.id)
+
+    def _on_focused_change(self, ctx: context.Context):
+        if self.get_focused():
+            self._hide_rect(ctx)
+
+    def _hide_rect(self, ctx: context.Context):
+        ctx.canvas.itemconfigure(self.id, state='hidden')
+
+    def _show_rect(self, ctx: context.Context):
+        ctx.canvas.itemconfigure(self.id, state='normal')
 
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
-        # TODO: block pub-sub here
+        self.lock_notifications()
         for child_id in self._child_ids:
             obj = ctx.objects_storage.get_by_id(child_id)
             obj.move(ctx, delta_x, delta_y)
-        # TODO: unlock pub-sub here
-        # TODO: update invisible rect here
+        # TODO: use _get_invisible_rect here
+        ctx.canvas.move(self.id, delta_x, delta_y)
+        self.unlock_notifications()
 
     def move_to(self, ctx: context.Context, x: int, y: int):
-        # TODO: block pub-sub here
+        self.lock_notifications()
         for child_id in self._child_ids:
             obj = ctx.objects_storage.get_by_id(child_id)
             obj.move_to(ctx, x, y)
-        # TODO: unlock pub-sub here
-        # TODO: update invisible rect here
+        # TODO: use _get_invisible_rect here
+        ctx.canvas.moveto(self.id, x, y)
+        self.unlock_notifications()
 
-    def get_frame_rect(self, ctx: context.Context) -> geometry.Rectangle: 
+    def get_frame_rect(self, ctx: context.Context) -> geometry.Rectangle:
         # TODO: maybe there is no need in own implementation of the method
         OFFSET = 3
         obj_frame = list(ctx.canvas.bbox(self.id))
@@ -73,5 +94,15 @@ class GroupObject(Object):
         # TODO: unlock pub-sub here
         # TODO: update invisible rect here
 
+    def get_notification(self, ctx: context.Context, publisher_id: str, event: str, **kwargs):
+        if event == Object.ENTERED_FOCUS_NOTIFICATION:
+            self._hide_rect(ctx)
+        if event == Object.LEFT_FOCUS_NOTIFICATION:
+            self._show_rect(ctx)
+        if event == Object.MOVED_TO_NOTIFICATION:
+            # TODO: move rect here
+            pass
+
     def scale(self, ctx: context.Context, scale_factor: float):
+        # tkinter handles it for us 🎉
         pass

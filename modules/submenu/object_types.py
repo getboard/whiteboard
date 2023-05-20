@@ -63,13 +63,13 @@ class Submenu:
     def show_menu(self, ctx: context.Context):
         obj = ctx.objects_storage.get_by_id(self.obj_id)
         obj.draw_rect(ctx)
-        obj.is_focused = True
+        obj.set_focused(ctx, True)
         for w in self._property_widgets:
             w.pack(pady=1, fill='both')
 
     def destroy_menu(self, ctx: context.Context):
         obj = ctx.objects_storage.get_by_id(self.obj_id)
         obj.remove_rect(ctx)
-        obj.is_focused = False
+        obj.set_focused(ctx, False)
         for w in self._property_widgets:
             w.destroy()

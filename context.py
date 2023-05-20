@@ -10,6 +10,7 @@ from objects_storage import ObjectsStorage
 from state_machine import StateMachine
 from pub_sub import Broker
 
+
 class Context:
     root: tkinter.Tk
     events_history: EventsHistory
