@@ -58,16 +58,16 @@ class Property:
         if self._property_type == PropertyType.FONT_FAMILY:
             set_of_families = set(f for f in font.families() if len(f.split()) == 1)
             return sorted(s for s in set_of_families if not s.startswith('@'))
-        elif self._property_type == PropertyType.FONT_SLANT:
+        if self._property_type == PropertyType.FONT_SLANT:
             return ['roman', 'italic']
-        elif self._property_type == PropertyType.FONT_WEIGHT:
+        if self._property_type == PropertyType.FONT_WEIGHT:
             return ['normal', 'bold']
-        elif self._property_type == PropertyType.FONT_SIZE:
+        if self._property_type == PropertyType.FONT_SIZE:
             MIN_SIZE = 8
             MAX_SIZE = 65
             STEP = 2
             return list(range(MIN_SIZE, MAX_SIZE, STEP))
-        elif self._property_type == PropertyType.COLOR:
+        if self._property_type == PropertyType.COLOR:
             return [
                 'gray',
                 'light yellow',
@@ -86,14 +86,13 @@ class Property:
                 'dark blue',
                 'black',
             ]
-        elif self._property_type == PropertyType.TEXT_ALIGNMENT:
+        if self._property_type == PropertyType.TEXT_ALIGNMENT:
             return ['left', 'center', 'right']
-        elif self._property_type == PropertyType.LINE_WIDTH:
+        if self._property_type == PropertyType.LINE_WIDTH:
             return [1, 2, 3, 4, 5]
-        elif self._property_type == PropertyType.LINE_TYPE:
+        if self._property_type == PropertyType.LINE_TYPE:
             return ['solid', 'dotted', 'dashed']
-        else:
-            return []
+        return []
 
     @property
     def property_type(self):

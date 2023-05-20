@@ -30,7 +30,7 @@ class Broker:
     subscribers: Dict[str, Dict[str, List[str]]]
 
     def __init__(self):
-        self.subscribers = dict()
+        self.subscribers = {}
 
     def add_publisher_event(self, publisher_id: str, event: str):
         if publisher_id not in self.subscribers:
@@ -38,7 +38,7 @@ class Broker:
         self.subscribers[publisher_id][event] = []
 
     def add_publisher(self, publisher_id):
-        self.subscribers[publisher_id] = dict()
+        self.subscribers[publisher_id] = {}
 
     def publish(self, ctx: context.Context, publisher_id: str, event, **kwargs):
         if publisher_id in self.subscribers and event in self.subscribers[publisher_id]:
