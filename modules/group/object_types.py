@@ -80,6 +80,7 @@ class GroupObject(Object):
                 property_description=child_prop.property_description,
                 getter=prop_getter,
                 setter=prop_setter,
+                restrictions=child_prop.restrictions,
             )
 
     def _get_property(self, ctx: context.Context, prop_name: str) -> Any:
