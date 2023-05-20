@@ -68,8 +68,7 @@ class GroupObject(Object):
         for child_id in self._child_ids:
             obj = ctx.objects_storage.get_by_id(child_id)
             obj.move_to(ctx, x, y)
-        # TODO: use _get_invisible_rect here
-        ctx.canvas.moveto(self.id, x, y)
+        self._update_invisible_rect(ctx)
         self.unlock_notifications()
 
     def get_frame_rect(self, ctx: context.Context) -> geometry.Rectangle:
