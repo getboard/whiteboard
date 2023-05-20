@@ -1,5 +1,4 @@
 from typing import List
-from PIL import Image, ImageTk
 
 import context
 from objects_storage import Object
@@ -8,7 +7,6 @@ import utils.geometry as geometry
 
 GROUP_OBJECT_TYPE_NAME = 'group'
 
-_IMAGES = []
 
 # TODO: use pub-sub for resizing/moving/etc.
 # TODO: deletion mechanism
@@ -38,10 +36,17 @@ class GroupObject(Object):
             ctx.pub_sub_broker.subscribe(Object.LEFT_FOCUS_NOTIFICATION, child_id, self.id)
             # TBD: maybe not needed
             ctx.pub_sub_broker.subscribe(Object.MOVED_TO_NOTIFICATION, child_id, self.id)
+            ctx.pub_sub_broker.subscribe(Object.CHANGED_SIZE_NOTIFICATION, child_id, self.id)
 
     def _on_focused_change(self, ctx: context.Context):
         if self.get_focused():
             self._hide_rect(ctx)
+        else:
+            self._show_rect(ctx)
+
+    def _update_invisible_rect(self, ctx: context.Context):
+        rect = self._get_invisible_rect(ctx)
+        ctx.canvas.coords(self.id, *rect.as_tkinter_rect())
 
     def _hide_rect(self, ctx: context.Context):
         ctx.canvas.itemconfigure(self.id, state='hidden')
@@ -97,11 +102,16 @@ class GroupObject(Object):
     def get_notification(self, ctx: context.Context, publisher_id: str, event: str, **kwargs):
         if event == Object.ENTERED_FOCUS_NOTIFICATION:
             self._hide_rect(ctx)
+            return
         if event == Object.LEFT_FOCUS_NOTIFICATION:
             self._show_rect(ctx)
+            return
         if event == Object.MOVED_TO_NOTIFICATION:
-            # TODO: move rect here
-            pass
+            # TODO: move rect here (TBD)
+            return
+        if event == Object.CHANGED_SIZE_NOTIFICATION:
+            self._update_invisible_rect(ctx)
+            return
 
     def scale(self, ctx: context.Context, scale_factor: float):
         # tkinter handles it for us 🎉

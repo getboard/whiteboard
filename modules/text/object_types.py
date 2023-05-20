@@ -102,6 +102,7 @@ class TextObject(Object):
     def set_font_size(self, ctx: context.Context, value: Union[int, str]):
         self._font_size = int(value)
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
+        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
 
     def get_font_family(self):
         return self._font_family
@@ -109,6 +110,7 @@ class TextObject(Object):
     def set_font_family(self, ctx: context.Context, font_family: str):
         self._font_family = font_family
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
+        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
 
     def get_font_weight(self):
         return self._font_weight
@@ -116,6 +118,7 @@ class TextObject(Object):
     def set_font_weight(self, ctx: context.Context, font_weight: str):
         self._font_weight = font_weight
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
+        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
 
     def get_font_slant(self):
         return self._font_slant
@@ -123,6 +126,7 @@ class TextObject(Object):
     def set_font_slant(self, ctx: context.Context, font_slant: str):
         self._font_slant = font_slant
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
+        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
 
     def get_font_color(self):
         return self._font_color
