@@ -25,7 +25,16 @@ def register_module_menu(ctx: context.Context):
     ctx.menu.add_command_to_menu(GROUP_MENU_ENTRY_NAME)
 
 
-@modules.modules.register_module(GROUP_MODULE_NAME)
+# TODO: move this const somewhere
+OBJECT_DESTROYING_MODULE_NAME = 'object_destroying'
+
+
+@modules.modules.register_module(
+    GROUP_MODULE_NAME,
+    [
+        OBJECT_DESTROYING_MODULE_NAME,
+    ],
+)
 def init_module(ctx: context.Context):
     create_states(ctx)
     register_handlers(ctx)

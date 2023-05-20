@@ -86,7 +86,7 @@ def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
         object_types.GROUP_OBJECT_TYPE_NAME,
         child_ids=child_object_ids,
     )
-    print(obj_id)
+
     # global_context.events_history.add_event(
     #     'ADD_STICKER', x=actual_x, y=actual_y, obj_id=obj_id, text='new sticker'
     # )
@@ -95,7 +95,8 @@ def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
     # TODO:
     # 2) Create GroupObject
     # 3) Write new event
-    # 4) PROFIT
+    # 4) Delete old groups
+    # 5) PROFIT
 
 
 def _on_leave(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):

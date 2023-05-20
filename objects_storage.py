@@ -93,6 +93,9 @@ class Object(pub_sub.Subscriber):
     def scale(self, ctx: context.Context, scale_factor: float):
         raise NotImplementedError("it's an abstract class")
 
+    def destroy(self, ctx: context.Context):
+        raise NotImplementedError("it's an abstract class")
+
 
 class ObjectsStorage:
     _ctx: context.Context
@@ -141,3 +144,7 @@ class ObjectsStorage:
 
     def update(self, object_id: str, **kwargs):
         self._objects[object_id].update(self._ctx, **kwargs)
+
+    def destroy_by_id(self, object_id: str):
+        obj = self._objects.pop(object_id)
+        obj.destroy(self._ctx)

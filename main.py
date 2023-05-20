@@ -17,6 +17,7 @@ import modules.move
 import modules.zooming
 import modules.drag_board
 import modules.submenu
+import modules.object_destroying
 import modules.group
 
 

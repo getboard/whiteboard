@@ -10,7 +10,6 @@ GROUP_OBJECT_TYPE_NAME = 'group'
 
 # TODO: use pub-sub for resizing/moving/etc.
 # TODO: deletion mechanism
-# TODO: fix size after child resizes
 class GroupObject(Object):
     _child_ids: List[str]
 
@@ -70,16 +69,6 @@ class GroupObject(Object):
             obj.move_to(ctx, x, y)
         self._update_invisible_rect(ctx)
         self.unlock_notifications()
-
-    def get_frame_rect(self, ctx: context.Context) -> geometry.Rectangle:
-        # TODO: maybe there is no need in own implementation of the method
-        OFFSET = 3
-        obj_frame = list(ctx.canvas.bbox(self.id))
-        obj_frame[0] -= OFFSET
-        obj_frame[1] -= OFFSET
-        obj_frame[2] += OFFSET
-        obj_frame[3] += OFFSET
-        return geometry.Rectangle.from_tkinter_rect(tuple(obj_frame))
 
     def _get_invisible_rect(self, ctx: context.Context) -> geometry.Rectangle:
         invisible_rect = None
