@@ -6,7 +6,6 @@ from modules.object_destroying import consts as object_destroying_consts
 
 import utils.geometry as geometry
 
-GROUP_OBJECT_TYPE_NAME = 'group'
 
 # TODO: Remove this after issue #30 is closed
 _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES = [
@@ -17,11 +16,11 @@ _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES = [
 
 
 class GroupObject(Object):
-    _child_ids: List[str]
+    _children_ids: List[str]
 
-    def __init__(self, ctx: context.Context, id: str, child_ids: List[str]):
+    def __init__(self, ctx: context.Context, id: str, children_ids: List[str]):
         super().__init__(ctx, id)
-        self._child_ids = child_ids
+        self._children_ids = children_ids
 
         invisible_rect = self._get_invisible_rect(ctx)
         ctx.canvas.create_rectangle(
@@ -36,7 +35,7 @@ class GroupObject(Object):
         )
         ctx.canvas.tag_raise(self.id)
 
-        for child_id in self._child_ids:
+        for child_id in self._children_ids:
             for notification_type in _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES:
                 ctx.pub_sub_broker.subscribe(notification_type, child_id, self.id)
 
@@ -58,24 +57,22 @@ class GroupObject(Object):
 
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
         self.lock_notifications()
-        for child_id in self._child_ids:
+        for child_id in self._children_ids:
             obj = ctx.objects_storage.get_by_id(child_id)
             obj.move(ctx, delta_x, delta_y)
         self._update_invisible_rect(ctx)
-        ctx.canvas.move(self.id, delta_x, delta_y)
         self.unlock_notifications()
 
     def move_to(self, ctx: context.Context, x: int, y: int):
-        self.lock_notifications()
-        for child_id in self._child_ids:
-            obj = ctx.objects_storage.get_by_id(child_id)
-            obj.move_to(ctx, x, y)
-        self._update_invisible_rect(ctx)
-        self.unlock_notifications()
+        cur_rect = self._get_invisible_rect(ctx)
+        # TODO: do not use internal fields
+        delta_x = x - cur_rect._top_left.x
+        delta_y = y - cur_rect._top_left.y
+        self.move(ctx, delta_x, delta_y)
 
     def _get_invisible_rect(self, ctx: context.Context) -> geometry.Rectangle:
         invisible_rect = None
-        for child_id in self._child_ids:
+        for child_id in self._children_ids:
             child = ctx.objects_storage.get_by_id(child_id)
             child_rect = child.get_frame_rect(ctx)
             invisible_rect = geometry.get_min_containing_rect(invisible_rect, child_rect)
@@ -85,7 +82,7 @@ class GroupObject(Object):
     def update(self, ctx: context.Context, **kwargs):
         # This func not used yet
         # TODO: block pub-sub here
-        for child_id in self._child_ids:
+        for child_id in self._children_ids:
             obj = ctx.objects_storage.get_by_id(child_id)
             obj.update(ctx, **kwargs)
         # TODO: unlock pub-sub here
@@ -107,7 +104,7 @@ class GroupObject(Object):
         pass
 
     def destroy(self, ctx: context.Context):
-        for child_id in self._child_ids:
+        for child_id in self._children_ids:
             for notification_type in _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES:
                 ctx.pub_sub_broker.unsubscribe(notification_type, child_id, self.id)
         ctx.canvas.delete(self.id)

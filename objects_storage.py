@@ -139,7 +139,10 @@ class ObjectsStorage:
         return self._objects
 
     def create(self, type_name: str, **kwargs) -> str:
-        obj_id = kwargs.get('obj_id', uuid.uuid4().hex[:10])
+        if 'obj_id' in kwargs:
+            obj_id = kwargs.pop('obj_id')
+        else:
+            obj_id = uuid.uuid4().hex[:10]
         self._objects[obj_id] = self._object_types[type_name](self._ctx, obj_id, **kwargs)
         return obj_id
 

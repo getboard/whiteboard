@@ -2,8 +2,8 @@ import context
 import modules
 from . import handlers
 from . import object_types
+from . import consts
 from modules.group.states import create_group
-from .consts import GROUP_MODULE_NAME, GROUP_MENU_ENTRY_NAME
 from modules.object_destroying import consts as object_destroying_consts
 
 
@@ -12,18 +12,17 @@ def create_states(ctx: context.Context):
 
 
 def register_handlers(ctx: context.Context):
-    # TODO
-    pass
+    ctx.event_handlers.register_handler(consts.CREATE_GROUP_EVENT_TYPE, handlers.CreateGroupHandler)
 
 
 def register_object_types(ctx: context.Context):
     ctx.objects_storage.register_object_type(
-        object_types.GROUP_OBJECT_TYPE_NAME, object_types.GroupObject
+        consts.GROUP_OBJECT_TYPE_NAME, object_types.GroupObject
     )
 
 
 def register_module_menu(ctx: context.Context):
-    ctx.menu.add_command_to_menu(GROUP_MENU_ENTRY_NAME)
+    ctx.menu.add_command_to_menu(consts.GROUP_MENU_ENTRY_NAME)
 
 
 # TODO: move this const somewhere
@@ -31,7 +30,7 @@ OBJECT_DESTROYING_MODULE_NAME = 'object_destroying'
 
 
 @modules.modules.register_module(
-    GROUP_MODULE_NAME,
+    consts.GROUP_MODULE_NAME,
     [
         object_destroying_consts.OBJECT_DESTROYING_MODULE_NAME,
     ],

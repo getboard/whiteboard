@@ -6,7 +6,8 @@ from state_machine import State
 from state_machine import StateMachine
 import context
 from modules.group import object_types
-from modules.group.consts import GROUP_MENU_ENTRY_NAME
+from modules.group import consts
+
 import utils.geometry as geometry
 
 CREATE_GROUP_STATE_NAME = 'CREATE_GROUP'
@@ -25,7 +26,7 @@ def _predicate_from_root_to_create_group(global_ctx: context.Context, event: tki
     return (
         event.type == tkinter.EventType.ButtonPress
         and event.num == 1
-        and global_ctx.menu.current_state == GROUP_MENU_ENTRY_NAME
+        and global_ctx.menu.current_state == consts.GROUP_MENU_ENTRY_NAME
     )
 
 
@@ -71,15 +72,18 @@ def _get_intersected_by_rect_object_ids(
             ids.append(object.id)
     return ids
 
-def _filter_groups_and_destroy_them(global_ctx: context.Context, object_ids: List[str]) -> List[str]:
-    result_ids = []
+# does nothing with regular objects
+# for groups: copies group children_ids and destroys the group
+def _get_children_ids(global_ctx: context.Context, object_ids: List[str]) -> List[str]:
+    result_ids = set()
     for obj_id in object_ids:
         obj = global_ctx.objects_storage.get_by_id(obj_id)
-        if not isinstance(obj, object_types.GroupObject):
-            result_ids.append(obj_id)
-            continue
-        global_ctx.objects_storage.destroy_by_id(obj_id)
-    return result_ids
+        if isinstance(obj, object_types.GroupObject):
+            result_ids.update(obj._children_ids)    
+            global_ctx.objects_storage.destroy_by_id(obj_id)
+        else:
+            result_ids.add(obj_id)
+    return list(result_ids)
 
 def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
     state_ctx_obj: CreateGroupStateContext = state_ctx[STATE_CONTEXT_OBJ_DICT_KEY]
@@ -90,23 +94,15 @@ def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
     intersected_object_ids = _get_intersected_by_rect_object_ids(global_ctx, group_covering_rect)
     if len(intersected_object_ids) < 2:
         return
-    child_object_ids = _filter_groups_and_destroy_them(global_ctx, intersected_object_ids)
+    children_ids = _get_children_ids(global_ctx, intersected_object_ids)
 
     obj_id = global_ctx.objects_storage.create(
-        object_types.GROUP_OBJECT_TYPE_NAME,
-        child_ids=child_object_ids,
+        consts.GROUP_OBJECT_TYPE_NAME,
+        children_ids=children_ids,
     )
-
-    # global_context.events_history.add_event(
-    #     'ADD_STICKER', x=actual_x, y=actual_y, obj_id=obj_id, text='new sticker'
-    # )
-
-    # TODO: check if there is a group
-    # TODO:
-    # 2) Create GroupObject
-    # 3) Write new event
-    # 4) Delete old groups
-    # 5) PROFIT
+    global_ctx.events_history.add_event(
+        consts.CREATE_GROUP_EVENT_TYPE, obj_id=obj_id, children_ids=children_ids,
+    )
 
 
 def _on_leave(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
