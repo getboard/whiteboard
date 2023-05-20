@@ -95,6 +95,10 @@ def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
     if len(intersected_object_ids) < 2:
         return
     children_ids = _get_children_ids(global_ctx, intersected_object_ids)
+    assert len(children_ids) >= 2
+
+    # There we create a new group all the time even if there is only one group intersected
+    # It can be optimized later: issue #32
 
     obj_id = global_ctx.objects_storage.create(
         consts.GROUP_OBJECT_TYPE_NAME,
