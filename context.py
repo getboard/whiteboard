@@ -18,6 +18,6 @@ class Context:
     logger: logging.Logger
     canvas: tkinter.Canvas
     state_machine: StateMachine
-    property_bar: ttk.Frame
+    # property_bar: ttk.Frame
     menu: Menu
     table: Table

@@ -10,3 +10,4 @@ class UpdateObjectHandler(event_handlers.EventHandler):
         obj = ctx.objects_storage.get_by_id(obj_id)
         for prop_name, prop_value in kwargs.items():
             obj.properties[prop_name].setter(ctx, prop_value)
+        ctx.table.update_object(ctx, obj_id)

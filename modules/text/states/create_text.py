@@ -12,9 +12,9 @@ CREATE_TEXT_STATE_NAME = 'CREATE_TEXT'
 def _predicate_from_root_to_create_text(global_context: Context, event: tkinter.Event) -> bool:
     # Press Left mouse button with text menu state
     if (
-        event.type != tkinter.EventType.ButtonPress
-        or event.num != 1
-        or global_context.menu.current_state != TEXT_MENU_ENTRY_NAME
+            event.type != tkinter.EventType.ButtonPress
+            or event.num != 1
+            or global_context.menu.current_state != TEXT_MENU_ENTRY_NAME
     ):
         return False
 

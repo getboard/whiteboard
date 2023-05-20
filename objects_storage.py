@@ -5,7 +5,7 @@ from typing import Optional
 
 import context
 
-from properties import Property
+from properties import Property, PropertyType
 
 
 class Object:
@@ -14,11 +14,26 @@ class Object:
     scale_factor: float
     properties: Dict[str, Property]
 
-    def __init__(self, _: context.Context, id: str, **kwargs):
+    OBJ_TYPE_NAME = 'obj_type'
+    OBJ_TYPE_DESC = 'Тип объекта'
+
+    def __init__(self, _: context.Context, id: str, obj_type: str, **kwargs):
         self.id = id
+        self._obj_type = obj_type
         self.is_focused = False
         self.scale_factor = 1.0
-        self.properties = {}
+        self.properties = {
+            self.OBJ_TYPE_NAME: Property(
+                property_type=PropertyType.TEXT,
+                property_description=self.OBJ_TYPE_DESC,
+                getter=self.get_obj_type,
+                setter=None,
+                restrictions=[],
+                is_hidden=False)
+        }
+
+    def get_obj_type(self):
+        return self._obj_type
 
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
         ctx.canvas.move(self.id, delta_x, delta_y)
@@ -103,8 +118,13 @@ class ObjectsStorage:
 
     def create(self, type_name: str, **kwargs) -> str:
         obj_id = kwargs.get('obj_id', uuid.uuid4().hex[:10])
-        self._objects[obj_id] = self._object_types[type_name](self._ctx, obj_id, **kwargs)
-        self._ctx.table.add_object(self._objects[obj_id])
+        self._objects[obj_id] = self._object_types[type_name](
+            self._ctx,
+            obj_id,
+            type_name,
+            **kwargs
+        )
+        self._ctx.table.add_object(self._ctx, obj_id)
         return obj_id
 
     def update(self, object_id: str, **kwargs):
