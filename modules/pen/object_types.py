@@ -5,7 +5,7 @@ import context
 import objects_storage
 
 from typing import List
-
+from . import consts
 from properties import PropertyType, Property
 
 
@@ -13,10 +13,6 @@ class PenObject(objects_storage.Object):
     _line_color: str
     _line_width: int
     _points: List[float]
-
-    LINE_COLOR_PROPERTY_NAME = 'line_color'
-    LINE_WIDTH_PROPERTY_NAME = 'line_width'
-    POINTS = 'points'
 
     def __init__(self,
                  ctx: context.Context,
@@ -41,26 +37,26 @@ class PenObject(objects_storage.Object):
         self.init_properties()
 
     def init_properties(self):
-        self.properties[self.POINTS] = Property(
+        self.properties[consts.POINTS] = Property(
             property_type=PropertyType.TEXT,
-            property_description='Точки',
+            property_description=consts.EMPTY_DESC,
             getter=self.get_points,
             setter=self.add_point,
             is_hidden=True
         )
 
-        self.properties[self.LINE_COLOR_PROPERTY_NAME] = Property(
+        self.properties[consts.LINE_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
-            property_description='Цвет',
+            property_description=consts.LINE_COLOR_PROPERTY_DESC,
             getter=self.get_line_color,
             setter=self.set_line_color,
             is_hidden=False
         )
 
-        self.properties[self.LINE_WIDTH_PROPERTY_NAME] = Property(
+        self.properties[consts.LINE_WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.LINE_WIDTH,
-            property_description='Толщина',
-            getter=self.get_width,
+            property_description=consts.LINE_WIDTH_PROPERTY_DESC,
+            getter=lambda: self.get_width(scaled=False),
             setter=self.set_width,
             is_hidden=False
         )
