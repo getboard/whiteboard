@@ -1,9 +1,9 @@
-from typing import List, Dict, Set, Any
+from typing import List, Any
 
 import context
 from objects_storage import Object
 import properties
-import utils.geometry as geometry
+from utils import geometry
 
 
 # TODO: Remove this after issue #30 is closed
@@ -52,7 +52,7 @@ class GroupObject(Object):
                 for (name, prop) in child_props.items()
                 if not prop.is_hidden
             )
-            if props == None:
+            if props is None:
                 props = child_props
             else:
                 props.intersection_update(child_props)
@@ -144,7 +144,7 @@ class GroupObject(Object):
     def get_frame_rect(self, ctx: context.Context) -> geometry.Rectangle:
         return self._get_invisible_rect(ctx)
 
-    def get_notification(self, ctx: context.Context, publisher_id: str, event: str, **kwargs):
+    def get_notification(self, ctx: context.Context, _: str, event: str, **kwargs):
         if event == Object.ENTERED_FOCUS_NOTIFICATION:
             self._hide_rect(ctx)
             return

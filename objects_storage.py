@@ -5,7 +5,7 @@ from typing import Optional
 
 import context
 import pub_sub
-import utils.geometry as geometry
+from utils import geometry
 from properties import Property
 
 

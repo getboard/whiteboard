@@ -1,10 +1,13 @@
 import context
 import modules
+
+from modules.group.states import create_group
+from modules.object_destroying import consts as object_destroying_consts
+
 from . import handlers
 from . import object_types
 from . import consts
-from modules.group.states import create_group
-from modules.object_destroying import consts as object_destroying_consts
+
 
 
 def create_states(ctx: context.Context):
