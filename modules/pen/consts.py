@@ -1,1 +1,1 @@
-STICKER_MENU_ENTRY_NAME = 'sticker'
+PEN_MENU_ENTRY_NAME = 'pen'
