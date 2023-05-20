@@ -16,7 +16,6 @@ class Rectangle:
     _bottom_right: ScreenPosition
 
     def __init__(self, a: ScreenPosition, b: ScreenPosition):
-        # TODO: check this
         self._top_left = ScreenPosition(min(a.x, b.x), min(a.y, b.y))
         self._bottom_right = ScreenPosition(max(a.x, b.x), max(a.y, b.y))
 
@@ -29,6 +28,14 @@ class Rectangle:
     def get_height(self) -> int:
         return self._bottom_right.y - self._top_left.y
 
+    @property
+    def top_left(self):
+        return self._top_left
+
+    @property
+    def bottom_right(self):
+        return self._bottom_right
+
     @staticmethod
     def from_tkinter_rect(rect: Tuple[int, int, int, int]) -> 'Rectangle':
         a = ScreenPosition(rect[0], rect[1])
@@ -40,13 +47,11 @@ class Rectangle:
 
 
 def are_rects_intersecting(a: Rectangle, b: Rectangle) -> bool:
-    # TODO: check this
-    # TODO: rewrite cuz using internal fields
     return (
-        a._top_left.x <= b._bottom_right.x
-        and a._bottom_right.x >= b._top_left.x
-        and a._top_left.y <= b._bottom_right.y
-        and a._bottom_right.y >= b._top_left.y
+        a.top_left.x <= b.bottom_right.x
+        and a.bottom_right.x >= b.top_left.x
+        and a.top_left.y <= b.bottom_right.y
+        and a.bottom_right.y >= b.top_left.y
     )
 
 
@@ -56,9 +61,8 @@ def get_min_containing_rect(a: Optional[Rectangle], b: Optional[Rectangle]) -> O
     if b is None:
         return a
 
-    # TODO: rewrite cuz using internal fields
-    res_a = ScreenPosition(min(a._top_left.x, b._top_left.x), min(a._top_left.y, b._top_left.y))
+    res_a = ScreenPosition(min(a.top_left.x, b.top_left.x), min(a.top_left.y, b.top_left.y))
     res_b = ScreenPosition(
-        max(a._bottom_right.x, b._bottom_right.x), max(a._bottom_right.y, b._bottom_right.y)
+        max(a.bottom_right.x, b.bottom_right.x), max(a.bottom_right.y, b.bottom_right.y)
     )
     return Rectangle(res_a, res_b)

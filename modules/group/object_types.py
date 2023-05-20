@@ -118,9 +118,8 @@ class GroupObject(Object):
 
     def move_to(self, ctx: context.Context, x: int, y: int):
         cur_rect = self._get_invisible_rect(ctx)
-        # TODO: do not use internal fields
-        delta_x = x - cur_rect._top_left.x
-        delta_y = y - cur_rect._top_left.y
+        delta_x = x - cur_rect.top_left.x
+        delta_y = y - cur_rect.top_left.y
         self.move(ctx, delta_x, delta_y)
 
     def _get_invisible_rect(self, ctx: context.Context) -> geometry.Rectangle:
