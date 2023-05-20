@@ -34,7 +34,7 @@ class Submenu:
 
     def init_property(self, ctx: context.Context, prop_name: str, prop_value: Property):
         string_var = StringVar()
-        parsed_value = prop_value.getter()
+        parsed_value = prop_value.getter(ctx)
         restrictions = prop_value.restrictions
         if not restrictions:
             restrictions = [parsed_value]
@@ -56,7 +56,7 @@ class Submenu:
         self, ctx: context.Context, prop_name: str, prop_value: Property, value: str
     ):
         prop_value.setter(ctx, value)
-        kwargs = {prop_name: prop_value.getter()}
+        kwargs = {prop_name: prop_value.getter(ctx)}
         ctx.events_history.add_event('UPDATE_OBJECT', obj_id=self.obj_id, **kwargs)
         ctx.objects_storage.get_by_id(self.obj_id).draw_rect(ctx)
 
