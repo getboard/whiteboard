@@ -4,6 +4,7 @@ from . import handlers
 from . import object_types
 from modules.group.states import create_group
 from .consts import GROUP_MODULE_NAME, GROUP_MENU_ENTRY_NAME
+from modules.object_destroying import consts as object_destroying_consts
 
 
 def create_states(ctx: context.Context):
@@ -32,7 +33,7 @@ OBJECT_DESTROYING_MODULE_NAME = 'object_destroying'
 @modules.modules.register_module(
     GROUP_MODULE_NAME,
     [
-        OBJECT_DESTROYING_MODULE_NAME,
+        object_destroying_consts.OBJECT_DESTROYING_MODULE_NAME,
     ],
 )
 def init_module(ctx: context.Context):

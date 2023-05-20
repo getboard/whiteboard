@@ -2,14 +2,20 @@ from typing import List
 
 import context
 from objects_storage import Object
+from modules.object_destroying import consts as object_destroying_consts
 
 import utils.geometry as geometry
 
 GROUP_OBJECT_TYPE_NAME = 'group'
 
+# TODO: Remove this after issue #30 is closed
+_SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES = [
+    Object.ENTERED_FOCUS_NOTIFICATION,
+    Object.LEFT_FOCUS_NOTIFICATION,
+    Object.CHANGED_SIZE_NOTIFICATION,
+]
 
-# TODO: use pub-sub for resizing/moving/etc.
-# TODO: deletion mechanism
+
 class GroupObject(Object):
     _child_ids: List[str]
 
@@ -31,11 +37,8 @@ class GroupObject(Object):
         ctx.canvas.tag_raise(self.id)
 
         for child_id in self._child_ids:
-            ctx.pub_sub_broker.subscribe(Object.ENTERED_FOCUS_NOTIFICATION, child_id, self.id)
-            ctx.pub_sub_broker.subscribe(Object.LEFT_FOCUS_NOTIFICATION, child_id, self.id)
-            # TBD: maybe not needed
-            ctx.pub_sub_broker.subscribe(Object.MOVED_TO_NOTIFICATION, child_id, self.id)
-            ctx.pub_sub_broker.subscribe(Object.CHANGED_SIZE_NOTIFICATION, child_id, self.id)
+            for notification_type in _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES:
+                ctx.pub_sub_broker.subscribe(notification_type, child_id, self.id)
 
     def _on_focused_change(self, ctx: context.Context):
         if self.get_focused():
@@ -58,7 +61,7 @@ class GroupObject(Object):
         for child_id in self._child_ids:
             obj = ctx.objects_storage.get_by_id(child_id)
             obj.move(ctx, delta_x, delta_y)
-        # TODO: use _get_invisible_rect here
+        self._update_invisible_rect(ctx)
         ctx.canvas.move(self.id, delta_x, delta_y)
         self.unlock_notifications()
 
@@ -80,6 +83,7 @@ class GroupObject(Object):
         return invisible_rect
 
     def update(self, ctx: context.Context, **kwargs):
+        # This func not used yet
         # TODO: block pub-sub here
         for child_id in self._child_ids:
             obj = ctx.objects_storage.get_by_id(child_id)
@@ -94,9 +98,6 @@ class GroupObject(Object):
         if event == Object.LEFT_FOCUS_NOTIFICATION:
             self._show_rect(ctx)
             return
-        if event == Object.MOVED_TO_NOTIFICATION:
-            # TODO: move rect here (TBD)
-            return
         if event == Object.CHANGED_SIZE_NOTIFICATION:
             self._update_invisible_rect(ctx)
             return
@@ -104,3 +105,12 @@ class GroupObject(Object):
     def scale(self, ctx: context.Context, scale_factor: float):
         # tkinter handles it for us 🎉
         pass
+
+    def destroy(self, ctx: context.Context):
+        for child_id in self._child_ids:
+            for notification_type in _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES:
+                ctx.pub_sub_broker.unsubscribe(notification_type, child_id, self.id)
+        ctx.canvas.delete(self.id)
+        ctx.events_history.add_event(
+            object_destroying_consts.DESTROY_OBJECT_EVENT_TYPE, obj_id=self.id
+        )

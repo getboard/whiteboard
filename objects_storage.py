@@ -128,6 +128,7 @@ class ObjectsStorage:
             return None
         return self.get_opt_by_id(tags[0])
 
+    # TODO: Issue #14
     def get_current_opt_type(self) -> str:
         tags = self._ctx.canvas.gettags('current')
         if not tags or len(tags) < 2:

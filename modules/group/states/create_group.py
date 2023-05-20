@@ -62,7 +62,7 @@ def _handle_event(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
         state_ctx_obj.frame_was_drawn_before = True
 
 
-def _get_child_object_ids(
+def _get_intersected_by_rect_object_ids(
     global_ctx: context.Context, covering_rect: geometry.Rectangle
 ) -> List[str]:
     ids = []
@@ -71,6 +71,15 @@ def _get_child_object_ids(
             ids.append(object.id)
     return ids
 
+def _filter_groups_and_destroy_them(global_ctx: context.Context, object_ids: List[str]) -> List[str]:
+    result_ids = []
+    for obj_id in object_ids:
+        obj = global_ctx.objects_storage.get_by_id(obj_id)
+        if not isinstance(obj, object_types.GroupObject):
+            result_ids.append(obj_id)
+            continue
+        global_ctx.objects_storage.destroy_by_id(obj_id)
+    return result_ids
 
 def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
     state_ctx_obj: CreateGroupStateContext = state_ctx[STATE_CONTEXT_OBJ_DICT_KEY]
@@ -78,9 +87,10 @@ def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
     group_covering_rect = geometry.Rectangle(
         state_ctx_obj.drag_start_pos, _get_cur_pos(global_ctx, event)
     )
-    child_object_ids = _get_child_object_ids(global_ctx, group_covering_rect)
-    if len(child_object_ids) < 2:
+    intersected_object_ids = _get_intersected_by_rect_object_ids(global_ctx, group_covering_rect)
+    if len(intersected_object_ids) < 2:
         return
+    child_object_ids = _filter_groups_and_destroy_them(global_ctx, intersected_object_ids)
 
     obj_id = global_ctx.objects_storage.create(
         object_types.GROUP_OBJECT_TYPE_NAME,
@@ -100,7 +110,8 @@ def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
 
 
 def _on_leave(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
-    _create_group(global_ctx, state_ctx, event)
+    if STATE_CONTEXT_OBJ_DICT_KEY in state_ctx:
+        _create_group(global_ctx, state_ctx, event)
     global_ctx.canvas.delete(FRAME_TKINTER_OBJECT_TAG)
     global_ctx.menu.set_root_state()
 
