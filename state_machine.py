@@ -94,6 +94,7 @@ class StateMachine:
         self._global_context.canvas.bind('<ButtonRelease-1>', self.handle_event)
         self._global_context.canvas.bind('<Key>', self.handle_event)
         self._global_context.canvas.bind('<Control-ButtonPress-1>', self.handle_event)
+        self._global_context.menu.bind(self.handle_event)
 
     def add_state(self, state: State):
         self._states[state.get_name()] = state
