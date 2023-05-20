@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import context
 
@@ -19,10 +19,10 @@ class Subscriber:
     def is_locked(self):
         return self._is_locked
 
-    def lock(self):
+    def lock_notifications(self):
         self._is_locked = True
 
-    def unlock(self):
+    def unlock_notifications(self):
         self._is_locked = False
 
 
@@ -30,7 +30,7 @@ class Broker:
     subscribers: Dict[str, Dict[str, List[str]]]
 
     def __init__(self):
-        self.subscribers = dict()
+        self.subscribers = {}
 
     def add_publisher_event(self, publisher_id: str, event: str):
         if publisher_id not in self.subscribers:
@@ -38,16 +38,16 @@ class Broker:
         self.subscribers[publisher_id][event] = []
 
     def add_publisher(self, publisher_id):
-        self.subscribers[publisher_id] = dict()
+        self.subscribers[publisher_id] = {}
 
     def publish(self, ctx: context.Context, publisher_id: str, event, **kwargs):
         if publisher_id in self.subscribers and event in self.subscribers[publisher_id]:
             for subscriber_id in self.subscribers[publisher_id][event]:
-                subscriber: Subscriber = ctx.objects_storage.get_by_id(subscriber_id)
-                if not subscriber.is_locked:
+                subscriber: Optional[Subscriber] = ctx.objects_storage.get_opt_by_id(subscriber_id)
+                if subscriber is not None and not subscriber.is_locked:
                     subscriber.get_notification(ctx, publisher_id, event, **kwargs)
 
-    def subscribe(self, event: str, publisher_id: str, subscriber_id):
+    def subscribe(self, event: str, publisher_id: str, subscriber_id: str):
         if publisher_id not in self.subscribers:
             return
         if event not in self.subscribers[publisher_id]:
