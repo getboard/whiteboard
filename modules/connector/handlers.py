@@ -9,11 +9,12 @@ class AddConnectorHandler(EventHandler):
         end_id = kwargs['end_id']
         start_position = eval(kwargs['start_position'])
         end_position = eval(kwargs['end_position'])
-        start_x = kwargs['start_x']
-        start_y = kwargs['start_y']
-        end_x = kwargs['end_x']
-        end_y = kwargs['end_y']
+        start_x = int(kwargs['start_x'])
+        start_y = int(kwargs['start_y'])
+        end_x = int(kwargs['end_x'])
+        end_y = int(kwargs['end_y'])
         snap_to = kwargs['snap_to']
+        kwargs.pop('obj_id')
         ctx.objects_storage.create(
             'CONNECTOR',
             obj_id=obj_id,

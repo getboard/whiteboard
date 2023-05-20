@@ -3,6 +3,7 @@ import math
 import typing
 import context
 import objects_storage
+from . import consts
 from properties import PropertyType, Property
 
 
@@ -20,18 +21,6 @@ class Connector(objects_storage.Object):
     _line_color: str
     _start_bbox: typing.Optional[typing.Tuple[int, int, int, int]]
     _end_bbox: typing.Optional[typing.Tuple[int, int, int, int]]
-
-    LINE_COLOR_PROPERTY_NAME = 'line_color'
-    LINE_WIDTH_PROPERTY_NAME = 'line_width'
-    STROKE_STYLE_PROPERTY_NAME = 'stroke_style'
-    START_ID_NAME = 'start_id'
-    END_ID_NAME = 'end_id'
-    START_POSITION = 'start_position'
-    END_POSITION = 'end_position'
-    START_X_STICK = 'start_x'
-    START_Y_STICK = 'start_y'
-    END_X_STICK = 'end_x'
-    END_Y_STICK = 'end_y'
 
     def __init__(
             self,
@@ -67,99 +56,99 @@ class Connector(objects_storage.Object):
         self._bezier_curve(ctx)
 
     def init_properties(self):
-        self.properties[self.LINE_COLOR_PROPERTY_NAME] = Property(
+        self.properties[consts.LINE_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
-            property_description='Цвет',
+            property_description=consts.LINE_COLOR_PROPERTY_DESC,
             getter=self.get_line_color,
             setter=self.set_line_color,
             restrictions='default',
             is_hidden=False
         )
 
-        self.properties[self.LINE_WIDTH_PROPERTY_NAME] = Property(
+        self.properties[consts.LINE_WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.LINE_WIDTH,
-            property_description='Толщина',
+            property_description=consts.LINE_WIDTH_PROPERTY_DESC,
             getter=self.get_line_width,
             setter=self.set_line_width,
             restrictions='default',
             is_hidden=False
         )
 
-        self.properties[self.STROKE_STYLE_PROPERTY_NAME] = Property(
+        self.properties[consts.STROKE_STYLE_PROPERTY_NAME] = Property(
             property_type=PropertyType.TEXT,
-            property_description='Толщина',
+            property_description=consts.STROKE_STYLE_PROPERTY_DESC,
             getter=self.get_snap_to,
             setter=self.set_snap_to,
             restrictions=['last', 'first', 'both'],
             is_hidden=False
         )
 
-        self.properties[self.START_ID_NAME] = Property(
+        self.properties[consts.START_ID_NAME] = Property(
             property_type=PropertyType.TEXT,
-            property_description='ID стартового объекта',
+            property_description=consts.EMPTY_DESCRIPTION,
             getter=self.get_start_id,
             setter=self.set_start_id,
             restrictions='default',
             is_hidden=True
         )
 
-        self.properties[self.END_ID_NAME] = Property(
+        self.properties[consts.END_ID_NAME] = Property(
             property_type=PropertyType.TEXT,
-            property_description='ID конечного объекта',
+            property_description=consts.EMPTY_DESCRIPTION,
             getter=self.get_end_id,
             setter=self.set_end_id,
             restrictions='default',
             is_hidden=True
         )
 
-        self.properties[self.START_POSITION] = Property(
+        self.properties[consts.START_POSITION] = Property(
             property_type=PropertyType.TEXT,
-            property_description='Стартовая точка',
+            property_description=consts.EMPTY_DESCRIPTION,
             getter=self.get_start_position,
             setter=self.set_start_position,
             restrictions='default',
             is_hidden=True
         )
 
-        self.properties[self.END_POSITION] = Property(
+        self.properties[consts.END_POSITION] = Property(
             property_type=PropertyType.TEXT,
-            property_description='Конечная точка',
+            property_description=consts.EMPTY_DESCRIPTION,
             getter=self.get_end_position,
             setter=self.set_end_position,
             restrictions='default',
             is_hidden=True
         )
 
-        self.properties[self.START_X_STICK] = Property(
+        self.properties[consts.START_X_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description='Anchor-Start-X',
+            property_description=consts.EMPTY_DESCRIPTION,
             getter=self.get_start_x,
             setter=None,
             restrictions='default',
             is_hidden=True
         )
 
-        self.properties[self.START_Y_STICK] = Property(
+        self.properties[consts.START_Y_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description='Anchor-Start-Y',
+            property_description=consts.EMPTY_DESCRIPTION,
             getter=self.get_start_y,
             setter=None,
             restrictions='default',
             is_hidden=True
         )
 
-        self.properties[self.START_X_STICK] = Property(
+        self.properties[consts.START_X_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description='Anchor-End-X',
+            property_description=consts.EMPTY_DESCRIPTION,
             getter=self.get_end_x,
             setter=None,
             restrictions='default',
             is_hidden=True
         )
 
-        self.properties[self.START_Y_STICK] = Property(
+        self.properties[consts.START_Y_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description='Anchor-End-Y',
+            property_description=consts.EMPTY_DESCRIPTION,
             getter=self.get_end_y,
             setter=None,
             restrictions='default',
@@ -169,7 +158,7 @@ class Connector(objects_storage.Object):
     def subscribe_to_move(self, ctx: context.Context, pub_id):
         sub = ctx.objects_storage.get_opt_by_id(pub_id)
         if sub:
-            ctx.broker.subscribe(sub.MOVE_EVENT, sub.id, self.id)
+            ctx.pub_sub_broker.subscribe(sub.MOVED_TO_NOTIFICATION, sub.id, self.id)
 
     def get_start_id(self):
         return self._start_id
@@ -249,7 +238,7 @@ class Connector(objects_storage.Object):
                 self.properties[key].setter(ctx, value)
 
     def get_notification(self, ctx: context.Context, publisher_id, event, **kwargs):
-        if self.MOVE_EVENT == event:
+        if self.MOVED_TO_NOTIFICATION == event:
             self._bezier_curve(ctx)
 
     def scale(self, ctx: context.Context, scale_factor: float, **kwargs):
