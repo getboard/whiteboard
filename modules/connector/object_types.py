@@ -68,7 +68,7 @@ class Connector(objects_storage.Object):
         self.properties[consts.LINE_WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.LINE_WIDTH,
             property_description=consts.LINE_WIDTH_PROPERTY_DESC,
-            getter=self.get_line_width,
+            getter=lambda: self.get_line_width(scaled=False),
             setter=self.set_line_width,
             restrictions='default',
             is_hidden=False
@@ -85,7 +85,7 @@ class Connector(objects_storage.Object):
 
         self.properties[consts.START_ID_NAME] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.EMPTY_DESCRIPTION,
+            property_description=consts.EMPTY_DESC,
             getter=self.get_start_id,
             setter=self.set_start_id,
             restrictions='default',
@@ -94,7 +94,7 @@ class Connector(objects_storage.Object):
 
         self.properties[consts.END_ID_NAME] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.EMPTY_DESCRIPTION,
+            property_description=consts.EMPTY_DESC,
             getter=self.get_end_id,
             setter=self.set_end_id,
             restrictions='default',
@@ -103,7 +103,7 @@ class Connector(objects_storage.Object):
 
         self.properties[consts.START_POSITION] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.EMPTY_DESCRIPTION,
+            property_description=consts.EMPTY_DESC,
             getter=self.get_start_position,
             setter=self.set_start_position,
             restrictions='default',
@@ -112,7 +112,7 @@ class Connector(objects_storage.Object):
 
         self.properties[consts.END_POSITION] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.EMPTY_DESCRIPTION,
+            property_description=consts.EMPTY_DESC,
             getter=self.get_end_position,
             setter=self.set_end_position,
             restrictions='default',
@@ -121,7 +121,7 @@ class Connector(objects_storage.Object):
 
         self.properties[consts.START_X_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description=consts.EMPTY_DESCRIPTION,
+            property_description=consts.EMPTY_DESC,
             getter=self.get_start_x,
             setter=None,
             restrictions='default',
@@ -130,7 +130,7 @@ class Connector(objects_storage.Object):
 
         self.properties[consts.START_Y_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description=consts.EMPTY_DESCRIPTION,
+            property_description=consts.EMPTY_DESC,
             getter=self.get_start_y,
             setter=None,
             restrictions='default',
@@ -139,7 +139,7 @@ class Connector(objects_storage.Object):
 
         self.properties[consts.START_X_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description=consts.EMPTY_DESCRIPTION,
+            property_description=consts.EMPTY_DESC,
             getter=self.get_end_x,
             setter=None,
             restrictions='default',
@@ -148,7 +148,7 @@ class Connector(objects_storage.Object):
 
         self.properties[consts.START_Y_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description=consts.EMPTY_DESCRIPTION,
+            property_description=consts.EMPTY_DESC,
             getter=self.get_end_y,
             setter=None,
             restrictions='default',
