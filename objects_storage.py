@@ -8,7 +8,6 @@ import pub_sub
 import utils.geometry as geometry
 from properties import Property
 
-
 class Object(pub_sub.Subscriber):
     id: str
     _is_focused: bool

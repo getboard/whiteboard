@@ -7,7 +7,7 @@ from state_machine import StateMachine
 import context
 from modules.group import object_types
 from modules.group import consts
-
+from modules.object_destroying import consts as object_destroying_consts
 import utils.geometry as geometry
 
 CREATE_GROUP_STATE_NAME = 'CREATE_GROUP'
@@ -81,6 +81,8 @@ def _get_children_ids(global_ctx: context.Context, object_ids: List[str]) -> Lis
         if isinstance(obj, object_types.GroupObject):
             result_ids.update(obj._children_ids)    
             global_ctx.objects_storage.destroy_by_id(obj_id)
+            global_ctx.events_history.add_event(object_destroying_consts.DESTROY_OBJECT_EVENT_TYPE, obj_id=obj_id)
+
         else:
             result_ids.add(obj_id)
     return list(result_ids)

@@ -2,7 +2,6 @@ from typing import List, Dict, Set, Any
 
 import context
 from objects_storage import Object
-from modules.object_destroying import consts as object_destroying_consts
 import properties
 import utils.geometry as geometry
 
@@ -156,6 +155,3 @@ class GroupObject(Object):
             for notification_type in _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES:
                 ctx.pub_sub_broker.unsubscribe(notification_type, child_id, self.id)
         ctx.canvas.delete(self.id)
-        ctx.events_history.add_event(
-            object_destroying_consts.DESTROY_OBJECT_EVENT_TYPE, obj_id=self.id
-        )
