@@ -1,6 +1,5 @@
 import logging
 import tkinter
-
 from tkinter import ttk
 
 from events_history import EventsHistory

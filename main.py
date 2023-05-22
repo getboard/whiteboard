@@ -2,6 +2,8 @@ import logging
 import tkinter
 from tkinter import ttk
 
+import git
+
 import context
 import events_history
 import objects_storage
@@ -26,7 +28,7 @@ def create_context(root: tkinter.Tk) -> context.Context:
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
     canvas.pack(side='left', fill='both', expand=False)
     ctx = context.Context()
-    ctx.events_history = events_history.EventsHistory()
+    ctx.events_history = events_history.EventsHistory("./test_repo", "main_event_log.txt")
     ctx.event_handlers = event_handlers.EventHandlers()
     ctx.objects_storage = objects_storage.ObjectsStorage(ctx)
     ctx.logger = logger
@@ -39,7 +41,7 @@ def create_context(root: tkinter.Tk) -> context.Context:
     return ctx
 
 
-def main(log_file: str):
+def main():
     root_window = tkinter.Tk(className='Whiteboard')
     root_window.geometry('870x600')
 
@@ -47,12 +49,10 @@ def main(log_file: str):
     ctx.canvas.focus_set()
     modules.modules.init_modules(ctx)
 
-    ctx.events_history.load_from_file_and_apply(ctx, log_file)
+    ctx.events_history.sync(ctx)
 
     root_window.mainloop()
 
-    ctx.events_history.save_to_file(log_file)
-
 
 if __name__ == '__main__':
-    main('event_log.txt')
+    main()

@@ -2,6 +2,8 @@ from __future__ import annotations
 import os
 import json
 
+import git
+
 import context
 
 
@@ -26,32 +28,51 @@ class EventInfo:
 
 
 class EventsHistory:
-    _events: list[EventInfo]
+    _local_events: list[EventInfo]
 
-    def __init__(self):
-        self._events = []
+    _repo: git.Repo
+    _filepath: str
+
+    def __init__(self, path_to_repo: str, log_filepath: str):
+        self._local_events = []
+        self._repo = git.Repo(path_to_repo)
+        self._filepath = log_filepath
 
     def add_event(self, kind: str, **event_kwargs):
         event_info = EventInfo()
         event_info.kind = kind
         event_info.kwargs = event_kwargs
-        self._events.append(event_info)
+        self._local_events.append(event_info)
 
-    def save_to_file(self, path: str):
+    def _pull_main(self):
+        self._repo.git.checkout('main')
+        self._repo.git.reset('--hard', 'main')
+        self._repo.remotes.origin.pull()
+
+    def sync(self, ctx: context.Context):
+        fetch_only = not self._local_events
+        if fetch_only:
+            ctx.logger.debug('No new local events, no push needed')
+        
+        self._pull_main()
+        if fetch_only:
+            self._apply_from_file(ctx)
+        # TODO
+
+    def _save_to_file(self, path: str):
         with open(path, 'w') as file:
             payloads = []
-            for event in self._events:
+            for event in self._local_events:
                 payloads.append(event.get_payload())
             json.dump(payloads, file, ensure_ascii=False, indent=None)
 
-    def load_from_file_and_apply(self, ctx: context.Context, path: str):
-        if not os.path.exists(path) or not os.path.isfile(path):
+    def _apply_from_file(self, ctx: context.Context):
+        if not os.path.exists(self._filepath) or not os.path.isfile(self._filepath):
             return
 
-        with open(path, 'r') as file:
+        with open(self._filepath, 'r') as file:
             event_payloads = json.load(file)
             for payload in event_payloads:
                 event_info = EventInfo.from_payload(payload)
-                self._events.append(event_info)
                 handler = ctx.event_handlers.get_handler(event_info.kind)
                 handler.apply(ctx, **event_info.kwargs)
