@@ -5,9 +5,10 @@ from tkinter import ttk
 import git
 
 import context
-import events_history
+import events.event_handlers
+import events.events_history
+import events.sync
 import objects_storage
-import event_handlers
 import menu
 import pub_sub
 from state_machine import StateMachine
@@ -22,15 +23,14 @@ import modules.submenu
 import modules.object_destroying
 import modules.group
 
-
 def create_context(root: tkinter.Tk) -> context.Context:
     logger = logging.Logger('global_logger', level=logging.DEBUG)
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
     canvas.pack(side='left', fill='both', expand=False)
     ctx = context.Context()
     # TODO: take the path from somewhere
-    ctx.events_history = events_history.EventsHistory("./test_repo", "main_event_log.json")
-    ctx.event_handlers = event_handlers.EventHandlers()
+    ctx.events_history = events.events_history.EventsHistory("./test_repo", "main_event_log.json")
+    ctx.event_handlers = events.event_handlers.EventHandlers()
     ctx.objects_storage = objects_storage.ObjectsStorage(ctx)
     ctx.logger = logger
     ctx.canvas = canvas
@@ -39,6 +39,9 @@ def create_context(root: tkinter.Tk) -> context.Context:
     ctx.property_bar.pack(fill='both', expand=True, padx=10, pady=10)
     ctx.menu = menu.Menu(root)
     ctx.pub_sub_broker = pub_sub.Broker()
+
+    button = tkinter.Button(root, text='Sync', command=lambda ctx=ctx: events.sync.sync(ctx))
+    button.pack(expand=False)
     return ctx
 
 
@@ -50,10 +53,9 @@ def main():
     ctx.canvas.focus_set()
     modules.modules.init_modules(ctx)
 
-    ctx.events_history.sync(ctx)
-    ctx.events_history.apply_all(ctx)
+    events.sync.sync(ctx)
     root_window.mainloop()
-    ctx.events_history.sync(ctx)
+    events.sync.sync(ctx, apply_events=False)
 
 
 if __name__ == '__main__':
