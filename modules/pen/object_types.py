@@ -56,19 +56,19 @@ class PenObject(objects_storage.Object):
         self.properties[consts.LINE_WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.LINE_WIDTH,
             property_description=consts.LINE_WIDTH_PROPERTY_DESC,
-            getter=lambda: self.get_width(scaled=False),
+            getter=lambda ctx: self.get_width(ctx, scaled=False),
             setter=self.set_width,
             is_hidden=False
         )
 
-    def get_points(self):
+    def get_points(self, _: context.Context):
         return self._points
 
     def add_point(self, ctx: context.Context, value: tuple[int, int]):
         self._points.extend(value)
         ctx.canvas.coords(self.id, self._points)
 
-    def get_width(self, scaled=False):
+    def get_width(self,  _: context.Context, scaled=False):
         width = self._width
         if scaled:
             width *= self.scale_factor
@@ -76,9 +76,9 @@ class PenObject(objects_storage.Object):
 
     def set_width(self, ctx: context.Context, value: str):
         self._width = int(value)
-        ctx.canvas.itemconfig(self.id, width=self.get_width(scaled=True))
+        ctx.canvas.itemconfig(self.id, width=self.get_width(ctx, scaled=True))
 
-    def get_line_color(self):
+    def get_line_color(self, _: context.Context):
         return self._line_color
 
     def set_line_color(self, ctx: context.Context, color: str):

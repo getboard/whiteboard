@@ -68,7 +68,7 @@ class Connector(objects_storage.Object):
         self.properties[consts.LINE_WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.LINE_WIDTH,
             property_description=consts.LINE_WIDTH_PROPERTY_DESC,
-            getter=lambda: self.get_line_width(scaled=False),
+            getter=lambda ctx: self.get_line_width(ctx, scaled=False),
             setter=self.set_line_width,
             restrictions='default',
             is_hidden=False
@@ -160,7 +160,7 @@ class Connector(objects_storage.Object):
         if sub:
             ctx.pub_sub_broker.subscribe(sub.MOVED_TO_NOTIFICATION, sub.id, self.id)
 
-    def get_start_id(self):
+    def get_start_id(self, _: context.Context):
         return self._start_id
 
     def set_start_id(self, ctx: context.Context, value: str):
@@ -170,7 +170,7 @@ class Connector(objects_storage.Object):
         points = ctx.canvas.coords(self.id)
         self._start_position = (int(points[0]), int(points[1]))
 
-    def get_end_id(self):
+    def get_end_id(self, _: context.Context):
         return self._end_id
 
     def set_end_id(self, ctx: context.Context, value: str):
@@ -180,40 +180,40 @@ class Connector(objects_storage.Object):
         points = ctx.canvas.coords(self.id)
         self._end_position = (int(points[-2]), int(points[-1]))
 
-    def get_start_position(self):
+    def get_start_position(self, _: context.Context):
         return self._start_position
 
     def set_start_position(self, ctx: context.Context, point: tuple[int, int]):
         self._start_position = point
         self._bezier_curve(ctx)
 
-    def get_end_position(self):
+    def get_end_position(self, _: context.Context):
         return self._end_position
 
     def set_end_position(self, ctx: context.Context, point: tuple[int, int]):
         self._end_position = point
         self._bezier_curve(ctx)
 
-    def get_start_x(self):
+    def get_start_x(self, _: context.Context):
         return self._start_x
 
-    def get_start_y(self):
+    def get_start_y(self, _: context.Context):
         return self._start_y
 
-    def get_end_x(self):
+    def get_end_x(self, _: context.Context):
         return self._end_x
 
-    def get_end_y(self):
+    def get_end_y(self, _: context.Context):
         return self._end_y
 
-    def get_snap_to(self):
+    def get_snap_to(self, _: context.Context):
         return self._snap_to
 
     def set_snap_to(self, ctx: context.Context, value: typing.Literal['first', 'both', 'last']):
         self._snap_to = value
         ctx.canvas.itemconfig(self.id, arrow=self._snap_to)
 
-    def get_line_width(self, scaled=False):
+    def get_line_width(self, _: context.Context,scaled=False):
         line_width = self._line_width
         if scaled:
             line_width *= self.scale_factor
@@ -225,7 +225,7 @@ class Connector(objects_storage.Object):
         self._line_width = int(line_width)
         ctx.canvas.itemconfig(self.id, width=self._line_width)
 
-    def get_line_color(self):
+    def get_line_color(self, _: context.Context):
         return self._line_color
 
     def set_line_color(self, ctx: context.Context, line_color: str):
