@@ -21,7 +21,7 @@ def _on_enter(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
 
 def _handle_event(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
     # Mouse motion
-    if event.type != tkinter.EventType.Motion or event.state != 256:
+    if event.type != tkinter.EventType.Motion or event.state & (1 << 8) == 0:
         return
     actual_x = int(global_ctx.canvas.canvasx(event.x))
     actual_y = int(global_ctx.canvas.canvasy(event.y))
@@ -50,7 +50,7 @@ def _predicate_from_root_to_pen(global_ctx: Context, event: tkinter.Event) -> bo
 
 def _predicate_from_pen_to_root(global_ctx: Context, event: tkinter.Event) -> bool:
     # Menu item clicked
-    if event.type != tkinter.EventType.VirtualEvent or event.state != 0:
+    if event.type != tkinter.EventType.VirtualEvent:
         return False
     # Menu select handle before the commands changed
     return global_ctx.menu.current_state == PEN_MENU_ENTRY_NAME
