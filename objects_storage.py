@@ -1,8 +1,6 @@
 from __future__ import annotations
 import uuid
-from typing import Type
-from typing import Optional
-from typing import Dict
+from typing import Type, Optional, Dict
 
 import context
 import pub_sub
@@ -14,7 +12,6 @@ class Object(pub_sub.Subscriber):
     is_focused: bool
     scale_factor: float
     properties: Dict[str, Property]
-    _observers: Dict[str, Object]
 
     MOVED_TO_NOTIFICATION = 'moved_to'
 
