@@ -17,6 +17,7 @@ import modules.move
 import modules.zooming
 import modules.drag_board
 import modules.pen
+import modules.connector
 import modules.submenu
 
 
