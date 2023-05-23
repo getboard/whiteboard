@@ -6,9 +6,11 @@ from typing import Optional
 import context
 
 from properties import Property, PropertyType
+import pub_sub
+from properties import Property
 
 
-class Object:
+class Object(pub_sub.Subscriber):
     id: str
     is_focused: bool
     scale_factor: float
@@ -16,12 +18,15 @@ class Object:
 
     OBJ_TYPE_NAME = 'obj_type'
     OBJ_TYPE_DESC = 'Тип объекта'
+    MOVED_TO_NOTIFICATION = 'moved_to'
 
-    def __init__(self, _: context.Context, id: str, obj_type: str, **kwargs):
+    def __init__(self, ctx: context.Context, id: str, obj_type: str, **kwargs):
+        super().__init__(id)
         self.id = id
         self._obj_type = obj_type
         self.is_focused = False
         self.scale_factor = 1.0
+
         self.properties = {
             self.OBJ_TYPE_NAME: Property(
                 property_type=PropertyType.TEXT,
@@ -31,15 +36,23 @@ class Object:
                 restrictions=[],
                 is_hidden=False)
         }
+        self._register_notifications(ctx)
 
     def get_obj_type(self):
         return self._obj_type
 
+    def _register_notifications(self, ctx: context.Context):
+        ctx.pub_sub_broker.add_publisher(self.id)
+        ctx.pub_sub_broker.add_publisher_event(self.id, Object.MOVED_TO_NOTIFICATION)
+
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
         ctx.canvas.move(self.id, delta_x, delta_y)
+        x, y, _, _ = ctx.canvas.bbox(self.id)
+        ctx.pub_sub_broker.publish(ctx, self.id, self.MOVED_TO_NOTIFICATION, x=x, y=y)
 
     def move_to(self, ctx: context.Context, x: int, y: int):
         ctx.canvas.moveto(self.id, x, y)
+        ctx.pub_sub_broker.publish(ctx, self.id, self.MOVED_TO_NOTIFICATION, x=x, y=y)
 
     def _get_rect_args(self, ctx: context.Context):
         OFFSET = 3

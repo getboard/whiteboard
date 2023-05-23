@@ -1,4 +1,3 @@
-import tkinter
 from tkinter import ttk, StringVar
 from typing import List
 
@@ -8,13 +7,11 @@ from properties import Property, PropertyType
 
 class Submenu:
     obj_id: str
-    # _property_widgets: List[ttk.Widget]
     _property_frame: ttk.Frame
 
     def __init__(self, obj_id: str, ctx: context.Context):
         self.obj_id = obj_id
         self._property_frame = ttk.Frame(None)
-        # self._property_widgets = []
         self.init_widgets(ctx)
 
     def init_widgets(self, ctx: context.Context):
@@ -51,12 +48,6 @@ class Submenu:
         if not restrictions:
             restrictions = [parsed_value]
         parsed_value_index = self.get_index(restrictions, parsed_value)
-        # label = ttk.Label(
-        #     ctx.property_bar, text=prop_value.property_description, justify='left', anchor='w'
-        # )
-        # combobox = ttk.Combobox(
-        #     ctx.property_bar, textvariable=string_var, values=restrictions, state='readonly'
-        # )
         string_var.set(restrictions[parsed_value_index])
         option_menu = ttk.OptionMenu(self._property_frame,
                                      string_var,
@@ -64,12 +55,6 @@ class Submenu:
                                      *restrictions,
                                      direction='flush')
         option_menu.pack(side='left')
-        # combobox.current(parsed_value_index)
-        # self._property_widgets.append(label)
-        # self._property_widgets.append(combobox)
-        # string_var.trace(
-        #     'w', lambda *_: self.update_property(ctx, prop_name, prop_value, string_var.get())
-        # )
 
     def update_property(
             self, ctx: context.Context, prop_name: str, prop_value: Property, value: str
@@ -83,19 +68,13 @@ class Submenu:
     def show_menu(self, ctx: context.Context):
         obj = ctx.objects_storage.get_by_id(self.obj_id)
         x, y, _, _ = ctx.canvas.bbox(self.obj_id)
-        x_f = self._property_frame.winfo_x()
-        y_f = self._property_frame.winfo_y()
         self._property_frame.place(x=x - 30, y=y - 30)
 
         obj.draw_rect(ctx)
         obj.is_focused = True
-        # for w in self._property_widgets:
-        #     w.pack(pady=1, fill='both')
 
     def destroy_menu(self, ctx: context.Context):
         self._property_frame.destroy()
         obj = ctx.objects_storage.get_by_id(self.obj_id)
         obj.remove_rect(ctx)
         obj.is_focused = False
-        # for w in self._property_widgets:
-        #     w.destroy()

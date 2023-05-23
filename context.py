@@ -9,6 +9,7 @@ from menu import Menu
 from objects_storage import ObjectsStorage
 from state_machine import StateMachine
 from table import Table
+from pub_sub import Broker
 
 
 class Context:
@@ -21,3 +22,4 @@ class Context:
     # property_bar: ttk.Frame
     menu: Menu
     table: Table
+    pub_sub_broker: Broker

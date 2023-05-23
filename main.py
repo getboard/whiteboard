@@ -1,12 +1,12 @@
 import logging
 import tkinter
-from tkinter import ttk
 
 import context
 import events_history
 import objects_storage
 import event_handlers
 import menu
+import pub_sub
 from state_machine import StateMachine
 from table import Table
 
@@ -21,7 +21,6 @@ import modules.submenu
 
 def create_context(root: tkinter.Tk) -> context.Context:
     canvas_width = 700
-    # property_bar_width = 150
     common_height = root.winfo_height() - 10
     table_width = root.winfo_width() - canvas_width
     logger = logging.Logger('global_logger')
@@ -36,9 +35,8 @@ def create_context(root: tkinter.Tk) -> context.Context:
     ctx.canvas = canvas
     ctx.menu = menu.Menu(root)
     ctx.state_machine = StateMachine(ctx)
-    # ctx.property_bar = ttk.Frame(root, width=property_bar_width, height=common_height)
-    # ctx.property_bar.pack(side="left", fill="both", expand=False, padx=10, pady=10)
     ctx.table = Table(root, ctx, table_width, common_height)
+    ctx.pub_sub_broker = pub_sub.Broker()
     return ctx
 
 
