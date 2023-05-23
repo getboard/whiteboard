@@ -24,11 +24,12 @@ import modules.group
 
 
 def create_context(root: tkinter.Tk) -> context.Context:
-    logger = logging.Logger('global_logger')
+    logger = logging.Logger('global_logger', level=logging.DEBUG)
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
     canvas.pack(side='left', fill='both', expand=False)
     ctx = context.Context()
-    ctx.events_history = events_history.EventsHistory("./test_repo", "main_event_log.txt")
+    # TODO: take the path from somewhere
+    ctx.events_history = events_history.EventsHistory("./test_repo", "main_event_log.json")
     ctx.event_handlers = event_handlers.EventHandlers()
     ctx.objects_storage = objects_storage.ObjectsStorage(ctx)
     ctx.logger = logger
@@ -50,8 +51,9 @@ def main():
     modules.modules.init_modules(ctx)
 
     ctx.events_history.sync(ctx)
-
+    ctx.events_history.apply_all(ctx)
     root_window.mainloop()
+    ctx.events_history.sync(ctx)
 
 
 if __name__ == '__main__':
