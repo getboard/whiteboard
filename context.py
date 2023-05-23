@@ -12,6 +12,7 @@ from pub_sub import Broker
 
 
 class Context:
+    root: tkinter.Tk
     events_history: EventsHistory
     event_handlers: EventHandlers
     objects_storage: ObjectsStorage
