@@ -62,15 +62,15 @@ def _on_leave(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
     global_ctx.events_history.add_event(
         'ADD_CONNECTOR',
         obj_id=obj.id,
-        start_id=obj.get_start_id(),
-        end_id=obj.get_end_id(),
-        start_position=obj.get_start_position(),
-        end_position=obj.get_end_position(),
-        start_x=obj.get_start_x(),
-        start_y=obj.get_start_y(),
-        end_x=obj.get_end_x(),
-        end_y=obj.get_end_y(),
-        snap_to=obj.get_snap_to()
+        start_id=obj.get_start_id(global_ctx),
+        end_id=obj.get_end_id(global_ctx),
+        start_position=obj.get_start_position(global_ctx),
+        end_position=obj.get_end_position(global_ctx),
+        start_x=obj.get_start_x(global_ctx),
+        start_y=obj.get_start_y(global_ctx),
+        end_x=obj.get_end_x(global_ctx),
+        end_y=obj.get_end_y(global_ctx),
+        snap_to=obj.get_snap_to(global_ctx)
     )
     global_ctx.menu.set_root_state()
 
