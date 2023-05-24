@@ -7,6 +7,7 @@ def prepare_for_applying(ctx: context.Context):
     ctx.canvas.delete('all')
     ctx.state_machine.reset()
 
+
 def sync(ctx: context.Context, apply_events=True):
     ctx.events_history.sync(ctx)
     if apply_events:

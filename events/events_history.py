@@ -12,6 +12,7 @@ import context
 
 _KIND_FIELD_NAME = 'kind'
 
+
 class EventInfo:
     kind: str
     kwargs: dict
@@ -35,7 +36,7 @@ class EventsHistory:
     _repo: git.Repo
     _path_to_repo: str
     _log_filepath_relative_to_the_repo: str
-    _last_sync_object_versions: Dict[str, int] # obj_id -> version
+    _last_sync_object_versions: Dict[str, int]   # obj_id -> version
 
     def __init__(self, path_to_repo: str, log_filepath_relative_to_the_repo: str):
         self._local_events = []
@@ -62,7 +63,7 @@ class EventsHistory:
         push_info_list.raise_if_error()
 
     def _revert_last_local_commit(self):
-        self._repo.git.reset("HEAD~1", "--hard")
+        self._repo.git.reset('HEAD~1', '--hard')
 
     def _try_to_merge(self, logger: logging.Logger):
         cur_sync_object_versions = {}
@@ -71,7 +72,7 @@ class EventsHistory:
             for line in file:
                 payload = json.loads(line)
                 event_info = EventInfo.from_payload(payload)
-                obj_id  = event_info.kwargs.get('obj_id', None)
+                obj_id = event_info.kwargs.get('obj_id', None)
                 if not obj_id:
                     logger.warn('No obj_id for event (source=repo), skipping the event')
                     continue
@@ -84,10 +85,12 @@ class EventsHistory:
                 logger.warn('No obj_id for event (source=local), skipping the event')
                 continue
 
-            last_sync_obj_ver = self._last_sync_object_versions.get(obj_id, 0) 
+            last_sync_obj_ver = self._last_sync_object_versions.get(obj_id, 0)
             cur_sync_obj_ver = cur_sync_object_versions.get(obj_id, 0)
             if last_sync_obj_ver < cur_sync_obj_ver:
-                logger.debug(f'obj_ver for obj_id={obj_id} changed since last sync (last_ver={last_sync_obj_ver}, cur_ver={cur_sync_obj_ver}), skipping an event')
+                logger.debug(
+                    f'obj_ver for obj_id={obj_id} changed since last sync (last_ver={last_sync_obj_ver}, cur_ver={cur_sync_obj_ver}), skipping an event'
+                )
                 continue
             events_to_append.append(event)
 
@@ -99,7 +102,6 @@ class EventsHistory:
                     obj_id = event.kwargs.get('obj_id')
                     cur_sync_object_versions[obj_id] = cur_sync_object_versions.get(obj_id, 0) + 1
 
-            # TODO: handle conflict here
             try:
                 self._push_main()
             except git.exc.GitCommandError as ex:

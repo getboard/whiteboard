@@ -23,6 +23,7 @@ import modules.submenu
 import modules.object_destroying
 import modules.group
 
+
 def _make_logger() -> logging.Logger:
     logger = logging.Logger('global_logger')
     handler = logging.StreamHandler()
@@ -31,6 +32,7 @@ def _make_logger() -> logging.Logger:
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
     return logger
+
 
 def _create_context(root: tkinter.Tk) -> context.Context:
     ctx = context.Context()
@@ -41,10 +43,10 @@ def _create_context(root: tkinter.Tk) -> context.Context:
     ctx.canvas = canvas
 
     # TODO: take the path from somewhere
-    ctx.events_history = events.events_history.EventsHistory("./test_repo", "main_event_log.json")
+    ctx.events_history = events.events_history.EventsHistory('./test_repo', 'main_event_log.json')
     ctx.event_handlers = events.event_handlers.EventHandlers()
     ctx.objects_storage = objects_storage.ObjectsStorage(ctx)
-    
+
     ctx.state_machine = StateMachine(ctx)
     ctx.property_bar = ttk.Frame(root)
     ctx.property_bar.pack(fill='both', expand=True, padx=10, pady=10)
