@@ -30,7 +30,7 @@ def _handle_event(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
 
 def _on_leave(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
     obj: PenObject = state_ctx[PEN_OBJECT]
-    kwargs = dict((key, prop.getter()) for key, prop in obj.properties.items())
+    kwargs = dict((key, prop.getter(global_ctx)) for key, prop in obj.properties.items())
     global_ctx.events_history.add_event(
         ADD_PEN_STATE_NAME, obj_id=obj.id, **kwargs
     )

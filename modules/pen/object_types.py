@@ -56,29 +56,29 @@ class PenObject(objects_storage.Object):
         self.properties[consts.LINE_WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.LINE_WIDTH,
             property_description=consts.LINE_WIDTH_PROPERTY_DESC,
-            getter=lambda: self.get_width(scaled=False),
+            getter=self.get_width,
             setter=self.set_width,
             is_hidden=False
         )
 
-    def get_points(self):
+    def get_points(self, ctx: context.Context):
         return self._points
 
     def add_point(self, ctx: context.Context, value: tuple[int, int]):
         self._points.extend(value)
         ctx.canvas.coords(self.id, self._points)
 
-    def get_width(self, scaled=False):
-        width = self._width
+    def get_width(self, ctx: context.Context, scaled=False):
+        width = float(self._width)
         if scaled:
             width *= self.scale_factor
         return int(width)
 
     def set_width(self, ctx: context.Context, value: str):
         self._width = int(value)
-        ctx.canvas.itemconfig(self.id, width=self.get_width(scaled=True))
+        ctx.canvas.itemconfig(self.id, width=self.get_width(ctx, scaled=True))
 
-    def get_line_color(self):
+    def get_line_color(self, ctx: context.Context):
         return self._line_color
 
     def set_line_color(self, ctx: context.Context, color: str):
@@ -92,4 +92,4 @@ class PenObject(objects_storage.Object):
 
     def scale(self, ctx: context.Context, scale_factor: float):
         self.scale_factor *= scale_factor
-        ctx.canvas.itemconfig(self.id, width=float(self._width))
+        ctx.canvas.itemconfig(self.id, width=self.get_width(ctx, scaled=True))
