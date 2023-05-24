@@ -5,6 +5,7 @@ import json
 import logging
 
 import git
+import git.exc
 
 import context
 
@@ -57,7 +58,11 @@ class EventsHistory:
     def _push_main(self):
         self._repo.index.add([self._log_filepath_relative_to_the_repo])
         self._repo.index.commit('New events on the way to the repo 🚂🚂🚂')
-        self._repo.remotes.origin.push()
+        push_info_list = self._repo.remotes.origin.push()
+        push_info_list.raise_if_error()
+
+    def _revert_last_local_commit(self):
+        self._repo.git.reset("HEAD~1", "--hard")
 
     def _try_to_merge(self, logger: logging.Logger):
         cur_sync_object_versions = {}
@@ -95,7 +100,12 @@ class EventsHistory:
                     cur_sync_object_versions[obj_id] = cur_sync_object_versions.get(obj_id, 0) + 1
 
             # TODO: handle conflict here
-            self._push_main()
+            try:
+                self._push_main()
+            except git.exc.GitCommandError as ex:
+                self._revert_last_local_commit()
+                raise
+
         self._last_sync_object_versions = cur_sync_object_versions
 
     def _get_path_to_log_file(self) -> str:
@@ -103,8 +113,14 @@ class EventsHistory:
 
     def sync(self, ctx: context.Context):
         ctx.logger.debug('Syncing event log')
-        self._pull_main()
-        self._try_to_merge(ctx.logger)
+        while True:
+            try:
+                self._pull_main()
+                self._try_to_merge(ctx.logger)
+                break
+            except git.exc.GitCommandError:
+                ctx.logger.debug('Conflict on push, trying to sync again')
+
         self._local_events = []
 
     def apply_all(self, ctx: context.Context):
