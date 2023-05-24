@@ -38,7 +38,7 @@ class Connector(objects_storage.Object):
             snap_to: typing.Literal['first', 'both', 'last'] = 'last',
             **_
     ):
-        super().__init__(ctx, _id)
+        super().__init__(ctx, _id, obj_type='CONNECTOR')
         self._start_id = start_id
         self._end_id = end_id
         self._start_position = start_position

@@ -3,6 +3,8 @@ import uuid
 from typing import Type, Optional, Dict
 
 import context
+
+from properties import Property, PropertyType
 import pub_sub
 from utils import geometry
 from properties import Property
@@ -14,18 +16,34 @@ class Object(pub_sub.Subscriber):
     scale_factor: float
     properties: Dict[str, Property]
 
+    OBJ_TYPE_NAME = 'obj_type'
+    OBJ_TYPE_DESC = 'Тип объекта'
     MOVED_TO_NOTIFICATION = 'moved_to'
     ENTERED_FOCUS_NOTIFICATION = 'entered_focus_notification'
     LEFT_FOCUS_NOTIFICATION = 'left_focus_notification'
     CHANGED_SIZE_NOTIFICATION = 'changed_size'
 
-    def __init__(self, ctx: context.Context, id: str, **kwargs):
+    def __init__(self, ctx: context.Context, id: str, obj_type: str = 'OBJECT', **kwargs):
         super().__init__(id)
         self.id = id
         self._is_focused = False
+        self._obj_type = obj_type
+        self.is_focused = False
         self.scale_factor = 1.0
-        self.properties = {}
+
+        self.properties = {
+            self.OBJ_TYPE_NAME: Property(
+                property_type=PropertyType.TEXT,
+                property_description=self.OBJ_TYPE_DESC,
+                getter=self.get_obj_type,
+                setter=None,
+                restrictions=[],
+                is_hidden=False)
+        }
         self._register_notifications(ctx)
+
+    def get_obj_type(self, ctx: context.Context):
+        return self._obj_type
 
     def _register_notifications(self, ctx: context.Context):
         ctx.pub_sub_broker.add_publisher(self.id)
@@ -143,6 +161,7 @@ class ObjectsStorage:
         else:
             obj_id = uuid.uuid4().hex[:10]
         self._objects[obj_id] = self._object_types[type_name](self._ctx, obj_id, **kwargs)
+        self._ctx.table.add_object(self._ctx, obj_id)
         return obj_id
 
     def update(self, object_id: str, **kwargs):

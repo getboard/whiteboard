@@ -18,7 +18,7 @@ class GroupObject(Object):
     _children_ids: List[str]
 
     def __init__(self, ctx: context.Context, id: str, children_ids: List[str]):
-        super().__init__(ctx, id)
+        super().__init__(ctx, id, obj_type='GROUP')
         self._children_ids = children_ids
 
         invisible_rect = self._get_invisible_rect(ctx)

@@ -11,8 +11,6 @@ class StickerObject(Object):
     _font_weight: str
     _font_slant: str
     _font_color: str
-    _x: int
-    _y: int
     _width: float
     _bg_color: str
     _text_id: int
@@ -23,13 +21,19 @@ class StickerObject(Object):
     FONT_WEIGHT_PROPERTY_NAME = 'font_weight'
     FONT_SLANT_PROPERTY_NAME = 'font_slant'
     FONT_COLOR_PROPERTY_NAME = 'font_color'
-    X_PROPERTY_NAME = 'x'
-    Y_PROPERTY_NAME = 'y'
-    WIDTH_PROPERTY_NAME = 'width'
-    BG_COLOR_PROPERTY_NAME = 'bg_color'
+    STICKY_NOTE_WIDTH_PROPERTY_NAME = 'sticky_note_width'
+    BG_COLOR_PROPERTY_NAME = 'sticky_note_background_color'
+
+    FONT_FAMILY_PROPERTY_DESC = 'Шрифт'
+    FONT_SIZE_PROPERTY_DESC = 'Размер шрифта'
+    FONT_WEIGHT_PROPERTY_DESC = 'Насыщенность шрифта'
+    FONT_SLANT_PROPERTY_DESC = 'Наклон шрифта'
+    FONT_COLOR_PROPERTY_DESC = 'Цвет шрифта'
+    STICKY_NOTE_WIDTH_PROPERTY_DESC = 'Ширина карточка'
+    BG_COLOR_PROPERTY_DESC = 'Цвет карточки'
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
-        super().__init__(ctx, id)
+        super().__init__(ctx, id, obj_type='STICKER')
         self._width = 100
         self._font_family = 'Arial'
         self._font_size = 14
@@ -66,72 +70,63 @@ class StickerObject(Object):
     def init_properties(self):
         self.properties[self.FONT_FAMILY_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_FAMILY,
-            property_description='Шрифт',
+            property_description=self.FONT_FAMILY_PROPERTY_DESC,
             getter=self.get_font_family,
             setter=self.set_font_family,
+            is_hidden=False
         )
 
         self.properties[self.FONT_SIZE_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_SIZE,
-            property_description='Размер шрифта',
+            property_description=self.FONT_SIZE_PROPERTY_DESC,
             getter=self.get_font_size,
-            setter=None,
-            is_hidden=True,
+            setter=self.set_font_size,
+            is_hidden=True
         )
 
         self.properties[self.FONT_WEIGHT_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_WEIGHT,
-            property_description='Насыщенность шрифта',
+            property_description=self.FONT_WEIGHT_PROPERTY_DESC,
             getter=self.get_font_weight,
             setter=self.set_font_weight,
+            is_hidden=False
         )
 
         self.properties[self.FONT_SLANT_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_SLANT,
-            property_description='Наклон шрифта',
+            property_description=self.FONT_SLANT_PROPERTY_DESC,
             getter=self.get_font_slant,
             setter=self.set_font_slant,
+            is_hidden=False
         )
 
         self.properties[self.FONT_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
-            property_description='Цвет шрифта',
+            property_description=self.FONT_COLOR_PROPERTY_DESC,
             getter=self.get_font_color,
             setter=self.set_font_color,
+            is_hidden=False
         )
 
         self.properties[self.BG_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
-            property_description='Цвет карточки',
+            property_description=self.BG_COLOR_PROPERTY_DESC,
             getter=self.get_bg_color,
             setter=self.set_bg_color,
+            is_hidden=False
         )
 
-        self.properties[self.WIDTH_PROPERTY_NAME] = Property(
+        self.properties[self.STICKY_NOTE_WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.NUMBER,
-            property_description='Длина карточки',
+            property_description=self.STICKY_NOTE_WIDTH_PROPERTY_DESC,
             getter=self.get_width,
             setter=self.set_width,
             restrictions=list(range(100, 300, 50)),
+            is_hidden=False
         )
 
-        self.properties[self.X_PROPERTY_NAME] = Property(
-            property_type=PropertyType.NUMBER,
-            property_description='X',
-            getter=self.get_x,
-            setter=None,
-            restrictions='default',
-            is_hidden=True,
-        )
-
-        self.properties[self.Y_PROPERTY_NAME] = Property(
-            property_type=PropertyType.NUMBER,
-            getter=self.get_y,
-            property_description='Y',
-            setter=None,
-            restrictions='default',
-            is_hidden=True,
-        )
+    def get_obj_id(self):
+        return self.id
 
     def get_font_size(self, ctx: context.Context):
         return self._font_size

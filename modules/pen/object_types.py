@@ -22,7 +22,7 @@ class PenObject(objects_storage.Object):
                  line_width: int = 2,
                  line_color='black',
                  **_):
-        super().__init__(ctx, id_)
+        super().__init__(ctx, id_, obj_type='PEN')
         self._points = list(points)
         self._width = line_width
         self._line_color = line_color

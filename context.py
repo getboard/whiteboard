@@ -8,6 +8,7 @@ from event_handlers import EventHandlers
 from menu import Menu
 from objects_storage import ObjectsStorage
 from state_machine import StateMachine
+from table import Table
 from pub_sub import Broker
 
 
@@ -19,6 +20,6 @@ class Context:
     logger: logging.Logger
     canvas: tkinter.Canvas
     state_machine: StateMachine
-    property_bar: ttk.Frame
     menu: Menu
+    table: Table
     pub_sub_broker: Broker

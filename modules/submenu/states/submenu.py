@@ -12,11 +12,13 @@ SUBMENU = 'SUBMENU'
 
 def _on_enter(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
     obj = global_ctx.objects_storage.get_current()
+    global_ctx.table.set_focus_by_id(obj.id)
     state_ctx[SUBMENU] = Submenu(obj.id, global_ctx)
     state_ctx[SUBMENU].show_menu(global_ctx)
 
 
 def _on_leave(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
+    global_ctx.table.reset_focus()
     state_ctx[SUBMENU].destroy_menu(global_ctx)
 
 

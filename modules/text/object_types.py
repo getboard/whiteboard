@@ -24,7 +24,7 @@ class TextObject(Object):
     Y_PROPERTY_NAME = 'y'
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
-        super().__init__(ctx, id)
+        super().__init__(ctx, id, 'TEXT')
         self._font_family = 'Arial'
         self._font_size = 14
         self._font_weight = 'normal'
