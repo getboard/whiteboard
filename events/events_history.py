@@ -82,7 +82,7 @@ class EventsHistory:
             last_sync_obj_ver = self._last_sync_object_versions.get(obj_id, 0) 
             cur_sync_obj_ver = cur_sync_object_versions.get(obj_id, 0)
             if last_sync_obj_ver < cur_sync_obj_ver:
-                logger.debug(f'obj_ver for obj_id={obj_id} changed since last sync, skipping an event')
+                logger.debug(f'obj_ver for obj_id={obj_id} changed since last sync (last_ver={last_sync_obj_ver}, cur_ver={cur_sync_obj_ver}), skipping an event')
                 continue
             events_to_append.append(event)
 
@@ -90,6 +90,10 @@ class EventsHistory:
             with open(path, 'a') as file:
                 for event in events_to_append:
                     file.write(f'{json.dumps(event.get_payload())}\n')
+
+                    obj_id = event.kwargs.get('obj_id')
+                    cur_sync_object_versions[obj_id] = cur_sync_object_versions.get(obj_id, 0) + 1
+
             # TODO: handle conflict here
             self._push_main()
         self._last_sync_object_versions = cur_sync_object_versions
@@ -100,9 +104,8 @@ class EventsHistory:
     def sync(self, ctx: context.Context):
         ctx.logger.debug('Syncing event log')
         self._pull_main()
-        if self._local_events:
-            self._try_to_merge(ctx.logger)
-            self._local_events = []
+        self._try_to_merge(ctx.logger)
+        self._local_events = []
 
     def apply_all(self, ctx: context.Context):
         path = os.path.join(self._path_to_repo, self._log_filepath_relative_to_the_repo)

@@ -23,17 +23,28 @@ import modules.submenu
 import modules.object_destroying
 import modules.group
 
-def create_context(root: tkinter.Tk) -> context.Context:
-    logger = logging.Logger('global_logger', level=logging.DEBUG)
+def _make_logger() -> logging.Logger:
+    logger = logging.Logger('global_logger')
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s -  %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    return logger
+
+def _create_context(root: tkinter.Tk) -> context.Context:
+    ctx = context.Context()
+    ctx.logger = _make_logger()
+
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
     canvas.pack(side='left', fill='both', expand=False)
-    ctx = context.Context()
+    ctx.canvas = canvas
+
     # TODO: take the path from somewhere
     ctx.events_history = events.events_history.EventsHistory("./test_repo", "main_event_log.json")
     ctx.event_handlers = events.event_handlers.EventHandlers()
     ctx.objects_storage = objects_storage.ObjectsStorage(ctx)
-    ctx.logger = logger
-    ctx.canvas = canvas
+    
     ctx.state_machine = StateMachine(ctx)
     ctx.property_bar = ttk.Frame(root)
     ctx.property_bar.pack(fill='both', expand=True, padx=10, pady=10)
@@ -49,7 +60,7 @@ def main():
     root_window = tkinter.Tk(className='Whiteboard')
     root_window.geometry('870x600')
 
-    ctx = create_context(root_window)
+    ctx = _create_context(root_window)
     ctx.canvas.focus_set()
     modules.modules.init_modules(ctx)
 

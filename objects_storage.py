@@ -152,3 +152,6 @@ class ObjectsStorage:
     def destroy_by_id(self, object_id: str):
         obj = self._objects.pop(object_id)
         obj.destroy(self._ctx)
+
+    def reset(self):
+        self._objects.clear()

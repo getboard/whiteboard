@@ -127,3 +127,7 @@ class StateMachine:
                 return
         # Залоггировать, что ни один предикат не выполнился
         self._cur_state.handle_event(self._global_context, self._cur_state_context, event)
+
+    def reset(self):
+        self._cur_state = self._states[StateMachine.ROOT_STATE_NAME]
+        self._cur_state_context = self._make_empty_context()
