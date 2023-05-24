@@ -110,7 +110,7 @@ class StickerObject(Object):
         self.properties[self.WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.NUMBER,
             property_description='Длина карточки',
-            getter=lambda ctx: self.get_width(ctx, scaled=False),
+            getter=self.get_width,
             setter=self.set_width,
             restrictions=list(range(100, 300, 50)),
         )
@@ -133,49 +133,49 @@ class StickerObject(Object):
             is_hidden=True,
         )
 
-    def get_font_size(self, _: context.Context):
+    def get_font_size(self, ctx: context.Context):
         return self._font_size
 
     def set_font_size(self, ctx: context.Context, value: Union[int, str]):
         self._font_size = int(value)
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_family(self, _: context.Context):
+    def get_font_family(self, ctx: context.Context):
         return self._font_family
 
     def set_font_family(self, ctx: context.Context, font_family: str):
         self._font_family = font_family
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_weight(self, _: context.Context):
+    def get_font_weight(self, ctx: context.Context):
         return self._font_weight
 
     def set_font_weight(self, ctx: context.Context, font_weight: str):
         self._font_weight = font_weight
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_slant(self, _: context.Context):
+    def get_font_slant(self, ctx: context.Context):
         return self._font_slant
 
     def set_font_slant(self, ctx: context.Context, font_slant: str):
         self._font_slant = font_slant
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_color(self, _: context.Context):
+    def get_font_color(self, ctx: context.Context):
         return self._font_color
 
     def set_font_color(self, ctx: context.Context, font_color: str):
         self._font_color = font_color
         ctx.canvas.itemconfig(self._text_id, fill=self._font_color)
 
-    def get_x(self, _: context.Context):
+    def get_x(self, ctx: context.Context):
         return self._x
 
-    def get_y(self, _: context.Context):
+    def get_y(self, ctx: context.Context):
         return self._y
 
-    def get_width(self, _: context.Context, scaled=False):
-        width = self._width
+    def get_width(self, ctx: context.Context, scaled=False):
+        width = float(self._width)
         if scaled:
             width *= self.scale_factor
         return int(width)
@@ -185,9 +185,8 @@ class StickerObject(Object):
         ctx.canvas.itemconfig(self._text_id, width=self._width)
         ctx.canvas.coords(self._bg_id, self.create_note_coords(ctx))
         self.adjust_font(ctx)
-        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
 
-    def get_bg_color(self, _: context.Context):
+    def get_bg_color(self, ctx: context.Context):
         return self._bg_color
 
     def set_bg_color(self, ctx: context.Context, value: str):
@@ -198,7 +197,7 @@ class StickerObject(Object):
         ctx.canvas.itemconfig(self.get_text_id(), **kwargs)
         self.adjust_font(ctx)
 
-    def get_font(self, _: context.Context, scaled=False):
+    def get_font(self, ctx: context.Context, scaled=False):
         font_size = self._font_size
         if scaled:
             font_size *= self.scale_factor

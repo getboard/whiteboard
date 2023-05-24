@@ -38,7 +38,7 @@ class TextObject(Object):
             text=kwargs['text'],
             tags=[id, 'text'],
             fill=self.get_font_color(ctx),
-            font=self.get_font(scaled=True),
+            font=self.get_font(ctx, scaled=True),
         )
         self.init_properties()
 
@@ -96,55 +96,51 @@ class TextObject(Object):
             is_hidden=True,
         )
 
-    def get_font_size(self, _: context.Context):
+    def get_font_size(self, ctx: context.Context):
         return self._font_size
 
     def set_font_size(self, ctx: context.Context, value: Union[int, str]):
         self._font_size = int(value)
-        ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
-        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
+        ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_family(self, _: context.Context):
+    def get_font_family(self, ctx: context.Context):
         return self._font_family
 
     def set_font_family(self, ctx: context.Context, font_family: str):
         self._font_family = font_family
-        ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
-        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
+        ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_weight(self, _: context.Context):
+    def get_font_weight(self, ctx: context.Context):
         return self._font_weight
 
     def set_font_weight(self, ctx: context.Context, font_weight: str):
         self._font_weight = font_weight
-        ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
-        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
+        ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_slant(self, _: context.Context):
+    def get_font_slant(self, ctx: context.Context):
         return self._font_slant
 
     def set_font_slant(self, ctx: context.Context, font_slant: str):
         self._font_slant = font_slant
-        ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
-        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
+        ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_color(self, _: context.Context):
+    def get_font_color(self, ctx: context.Context):
         return self._font_color
 
     def set_font_color(self, ctx: context.Context, font_color: str):
         self._font_color = font_color
         ctx.canvas.itemconfig(self._text_id, fill=font_color)
 
-    def get_x(self, _: context.Context):
+    def get_x(self, ctx: context.Context):
         return self._x
 
-    def get_y(self, _: context.Context):
+    def get_y(self, ctx: context.Context):
         return self._y
 
     def update(self, ctx: context.Context, **kwargs):
         ctx.canvas.itemconfig(self._text_id, **kwargs)
 
-    def get_font(self, scaled=False):
+    def get_font(self, ctx: context.Context, scaled=False):
         font_size = self._font_size
         if scaled:
             font_size *= self.scale_factor
@@ -158,4 +154,4 @@ class TextObject(Object):
 
     def scale(self, ctx: context.Context, scale_factor: float):
         self.scale_factor *= scale_factor
-        ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
+        ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
