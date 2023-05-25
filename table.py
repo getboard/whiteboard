@@ -111,7 +111,7 @@ class Table:
         data.sort(reverse=reverse)
         for index, (value, item) in enumerate(data):
             self._table.move(item, '', index)
-        self._table.heading(col_name, command=lambda: self.sort_column(col_name, not reverse))
+        self._table.heading(col_name, command=lambda col=col_name: self.sort_column(col, not reverse))
 
     def edit_selected_row(self, ctx: context.Context):
         selected_item = self._table.focus()
