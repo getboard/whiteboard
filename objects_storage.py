@@ -73,6 +73,9 @@ class Object(pub_sub.Subscriber):
     def scale(self, ctx: context.Context, scale_factor: float):
         raise NotImplementedError("it's an abstract class")
 
+    def destroy(self, ctx: context.Context):
+        raise NotImplementedError("it's an abstract class")
+
 
 class ObjectsStorage:
     _ctx: context.Context
@@ -115,9 +118,17 @@ class ObjectsStorage:
         return self._objects
 
     def create(self, type_name: str, **kwargs) -> str:
-        obj_id = kwargs.get('obj_id', uuid.uuid4().hex[:10])
+        if 'obj_id' in kwargs:
+            obj_id = kwargs['obj_id']
+            kwargs.pop('obj_id')
+        else:
+            obj_id = uuid.uuid4().hex[:10]
         self._objects[obj_id] = self._object_types[type_name](self._ctx, obj_id, **kwargs)
         return obj_id
 
     def update(self, object_id: str, **kwargs):
         self._objects[object_id].update(self._ctx, **kwargs)
+
+    def destroy_by_id(self, object_id: str):
+        obj = self._objects.pop(object_id)
+        obj.destroy(self._ctx)
