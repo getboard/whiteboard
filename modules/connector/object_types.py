@@ -314,29 +314,25 @@ class Connector(Object):
         ctx.canvas.delete(self.id)
         self._correct_connection_edges(ctx)
         points_basic = self._find_basic_points_of_elbowed(ctx)
-        points_cnt = int(abs((points_basic[-1][0] - points_basic[0][1])))
-        # points = list(points_basic[0])
-        # if points_cnt < 101:
-        #     points_cnt = 101
-        # for i in range(points_cnt):
-        #     t = i / (points_cnt - 1)
-        #     x, y = self._bezier(t, *points_basic)
-        #     points.extend([x, y])
-
+        points = list(points_basic[0])
+        points_cnt = 10
+        for i in range(points_cnt):
+            t = i / (points_cnt - 1)
+            x, y = self._bezier(t, *points_basic)
+            points.extend([x, y])
         ctx.canvas.create_line(
-            points_basic,
+            points,
             width=self._line_width,
             arrow=self._snap_to,
             tags=self.id,
             splinesteps=points_cnt,
-            smooth=True,
+            smooth=False,
             fill=self._line_color,
         )
 
     def _correct_connection_edges(self, ctx: context.Context):
         xs1, ys1, xs2, ys2 = self.get_start_bbox(ctx)
         xe1, ye1, xe2, ye2 = self.get_end_bbox(ctx)
-        print(self._start_position)
         if self._start_x == -1 and self._start_y == 0:
             if ys1 > ye2:
                 self.set_start_x(ctx, 0)
@@ -378,13 +374,54 @@ class Connector(Object):
                 self.set_start_x(ctx, -1)
                 self.set_start_y(ctx, 0)
         self.update_start_position(ctx)
-        print(self._start_position)
+
+        if self._end_x == -1 and self._end_y == 0:
+            if ye1 > ys2:
+                self.set_end_x(ctx, 0)
+                self.set_end_y(ctx, -1)
+            elif ys1 > ye2:
+                self.set_end_x(ctx, 0)
+                self.set_end_y(ctx, 1)
+            elif xs1 > xe2:
+                self.set_end_x(ctx, 1)
+                self.set_end_y(ctx, 0)
+        if self._end_x == 0 and self._end_y == -1:
+            if ys2 > ye1:
+                self.set_end_x(ctx, 0)
+                self.set_end_y(ctx, 1)
+            elif xs1 > xe2:
+                self.set_end_x(ctx, 1)
+                self.set_end_y(ctx, 0)
+            elif xe1 > xs2:
+                self.set_end_x(ctx, -1)
+                self.set_end_y(ctx, 0)
+        if self._end_x == 1 and self._end_y == 0:
+            if ye1 > ys2:
+                self.set_end_x(ctx, 0)
+                self.set_end_y(ctx, -1)
+            elif ys1 > ye2:
+                self.set_end_x(ctx, 0)
+                self.set_end_y(ctx, 1)
+            elif xe1 > xs2:
+                self.set_end_x(ctx, -1)
+                self.set_end_y(ctx, 0)
+        if self._end_x == 0 and self._end_y == 1:
+            if ye1 > ys2:
+                self.set_end_x(ctx, 0)
+                self.set_end_y(ctx, -1)
+            elif xs1 > xe2:
+                self.set_end_x(ctx, 1)
+                self.set_end_y(ctx, 0)
+            elif xe1 > xs2:
+                self.set_end_x(ctx, -1)
+                self.set_end_y(ctx, 0)
+        self.update_end_position(ctx)
 
     def _find_basic_points_of_straight_type(self):
         return [self._start_position, self._end_position]
 
     def _find_basic_points_of_elbowed(self, ctx: context.Context):
-        OFFSET = 10
+        OFFSET = 20
         p_start = [self._start_position]
         p_end = [self._end_position]
         if abs(self._start_position[0] - self._end_position[0]) < 2 * OFFSET:
@@ -395,34 +432,12 @@ class Connector(Object):
             p_start.append(
                 (p_start[-1][0] + self._start_x * OFFSET, p_start[-1][1] + self._start_y * OFFSET)
             )
-            if self._start_y in [0, -1] and self._end_position[1] < self._start_position[1]:
-                mid_y = (self._start_position[1] - self._end_position[1]) / 2
-                p_start.append((p_start[-1][0], mid_y))
-            elif self._start_y in [0, 1] and self._end_position[1] > self._start_position[1]:
-                mid_y = (self._end_position[1] - self._start_position[1]) / 2
-                p_start.append((p_start[-1][0], mid_y))
-            elif self._start_y in [1, -1] and self._end_position[0] < self._start_position[0]:
-                mid_x = (self._start_position[0] - self._end_position[0]) / 2
-                p_start.append((mid_x, p_start[-1][1]))
-            elif self._start_y in [1, -1] and self._end_position[0] > self._start_position[0]:
-                mid_x = (self._end_position[0] - self._start_position[0]) / 2
-                p_start.append((mid_x, p_start[-1][1]))
+            p_start.append((p_start[-1][0], (self._start_position[1] + self._end_position[1]) / 2))
         if self._end_x is not None:
             p_end.append(
                 (p_end[-1][0] + self._end_x * OFFSET, p_end[-1][1] + self._end_y * OFFSET)
             )
-            if self._end_y in [0, -1] and self._end_position[1] < self._start_position[1]:
-                mid_y = (self._start_position[1] - self._end_position[1]) / 2
-                p_end.append((p_end[-1][0], mid_y))
-            elif self._end_y in [0, 1] and self._end_position[1] > self._start_position[1]:
-                mid_y = (self._end_position[1] - self._start_position[1]) / 2
-                p_end.append((p_end[-1][0], mid_y))
-            elif self._end_y in [1, -1] and self._end_position[0] < self._start_position[0]:
-                mid_x = (self._start_position[0] - self._end_position[0]) / 2
-                p_end.append((mid_x, p_end[-1][1]))
-            elif self._end_y in [1, -1] and self._end_position[0] > self._start_position[0]:
-                mid_x = (self._end_position[0] - self._start_position[0]) / 2
-                p_end.append((mid_x, p_end[-1][1]))
+            p_end.append((p_end[-1][0], (self._start_position[1] + self._end_position[1]) / 2))
         return p_start + list(reversed(p_end))
 
     def _find_basic_points_of_bezier(self):
@@ -433,23 +448,26 @@ class Connector(Object):
         """
         Bezier function
         """
-        points = list(points)
-        points_cnt = len(points)
-        if points_cnt < 2:
+        points_n = list(points)
+        cnt = len(points_n)
+        if cnt < 2:
             return
         c = []
-        if points_cnt == 2:
+        print(cnt, points_n)
+        if cnt == 2:
             c += [1, 1]
-        if points_cnt == 3:
+        if cnt == 3:
             c += [1, 2, 1]
-        if points_cnt == 4:
+        if cnt == 4:
             c += [1, 3, 3, 1]
-        if points_cnt >= 5:
+        if cnt == 5:
             c += [1, 4, 6, 4, 1]
-            points = points[:4] + [points[-1]]
-            points_cnt = 5
-        x = [c[i] * (1 - t) ** (points_cnt - i) * t ** i * points[i][0] for i in range(points_cnt)]
-        y = [c[i] * (1 - t) ** (points_cnt - i) * t ** i * points[i][1] for i in range(points_cnt)]
+        if cnt >= 6:
+            c += [1, 5, 10, 10, 5, 1]
+            points_n = points_n[:5] + [points_n[-1]]
+            cnt = 6
+        x = sum(c[i] * (1 - t) ** (cnt - i) * t ** i * points_n[i][0] for i in range(cnt))
+        y = sum(c[i] * (1 - t) ** (cnt - i) * t ** i * points_n[i][1] for i in range(cnt))
         return x, y
 
     @staticmethod
