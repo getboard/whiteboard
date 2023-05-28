@@ -6,22 +6,22 @@ from state_machine import State
 from state_machine import StateMachine
 from context import Context
 from modules.connector.object_types import Connector
-
+from properties import Property
 CREATE_CONNECTOR_STATE_NAME = 'CREATE_CONNECTOR'
 CONNECTOR = 'connector'
 
 
 def _on_enter(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
-    start_id = global_ctx.objects_storage.get_current().id
+    start = global_ctx.objects_storage.get_current_opt()
+    start_id = start.id if start else None
     actual_x = int(global_ctx.canvas.canvasx(event.x))
     actual_y = int(global_ctx.canvas.canvasy(event.y))
 
     obj_id = global_ctx.objects_storage.create(
         'CONNECTOR',
-        start_id=start_id,
         start_position=(actual_x, actual_y),
-        end_id=None,
-        end_position=None
+        end_position=(actual_x, actual_y),
+        start_id=start_id
     )
     connector = global_ctx.objects_storage.get_opt_by_id(obj_id)
     state_ctx[CONNECTOR] = connector
@@ -43,23 +43,16 @@ def _on_leave(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
     actual_x = int(global_ctx.canvas.canvasx(event.x))
     actual_y = int(global_ctx.canvas.canvasy(event.y))
     connector.update_end(global_ctx, end_position=(actual_x, actual_y))
-    if connector.get_end_id(global_ctx) is None:
-        global_ctx.objects_storage.destroy_by_id(connector.id)
-        return
     obj: Connector = state_ctx[CONNECTOR]
     state_ctx.pop(CONNECTOR)
+    kwargs = {}
+    for key, prop in obj.properties.items():
+        if prop.getter(global_ctx):
+            kwargs[key] = prop.getter(global_ctx)
     global_ctx.events_history.add_event(
         'ADD_CONNECTOR',
         obj_id=obj.id,
-        start_id=obj.get_start_id(global_ctx),
-        end_id=obj.get_end_id(global_ctx),
-        start_position=obj.get_start_position(global_ctx),
-        end_position=obj.get_end_position(global_ctx),
-        start_x=obj.get_start_x(global_ctx),
-        start_y=obj.get_start_y(global_ctx),
-        end_x=obj.get_end_x(global_ctx),
-        end_y=obj.get_end_y(global_ctx),
-        snap_to=obj.get_snap_to(global_ctx)
+        **kwargs
     )
     global_ctx.menu.set_root_state()
 
@@ -68,12 +61,7 @@ def _predicate_from_root_to_connector(global_ctx: Context, event: tkinter.Event)
     # Motion with Left mouse button pressed and with state CONNECTOR_MENU_ENTRY_NAME
     if event.type != tkinter.EventType.ButtonPress or event.num != 1:
         return False
-    if global_ctx.menu.current_state != CONNECTOR_MENU_ENTRY_NAME:
-        return False
-    cur_obj = global_ctx.objects_storage.get_current_opt()
-    if cur_obj is None:
-        return False
-    return not isinstance(cur_obj, Connector)
+    return global_ctx.menu.current_state == CONNECTOR_MENU_ENTRY_NAME
 
 
 def _predicate_from_connector_to_root(_: Context, event: tkinter.Event) -> bool:

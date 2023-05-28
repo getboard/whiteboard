@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import Optional, Tuple, Literal, Union
+from typing import Optional, Tuple, Literal, Union, Iterable
 
 import context
 from objects_storage import Object
@@ -14,7 +14,8 @@ class Connector(Object):
     _end_id: str
     _line_width: int
     _line_color: str
-    _snap_to: Literal['first', 'both', 'last']
+    _stroke_style: Literal['first', 'both', 'last']
+    _connector_type: Literal['elbowed', 'straight', 'curved']
 
     _start_position: Tuple[int, int]
     _end_position: Tuple[int, int]
@@ -27,41 +28,43 @@ class Connector(Object):
             self,
             ctx: context.Context,
             _id: str,
-            start_id: Optional[str],
             start_position: Tuple[int, int],
-            end_id: Optional[str],
             end_position: Tuple[int, int],
             *,
+            start_id: Optional[str] = None,
+            end_id: Optional[str] = None,
             start_x: Optional[Literal[-1, 0, 1]] = None,
             start_y: Optional[Literal[-1, 0, 1]] = None,
             end_x: Optional[Literal[-1, 0, 1]] = None,
             end_y: Optional[Literal[-1, 0, 1]] = None,
-            snap_to: Optional[Literal['first', 'both', 'last']] = 'last',
+            stroke_style: Optional[Literal['first', 'both', 'last']] = 'last',
             line_width: int = 2,
-            line_color: str = 'black'
+            line_color: str = 'black',
+            connector_type: Literal['elbowed', 'straight', 'curved'] = 'curved'
     ):
         super().__init__(ctx, _id)
-        self._start_id = None
-        self._end_id = None
+        self._start_id = start_id
+        self._end_id = end_id
 
         self._start_x = start_x
         self._start_y = start_y
         self._end_x = end_x
         self._end_y = end_y
-        self._snap_to = snap_to
+        self._stroke_style = stroke_style
         self._line_width = line_width
         self._line_color = line_color
+        self._connector_type = connector_type
 
-        self.set_start_id(ctx, start_id)
-        self.set_end_id(ctx, end_id)
+        if self._start_id:
+            self.set_start_id(ctx, start_id)
+        if self._end_id:
+            self.set_end_id(ctx, end_id)
         if start_position or start_x and start_y:
             self.set_start_position(ctx, pos=start_position)
         if end_position or end_x and end_y:
             self.set_end_position(ctx, pos=end_position)
-        if start_id and end_id:
-            self._bezier_curve(ctx)
-
         self.init_properties()
+        self._curve(ctx)
 
     def init_properties(self):
         self.properties[consts.LINE_COLOR_PROPERTY_NAME] = Property(
@@ -85,9 +88,18 @@ class Connector(Object):
         self.properties[consts.STROKE_STYLE_PROPERTY_NAME] = Property(
             property_type=PropertyType.TEXT,
             property_description=consts.STROKE_STYLE_PROPERTY_DESC,
-            getter=self.get_snap_to,
-            setter=self.set_snap_to,
+            getter=self.get_stroke_style,
+            setter=self.set_stroke_style,
             restrictions=['last', 'first', 'both'],
+            is_hidden=False
+        )
+
+        self.properties[consts.CONNECTOR_TYPE_PROPERTY_NAME] = Property(
+            property_type=PropertyType.TEXT,
+            property_description=consts.CONNECTOR_TYPE_PROPERTY_DESC,
+            getter=self.get_connector_type,
+            setter=self.set_connector_type,
+            restrictions=['elbowed', 'straight', 'curved'],
             is_hidden=False
         )
 
@@ -180,7 +192,7 @@ class Connector(Object):
                 self.update_start_position(ctx)
             elif publisher_id == self._end_id:
                 self.update_end_position(ctx)
-            self._bezier_curve(ctx)
+            self._curve(ctx)
 
     def get_start_bbox(self, ctx: context.Context):
         if self._start_id:
@@ -243,36 +255,40 @@ class Connector(Object):
     def get_start_x(self, ctx: context.Context):
         return self._start_x
 
-    def set_start_x(self, ctx: context.Context, value: str):
-        self._start_x = int(value)
+    def set_start_x(self, ctx: context.Context, value: Optional):
+        if value is not None and isinstance(value, (str, int)):
+            self._start_x = int(value)
 
     def get_start_y(self, ctx: context.Context):
         return self._start_y
 
-    def set_start_y(self, ctx: context.Context, value: str):
-        self._start_y = int(value)
+    def set_start_y(self, ctx: context.Context, value: Optional):
+        if value is not None and isinstance(value, (str, int)):
+            self._start_y = int(value)
 
     def get_end_x(self, ctx: context.Context):
         return self._end_x
 
     def set_end_x(self, ctx: context.Context, value: str):
-        self._end_x = int(value)
+        if value is not None and isinstance(value, (str, int)):
+            self._end_x = int(value)
 
     def get_end_y(self, ctx: context.Context):
         return self._end_y
 
     def set_end_y(self, ctx: context.Context, value: str):
-        self._end_y = int(value)
+        if value is not None and isinstance(value, (str, int)):
+            self._end_y = int(value)
 
-    def get_snap_to(self, ctx: context.Context):
-        return self._snap_to
+    def get_stroke_style(self, ctx: context.Context):
+        return self._stroke_style
 
-    def set_snap_to(self, ctx: context.Context, value: Literal['first', 'both', 'last']):
-        self._snap_to = value
-        ctx.canvas.itemconfig(self.id, arrow=self._snap_to)
+    def set_stroke_style(self, ctx: context.Context, value: Literal['first', 'both', 'last']):
+        self._stroke_style = value
+        ctx.canvas.itemconfig(self.id, arrow=self._stroke_style)
 
     def get_line_width(self, ctx: context.Context, scaled=False):
-        line_width = self._line_width
+        line_width = float(self._line_width)
         if scaled:
             line_width *= self.scale_factor
         return int(line_width)
@@ -289,12 +305,33 @@ class Connector(Object):
     def set_line_color(self, ctx: context.Context, line_color: str):
         ctx.canvas.itemconfig(self.id, fill=line_color)
 
+    def get_connector_type(self, ctx: context.Context):
+        return self._connector_type
+
+    def set_connector_type(self, ctx: context.Context, value: str):
+        if value in ['elbowed', 'straight', 'curved']:
+            self._connector_type = value
+            self._curve(ctx)
+
     def update_end(self, ctx: context.Context, end_position: tuple[int, int]):
         cur_obj = self._find_overlapping_opt_obj(ctx, end_position)
         if cur_obj and cur_obj.id != self._start_id:
             self.set_end_id(ctx, cur_obj.id)
         self.set_end_position(ctx, pos=end_position)
-        self._bezier_curve(ctx)
+        self._curve(ctx)
+
+    def update_start(self, ctx: context.Context, start_position: tuple[int, int]):
+        cur_obj = self._find_overlapping_opt_obj(ctx, start_position)
+        if cur_obj and cur_obj.id != self._end_id:
+            self.set_start_id(ctx, cur_obj.id)
+        self.set_start_position(ctx, pos=start_position)
+        self._curve(ctx)
+
+    def move(self, ctx: context.Context, delta_x: int, delta_y: int):
+        pass
+
+    def move_to(self, ctx: context.Context, x: int, y: int):
+        pass
 
     def update(self, ctx: context.Context, **kwargs):
         for key, value in kwargs.items():
@@ -310,24 +347,21 @@ class Connector(Object):
         self.unsubscribe(ctx, self._end_id)
         ctx.canvas.delete(self.id)
 
-    def _bezier_curve(self, ctx: context.Context):
+    def _curve(self, ctx: context.Context):
         ctx.canvas.delete(self.id)
         self._correct_connection_edges(ctx)
-        points_basic = self._find_basic_points_of_elbowed(ctx)
-        points = list(points_basic[0])
-        points_cnt = 10
-        for i in range(points_cnt):
-            t = i / (points_cnt - 1)
-            x, y = self._bezier(t, *points_basic)
-            points.extend([x, y])
+        if self._connector_type == 'straight':
+            points = self._extend_points(self._find_basic_points_of_straight())
+        elif self._connector_type == 'elbowed':
+            points = self._extend_points(self._find_basic_points_of_elbowed())
+        else:
+            points = self._extend_points(self._find_basic_points_of_bezier())
         ctx.canvas.create_line(
             points,
             width=self._line_width,
-            arrow=self._snap_to,
+            arrow=self._stroke_style,
             tags=self.id,
-            splinesteps=points_cnt,
-            smooth=False,
-            fill=self._line_color,
+            fill=self._line_color
         )
 
     def _correct_connection_edges(self, ctx: context.Context):
@@ -374,7 +408,6 @@ class Connector(Object):
                 self.set_start_x(ctx, -1)
                 self.set_start_y(ctx, 0)
         self.update_start_position(ctx)
-
         if self._end_x == -1 and self._end_y == 0:
             if ye1 > ys2:
                 self.set_end_x(ctx, 0)
@@ -417,57 +450,66 @@ class Connector(Object):
                 self.set_end_y(ctx, 0)
         self.update_end_position(ctx)
 
-    def _find_basic_points_of_straight_type(self):
+    def _find_basic_points_of_straight(self):
         return [self._start_position, self._end_position]
 
-    def _find_basic_points_of_elbowed(self, ctx: context.Context):
+    def _find_basic_points_of_elbowed(self):
         OFFSET = 20
-        p_start = [self._start_position]
-        p_end = [self._end_position]
         if abs(self._start_position[0] - self._end_position[0]) < 2 * OFFSET:
-            return p_start + list(reversed(p_end))
+            return self._find_basic_points_of_straight()
         if abs(self._start_position[1] - self._end_position[1]) < 2 * OFFSET:
-            return p_start + list(reversed(p_end))
-        if self._start_x is not None:
-            p_start.append(
-                (p_start[-1][0] + self._start_x * OFFSET, p_start[-1][1] + self._start_y * OFFSET)
-            )
-            p_start.append((p_start[-1][0], (self._start_position[1] + self._end_position[1]) / 2))
-        if self._end_x is not None:
-            p_end.append(
-                (p_end[-1][0] + self._end_x * OFFSET, p_end[-1][1] + self._end_y * OFFSET)
-            )
-            p_end.append((p_end[-1][0], (self._start_position[1] + self._end_position[1]) / 2))
-        return p_start + list(reversed(p_end))
+            return self._find_basic_points_of_straight()
+        mid_x = (self._start_position[0] + self._end_position[0]) / 2
+        mid_y = (self._start_position[1] + self._end_position[1]) / 2
+        points = [self._start_position]
+        if self._start_x == 0 and self._start_y == -1 and self._end_x == 0 and self._end_y == 1:
+            points.extend([
+                (self._start_position[0], mid_y),
+                (self._end_position[0], mid_y),
+            ])
+        elif self._start_x == 0 and self._start_y == -1 and self._end_x == -1 and self._end_y == 0:
+            points.append((self._start_position[0], self._end_position[1]))
+        elif self._end_x == 0 and self._end_y == -1 and self._start_x == 0 and self._start_y == 1:
+            points.extend([
+                (self._start_position[0], mid_y),
+                (self._end_position[0], mid_y),
+            ])
+        elif self._end_x == 0 and self._end_y == -1 and self._start_x == -1 and self._start_y == 0:
+            points.append((self._end_position[0], self._start_position[1]))
+        else:
+            points.extend([
+                (mid_x, self._start_position[1]),
+                (mid_x, self._end_position[1]),
+            ])
+        points.append(self._end_position)
+        return points
 
     def _find_basic_points_of_bezier(self):
-        pass
+        basic_p = self._find_basic_points_of_elbowed()
+        points_cnt = 10
+        points = []
+        if len(basic_p) > 2:
+            for i in range(points_cnt):
+                t = i / (points_cnt - 1)
+                x, y = self._bezier(t, *basic_p)
+                points.append((x, y))
+        else:
+            points = basic_p
+        return points
 
     @staticmethod
-    def _bezier(t, *points: Tuple[float, float]):
+    def _bezier(t, *points):
         """
         Bezier function
         """
-        points_n = list(points)
-        cnt = len(points_n)
-        if cnt < 2:
-            return
         c = []
-        print(cnt, points_n)
-        if cnt == 2:
-            c += [1, 1]
+        cnt = len(points)
         if cnt == 3:
             c += [1, 2, 1]
         if cnt == 4:
             c += [1, 3, 3, 1]
-        if cnt == 5:
-            c += [1, 4, 6, 4, 1]
-        if cnt >= 6:
-            c += [1, 5, 10, 10, 5, 1]
-            points_n = points_n[:5] + [points_n[-1]]
-            cnt = 6
-        x = sum(c[i] * (1 - t) ** (cnt - i) * t ** i * points_n[i][0] for i in range(cnt))
-        y = sum(c[i] * (1 - t) ** (cnt - i) * t ** i * points_n[i][1] for i in range(cnt))
+        x = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t ** i * points[i][0] for i in range(cnt))
+        y = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t ** i * points[i][1] for i in range(cnt))
         return x, y
 
     @staticmethod
@@ -538,3 +580,10 @@ class Connector(Object):
         if not isinstance(temp, Connector):
             return temp
         return None
+
+    @staticmethod
+    def _extend_points(points: Iterable[int or float]):
+        extended = []
+        for point in points:
+            extended.extend(point)
+        return extended
