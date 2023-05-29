@@ -131,3 +131,6 @@ class StateMachine:
     def reset(self):
         self._cur_state = self._states[StateMachine.ROOT_STATE_NAME]
         self._cur_state_context = self._make_empty_context()
+
+    def get_cur_state_name(self) -> str:
+        return self._cur_state.get_name()

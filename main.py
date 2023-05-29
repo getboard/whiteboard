@@ -36,6 +36,9 @@ def _make_logger() -> logging.Logger:
 
 def _create_context(root: tkinter.Tk) -> context.Context:
     ctx = context.Context()
+
+    ctx.root = root
+
     ctx.logger = _make_logger()
 
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
@@ -52,9 +55,6 @@ def _create_context(root: tkinter.Tk) -> context.Context:
     ctx.property_bar.pack(fill='both', expand=True, padx=10, pady=10)
     ctx.menu = menu.Menu(root)
     ctx.pub_sub_broker = pub_sub.Broker()
-
-    button = tkinter.Button(root, text='Sync', command=lambda ctx=ctx: events.sync.sync(ctx))
-    button.pack(expand=False)
     return ctx
 
 
@@ -66,9 +66,10 @@ def main():
     ctx.canvas.focus_set()
     modules.modules.init_modules(ctx)
 
-    events.sync.sync(ctx)
+    events.sync.sync(ctx, apply_events=True, force=True)
+    events.sync.start_sync_periodic_task(ctx)
     root_window.mainloop()
-    events.sync.sync(ctx, apply_events=False)
+    events.sync.sync(ctx, apply_events=False, force=True)
 
 
 if __name__ == '__main__':

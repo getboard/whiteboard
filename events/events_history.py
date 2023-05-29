@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import Dict, List
+from typing import Dict, List, Optional
 import os
+import time
 import json
 import logging
 
@@ -9,8 +10,8 @@ import git.exc
 
 import context
 
-
 _KIND_FIELD_NAME = 'kind'
+_SYNC_PERIOD_IN_SEC = 5
 
 
 class EventInfo:
@@ -37,6 +38,7 @@ class EventsHistory:
     _path_to_repo: str
     _log_filepath_relative_to_the_repo: str
     _last_sync_object_versions: Dict[str, int]   # obj_id -> version
+    _last_sync_ts = Optional[float]
 
     def __init__(self, path_to_repo: str, log_filepath_relative_to_the_repo: str):
         self._local_events = []
@@ -44,6 +46,7 @@ class EventsHistory:
         self._path_to_repo = path_to_repo
         self._log_filepath_relative_to_the_repo = log_filepath_relative_to_the_repo
         self._last_sync_object_versions = {}
+        self._last_sync_ts = None
 
     def add_event(self, kind: str, **event_kwargs):
         event_info = EventInfo()
@@ -119,6 +122,7 @@ class EventsHistory:
             try:
                 self._pull_main()
                 self._try_to_merge(ctx.logger)
+                self._last_sync_ts = time.time()
                 break
             except git.exc.GitCommandError:
                 ctx.logger.debug('Conflict on push, trying to sync again')
@@ -136,3 +140,6 @@ class EventsHistory:
                 event_info = EventInfo.from_payload(payload)
                 handler = ctx.event_handlers.get_handler(event_info.kind)
                 handler.apply(ctx, **event_info.kwargs)
+
+    def get_last_sync_ts(self) -> Optional[float]:
+        return self._last_sync_ts
