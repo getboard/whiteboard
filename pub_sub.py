@@ -38,7 +38,7 @@ class Broker:
             return
         self._subscribers[publisher_id][event] = []
 
-    def add_publisher(self, publisher_id):
+    def add_publisher(self, publisher_id: str):
         self._subscribers[publisher_id] = {}
 
     def remove_publisher(self, publisher_id):

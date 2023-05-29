@@ -50,11 +50,12 @@ def _create_context(root: tkinter.Tk) -> context.Context:
     ctx.event_handlers = events.event_handlers.EventHandlers()
     ctx.objects_storage = objects_storage.ObjectsStorage(ctx)
 
+    ctx.pub_sub_broker = pub_sub.Broker()
+
     ctx.state_machine = StateMachine(ctx)
     ctx.property_bar = ttk.Frame(root)
     ctx.property_bar.pack(fill='both', expand=True, padx=10, pady=10)
     ctx.menu = menu.Menu(root)
-    ctx.pub_sub_broker = pub_sub.Broker()
     return ctx
 
 
@@ -67,7 +68,7 @@ def main():
     modules.modules.init_modules(ctx)
 
     events.sync.sync(ctx, apply_events=True, force=True)
-    events.sync.start_sync_periodic_task(ctx)
+    events.sync.init_sync(ctx)
     root_window.mainloop()
     events.sync.sync(ctx, apply_events=False, force=True)
 
