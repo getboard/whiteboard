@@ -179,15 +179,17 @@ class Connector(Object):
         sub = ctx.objects_storage.get_opt_by_id(pub_id)
         if sub:
             ctx.pub_sub_broker.subscribe(sub.MOVED_TO_NOTIFICATION, sub.id, self.id)
+            ctx.pub_sub_broker.subscribe(sub.BBOX_CHANGED_NOTIFICATION, sub.id, self.id)
 
     def unsubscribe(self, ctx: context.Context, pub_id):
         sub = ctx.objects_storage.get_opt_by_id(pub_id)
         if sub:
             ctx.pub_sub_broker.unsubscribe(sub.MOVED_TO_NOTIFICATION, sub.id, self.id)
+            ctx.pub_sub_broker.unsubscribe(sub.BBOX_CHANGED_NOTIFICATION, sub.id, self.id)
 
     def get_notification(self, ctx: context.Context, publisher_id, event, **kwargs):
         obj = ctx.objects_storage.get_by_id(publisher_id)
-        if obj.MOVED_TO_NOTIFICATION == event:
+        if obj.MOVED_TO_NOTIFICATION == event or obj.BBOX_CHANGED_NOTIFICATION == event:
             if publisher_id == self._start_id:
                 self.update_start_position(ctx)
             elif publisher_id == self._end_id:

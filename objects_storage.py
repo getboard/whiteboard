@@ -17,6 +17,7 @@ class Object(pub_sub.Subscriber):
     _observers: Dict[str, Object]
 
     MOVED_TO_NOTIFICATION = 'moved_to'
+    BBOX_CHANGED_NOTIFICATION = 'bbox_changed'
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(id)
@@ -29,6 +30,7 @@ class Object(pub_sub.Subscriber):
     def _register_notifications(self, ctx: context.Context):
         ctx.pub_sub_broker.add_publisher(self.id)
         ctx.pub_sub_broker.add_publisher_event(self.id, Object.MOVED_TO_NOTIFICATION)
+        ctx.pub_sub_broker.add_publisher_event(self.id, Object.BBOX_CHANGED_NOTIFICATION)
 
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
         ctx.canvas.move(self.id, delta_x, delta_y)

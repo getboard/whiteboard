@@ -185,6 +185,8 @@ class StickerObject(Object):
         ctx.canvas.itemconfig(self._text_id, width=self._width)
         ctx.canvas.coords(self._bg_id, self.create_note_coords(ctx))
         self.adjust_font(ctx)
+        bbox = ctx.canvas.coords(self.id)
+        ctx.pub_sub_broker.publish(ctx, self.id, self.BBOX_CHANGED_NOTIFICATION, bbox=bbox)
 
     def get_bg_color(self, ctx: context.Context):
         return self._bg_color
