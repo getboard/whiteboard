@@ -160,6 +160,8 @@ class ObjectsStorage:
             obj_id = kwargs.pop('obj_id')
         else:
             obj_id = uuid.uuid4().hex[:10]
+        if 'obj_type' in kwargs:
+            kwargs.pop('obj_type')
         self._objects[obj_id] = self._object_types[type_name](self._ctx, obj_id, **kwargs)
         self._ctx.table.add_object(self._ctx, obj_id)
         return obj_id

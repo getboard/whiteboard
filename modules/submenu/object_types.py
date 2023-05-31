@@ -17,16 +17,7 @@ class Submenu:
     def init_widgets(self, ctx: context.Context):
         properties = ctx.objects_storage.get_by_id(self.obj_id).properties
         for prop_name, prop_value in properties.items():
-            if not prop_value.is_hidden and prop_value.property_type in [
-                PropertyType.LINE_TYPE,
-                PropertyType.LINE_WIDTH,
-                PropertyType.TEXT_ALIGNMENT,
-                PropertyType.FONT_FAMILY,
-                PropertyType.FONT_SIZE,
-                PropertyType.FONT_WEIGHT,
-                PropertyType.FONT_SLANT,
-                PropertyType.COLOR
-            ]:
+            if not prop_value.is_hidden and prop_value.restrictions:
                 self.init_property(ctx, prop_name, prop_value)
 
     @staticmethod

@@ -21,7 +21,11 @@ class Table:
         'font_slant',
         'font_color',
         'sticky_note_width',
-        'sticky_note_background_color'
+        'sticky_note_background_color',
+        'line_color',
+        'line_width',
+        'stroke_style',
+        'connector_type'
     ]
 
     _headings = [
@@ -32,7 +36,11 @@ class Table:
         'Наклон шрифта',
         'Цвет шрифта',
         'Ширина карточки',
-        'Цвет карточки'
+        'Цвет карточки',
+        'Цвет линии',
+        'Толщина линии',
+        'Связь',
+        'Тип линии связи',
     ]
 
     def __init__(self, root: tkinter.Tk, ctx: context.Context, width: int, height: int):
@@ -111,7 +119,8 @@ class Table:
         data.sort(reverse=reverse)
         for index, (value, item) in enumerate(data):
             self._table.move(item, '', index)
-        self._table.heading(col_name, command=lambda col=col_name: self.sort_column(col, not reverse))
+        self._table.heading(col_name,
+                            command=lambda col=col_name: self.sort_column(col, not reverse))
 
     def edit_selected_row(self, ctx: context.Context):
         selected_item = self._table.focus()

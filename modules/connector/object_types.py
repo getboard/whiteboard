@@ -269,14 +269,14 @@ class Connector(Object):
     def get_end_x(self, ctx: context.Context):
         return self._end_x
 
-    def set_end_x(self, ctx: context.Context, value: str):
+    def set_end_x(self, ctx: context.Context, value: Optional):
         if value is not None and isinstance(value, (str, int)):
             self._end_x = int(value)
 
     def get_end_y(self, ctx: context.Context):
         return self._end_y
 
-    def set_end_y(self, ctx: context.Context, value: str):
+    def set_end_y(self, ctx: context.Context, value: Optional):
         if value is not None and isinstance(value, (str, int)):
             self._end_y = int(value)
 
@@ -303,6 +303,7 @@ class Connector(Object):
         return ctx.canvas.itemcget(self.id, 'fill')
 
     def set_line_color(self, ctx: context.Context, line_color: str):
+        self._line_color = line_color
         ctx.canvas.itemconfig(self.id, fill=line_color)
 
     def get_connector_type(self, ctx: context.Context):
