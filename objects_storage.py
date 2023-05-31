@@ -22,6 +22,7 @@ class Object(pub_sub.Subscriber):
     ENTERED_FOCUS_NOTIFICATION = 'entered_focus_notification'
     LEFT_FOCUS_NOTIFICATION = 'left_focus_notification'
     CHANGED_SIZE_NOTIFICATION = 'changed_size'
+    BBOX_CHANGED_NOTIFICATION = 'bbox_changed'
 
     def __init__(self, ctx: context.Context, id: str, obj_type: str = 'OBJECT', **kwargs):
         super().__init__(id)
@@ -48,6 +49,7 @@ class Object(pub_sub.Subscriber):
     def _register_notifications(self, ctx: context.Context):
         ctx.pub_sub_broker.add_publisher(self.id)
         ctx.pub_sub_broker.add_publisher_event(self.id, Object.MOVED_TO_NOTIFICATION)
+<<<<<<< HEAD
         ctx.pub_sub_broker.add_publisher_event(self.id, Object.ENTERED_FOCUS_NOTIFICATION)
         ctx.pub_sub_broker.add_publisher_event(self.id, Object.LEFT_FOCUS_NOTIFICATION)
         ctx.pub_sub_broker.add_publisher_event(self.id, Object.CHANGED_SIZE_NOTIFICATION)
@@ -65,6 +67,9 @@ class Object(pub_sub.Subscriber):
 
     def get_focused(self):
         return self._is_focused
+=======
+        ctx.pub_sub_broker.add_publisher_event(self.id, Object.BBOX_CHANGED_NOTIFICATION)
+>>>>>>> connector
 
     def move(self, ctx: context.Context, delta_x: int, delta_y: int):
         ctx.canvas.move(self.id, delta_x, delta_y)
