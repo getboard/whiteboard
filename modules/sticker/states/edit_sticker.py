@@ -48,7 +48,20 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
         cur_obj.adjust_font(global_ctx, False)
         return
 
-    if event.char == '':
+    if event.keysym == 'Tab':
+        global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
+        cur_obj.adjust_font(global_ctx)
+        global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', "    ")
+        return
+
+
+    if event.keysym == 'Return':
+        global_ctx.canvas.index(cur_obj.get_text_id(), "insert")
+        cur_obj.adjust_font(global_ctx)
+        global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', "\n")
+        return
+
+    if not event.char.isprintable():
         return
 
     global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')

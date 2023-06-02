@@ -45,8 +45,19 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
             global_ctx.canvas.dchars(cur_obj.get_text_id(), insert - 1, insert - 1)
         return
 
-    if event.char == '':
+    if event.keysym == 'Tab':
+        insert = global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
+        global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', "    ")
         return
+
+    if event.keysym == 'Return':
+        global_ctx.canvas.index(cur_obj.get_text_id(), "insert")
+        global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', "\n")
+        return
+
+    if not event.char.isprintable():
+        return
+
     global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
     global_ctx.canvas.insert(cur_obj.get_text_id(), 'insert', event.char)
 
