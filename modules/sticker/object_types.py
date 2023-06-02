@@ -244,20 +244,19 @@ class StickerObject(Object):
         _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         width = self.get_width(scaled=True)
         floated_size = float(self._font_size)
-        if larger:
-            if self.check_default_font_size(ctx):
-                width = self.get_width(scaled=True)
-            while abs(y1 - y2) > width:
-                floated_size /= 1.05
-                self._font_size = int(floated_size)
-                ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
-                _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
-        else:
-            while abs(y1 - y2) <= width * 0.78:
+        if not larger:
+            while abs(y1 - y2) < width:
                 floated_size *= 1.05
                 self._font_size = int(floated_size)
                 ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
                 _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
                 y1 = ctx.canvas.canvasx(y1)
                 y2 = ctx.canvas.canvasy(y2)
-            self.check_default_font_size(ctx)
+
+        if self.check_default_font_size(ctx):
+            _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
+        while abs(y1 - y2) > width:
+            floated_size /= 1.05
+            self._font_size = int(floated_size)
+            ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
+            _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
