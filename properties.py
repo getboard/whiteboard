@@ -66,7 +66,7 @@ class Property:
             MIN_SIZE = 8
             MAX_SIZE = 65
             STEP = 2
-            return list(range(MIN_SIZE, MAX_SIZE, STEP))
+            return ['Auto'] + list(range(MIN_SIZE, MAX_SIZE, STEP))
         if self._property_type == PropertyType.COLOR:
             return [
                 'gray',

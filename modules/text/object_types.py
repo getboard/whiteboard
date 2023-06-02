@@ -100,6 +100,8 @@ class TextObject(Object):
         return self._font_size
 
     def set_font_size(self, ctx: context.Context, value: Union[int, str]):
+        if value == "Auto":
+            return
         self._font_size = int(value)
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
 

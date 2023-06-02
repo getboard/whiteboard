@@ -27,12 +27,14 @@ class StickerObject(Object):
     Y_PROPERTY_NAME = 'y'
     WIDTH_PROPERTY_NAME = 'width'
     BG_COLOR_PROPERTY_NAME = 'bg_color'
+    DEFAULT_FONT_SIZE = 14
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(ctx, id)
         self._width = 100
         self._font_family = 'Arial'
-        self._font_size = 14
+        self._font_size = self.DEFAULT_FONT_SIZE
+        self._font_auto = True
         self._font_weight = 'normal'
         self._font_slant = 'roman'
         self._font_color = 'black'
@@ -75,8 +77,9 @@ class StickerObject(Object):
             property_type=PropertyType.FONT_SIZE,
             property_description='Размер шрифта',
             getter=self.get_font_size,
-            setter=None,
-            is_hidden=True,
+            setter=self.set_font_size,
+            # setter=None,
+            # is_hidden=True,
         )
 
         self.properties[self.FONT_WEIGHT_PROPERTY_NAME] = Property(
@@ -134,10 +137,18 @@ class StickerObject(Object):
         )
 
     def get_font_size(self):
+        if self._font_auto:
+            return "Auto"
         return self._font_size
 
     def set_font_size(self, ctx: context.Context, value: Union[int, str]):
+        if value == "Auto":
+            self._font_auto = True
+            self.adjust_font(ctx, False)
+            self.adjust_font(ctx)
+            return
         self._font_size = int(value)
+        self._font_auto = False
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
 
     def get_font_family(self):
@@ -218,21 +229,35 @@ class StickerObject(Object):
             self._text_id, font=self.get_font(scaled=True), width=self.get_width(scaled=True)
         )
 
+    def check_default_font_size(self, ctx: context.Context):
+        if self._font_size > self.DEFAULT_FONT_SIZE:
+            floated_size = float(self.DEFAULT_FONT_SIZE)
+            self._font_size = int(floated_size)
+            ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
+            _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
+            return True
+        return False
+
     def adjust_font(self, ctx: context.Context, larger=True):
+        if not self._font_auto:
+            return
         _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         width = self.get_width(scaled=True)
         floated_size = float(self._font_size)
         if larger:
+            if self.check_default_font_size(ctx):
+                width = self.get_width(scaled=True)
             while abs(y1 - y2) > width:
                 floated_size /= 1.05
                 self._font_size = int(floated_size)
                 ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
                 _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         else:
-            while abs(y1 - y2) < width * 0.7:
+            while abs(y1 - y2) <= width * 0.78:
                 floated_size *= 1.05
                 self._font_size = int(floated_size)
                 ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
                 _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
                 y1 = ctx.canvas.canvasx(y1)
                 y2 = ctx.canvas.canvasy(y2)
+            self.check_default_font_size(ctx)
