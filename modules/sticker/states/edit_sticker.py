@@ -72,7 +72,7 @@ def _predicate_from_context_to_edit_text(global_context: Context, event: tkinter
     cur_obj: Optional[Object] = global_context.objects_storage.get_current_opt()
     if cur_obj is None:
         return False
-    if not cur_obj.is_focused:
+    if not cur_obj.get_focused():
         return False
     return isinstance(cur_obj, StickerObject)
 

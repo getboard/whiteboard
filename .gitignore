@@ -3,3 +3,4 @@ __pycache__/
 venv/
 event_log.txt
 .vscode/
+*.code-workspace

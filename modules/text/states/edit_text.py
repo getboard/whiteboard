@@ -45,6 +45,7 @@ def _handle_event(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
             global_ctx.canvas.dchars(cur_obj.get_text_id(), insert - 1, insert - 1)
         return
 
+    # TODO: issue #12
     if event.char == '':
         return
     global_ctx.canvas.index(cur_obj.get_text_id(), 'insert')
@@ -56,6 +57,7 @@ def _on_leave(global_ctx: 'Context', state_ctx: Dict, event: tkinter.Event):
     cur_obj = state_ctx[TEXT]
     obj_id = cur_obj.id
     txt = cur_obj.get_text(global_ctx)
+    global_ctx.pub_sub_broker.publish(global_ctx, obj_id, Object.CHANGED_SIZE_NOTIFICATION)
     global_ctx.events_history.add_event('EDIT_TEXT', obj_id=obj_id, new_text=txt)
 
 
@@ -66,7 +68,7 @@ def _predicate_from_context_to_edit_text(global_context: Context, event: tkinter
     cur_obj: Optional[Object] = global_context.objects_storage.get_current_opt()
     if cur_obj is None:
         return False
-    if not cur_obj.is_focused:
+    if not cur_obj.get_focused():
         return False
     return isinstance(cur_obj, TextObject)
 
