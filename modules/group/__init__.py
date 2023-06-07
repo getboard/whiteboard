@@ -9,7 +9,6 @@ from . import object_types
 from . import consts
 
 
-
 def create_states(ctx: context.Context):
     ctx.state_machine.add_state(create_group.create_state(ctx.state_machine))
 

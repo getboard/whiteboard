@@ -159,3 +159,7 @@ class TextObject(Object):
     def scale(self, ctx: context.Context, scale_factor: float):
         self.scale_factor *= scale_factor
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(scaled=True))
+
+    def destroy(self, ctx: context.Context):
+        ctx.pub_sub_broker.remove_publisher(self.id)
+        ctx.canvas.delete(self.id)
