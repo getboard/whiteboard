@@ -12,6 +12,7 @@ import objects_storage
 import menu
 import pub_sub
 from state_machine import StateMachine
+from utils import make_logger
 
 import modules.modules
 import modules.text
@@ -24,28 +25,18 @@ import modules.object_destroying
 import modules.group
 
 
-def _make_logger() -> logging.Logger:
-    logger = logging.Logger('global_logger')
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s -  %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
-    return logger
-
-
-def _create_context(root: tkinter.Tk, repo: git.Repo, path_to_repo: str) -> context.Context:
+def _create_context(root: tkinter.Tk, logger: logging.Logger, repo: git.Repo, path_to_repo: str, log_filename: str) -> context.Context:
     ctx = context.Context()
 
     ctx.root = root
 
-    ctx.logger = _make_logger()
+    ctx.logger = logger
 
     canvas = tkinter.Canvas(root, width=700, height=500, bg='white')
     canvas.pack(side='left', fill='both', expand=False)
     ctx.canvas = canvas
 
-    ctx.events_history = events.events_history.EventsHistory(repo, path_to_repo, 'aboba.json')
+    ctx.events_history = events.events_history.EventsHistory(repo, path_to_repo, log_filename)
     ctx.event_handlers = events.event_handlers.EventHandlers()
     ctx.objects_storage = objects_storage.ObjectsStorage(ctx)
 
@@ -59,24 +50,20 @@ def _create_context(root: tkinter.Tk, repo: git.Repo, path_to_repo: str) -> cont
 
 
 def main():
+    # TODO: take the path from somewhere
+    logger = make_logger.make_logger()
+    
+    PATH_TO_REPO = './sync_repo'
+    repo = git.Repo(PATH_TO_REPO)
+    
+    picked_log_filename = events.sync.pick_log_file(repo, PATH_TO_REPO)
+    if picked_log_filename is None:
+        return
+
     root_window = tkinter.Tk(className='Whiteboard')
     root_window.geometry('870x600')
 
-    # TODO: take the path from somewhere
-    PATH_TO_REPO = './sync_repo'
-    repo = git.Repo(PATH_TO_REPO)
-
-    # TODO:
-    #   1) pull from repo
-    #   2) show file picker
-    #   3) pick file
-    #   4) init ctx
-    #   5) first sync
-    #   6) init sync
-    #   7) root mainloop
-    #   8) final sync
-
-    ctx = _create_context(root_window, repo, PATH_TO_REPO)
+    ctx = _create_context(root_window, logger, repo, PATH_TO_REPO, picked_log_filename)
     ctx.canvas.focus_set()
     modules.modules.init_modules(ctx)
 

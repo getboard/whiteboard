@@ -1,4 +1,10 @@
 import time
+import os
+from typing import List
+import tkinter
+from tkinter import ttk
+
+import git
 
 import context
 import state_machine
@@ -67,5 +73,44 @@ class _OnEventSyncer(objects_storage.Object):
             return
         sync(ctx, apply_events=True, force=False)
 
+
 def init_sync(ctx: context.Context):
     ctx.root.after(_SYNC_PERIOD_IN_SEC * _MS_IN_SEC, lambda ctx=ctx: sync_periodic(ctx))
+
+
+def _get_available_log_files(repo: git.Repo, path_to_repo: str) -> List[str]:
+    repo.git.checkout('main')
+    repo.git.reset('--hard', 'main')
+    repo.remotes.origin.pull()
+
+    res = []
+    for filename in os.listdir(path_to_repo):
+        if os.path.isfile(os.path.join(path_to_repo, filename)):
+            res.append(filename)
+    return res
+
+def _create_new_board():
+    pass
+
+def pick_log_file(repo: git.Repo, path_to_repo: str):
+    window = tkinter.Tk(className='Choose board')
+    window.geometry('400x300')
+ 
+    available_log_files = _get_available_log_files(repo, path_to_repo)
+    log_files_listbox = tkinter.Listbox()
+    log_files_listbox.grid(row=1, column=0, columnspan=2, sticky=tkinter.EW, padx=5, pady=5)
+    for log_file in available_log_files:
+        log_files_listbox.insert(tkinter.END, log_file)
+
+    new_log_file_name_entry = ttk.Entry()
+    new_log_file_name_entry.grid(column=0, row=0, padx=6, pady=6, sticky=tkinter.EW)
+    ttk.Button(text="Создать новую доску", command=_create_new_board).grid(column=1, row=0, padx=6, pady=6)
+
+    open_button = ttk.Button(text="Открыть выбранную доску", command=lambda window=window: window.quit())
+    open_button.grid(row=2, column=1, padx=5, pady=5)
+    # TODO:open_button['state'] = 'disabled'
+    window.mainloop()
+    selected_indx = log_files_listbox.curselection()
+    log_filename = log_files_listbox.get(selected_indx)
+    window.destroy()
+    return log_filename
