@@ -40,9 +40,9 @@ class EventsHistory:
     _last_sync_object_versions: Dict[str, int]   # obj_id -> version
     _last_sync_ts = Optional[float]
 
-    def __init__(self, path_to_repo: str, log_filepath_relative_to_the_repo: str):
+    def __init__(self, repo: git.Repo, path_to_repo: str, log_filepath_relative_to_the_repo: str):
         self._local_events = []
-        self._repo = git.Repo(path_to_repo)
+        self._repo = repo
         self._path_to_repo = path_to_repo
         self._log_filepath_relative_to_the_repo = log_filepath_relative_to_the_repo
         self._last_sync_object_versions = {}
@@ -124,7 +124,8 @@ class EventsHistory:
                 self._try_to_merge(ctx.logger)
                 self._last_sync_ts = time.time()
                 break
-            except git.exc.GitCommandError:
+            except git.exc.GitCommandError as ex:
+                print(ex)
                 ctx.logger.debug('Conflict on push, trying to sync again')
 
         self._local_events = []

@@ -34,7 +34,7 @@ def _make_logger() -> logging.Logger:
     return logger
 
 
-def _create_context(root: tkinter.Tk) -> context.Context:
+def _create_context(root: tkinter.Tk, repo: git.Repo, path_to_repo: str) -> context.Context:
     ctx = context.Context()
 
     ctx.root = root
@@ -45,8 +45,7 @@ def _create_context(root: tkinter.Tk) -> context.Context:
     canvas.pack(side='left', fill='both', expand=False)
     ctx.canvas = canvas
 
-    # TODO: take the path from somewhere
-    ctx.events_history = events.events_history.EventsHistory('./test_repo', 'main_event_log.json')
+    ctx.events_history = events.events_history.EventsHistory(repo, path_to_repo, 'aboba.json')
     ctx.event_handlers = events.event_handlers.EventHandlers()
     ctx.objects_storage = objects_storage.ObjectsStorage(ctx)
 
@@ -63,7 +62,21 @@ def main():
     root_window = tkinter.Tk(className='Whiteboard')
     root_window.geometry('870x600')
 
-    ctx = _create_context(root_window)
+    # TODO: take the path from somewhere
+    PATH_TO_REPO = './sync_repo'
+    repo = git.Repo(PATH_TO_REPO)
+
+    # TODO:
+    #   1) pull from repo
+    #   2) show file picker
+    #   3) pick file
+    #   4) init ctx
+    #   5) first sync
+    #   6) init sync
+    #   7) root mainloop
+    #   8) final sync
+
+    ctx = _create_context(root_window, repo, PATH_TO_REPO)
     ctx.canvas.focus_set()
     modules.modules.init_modules(ctx)
 

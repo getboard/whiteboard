@@ -24,7 +24,7 @@ def _is_sync_needed(ctx: context.Context) -> bool:
     return True
 
 
-def prepare_for_applying(ctx: context.Context):
+def _prepare_for_applying(ctx: context.Context):
     # The order is crucial here
     ctx.pub_sub_broker.reset()
     ctx.objects_storage.reset()
@@ -38,7 +38,7 @@ def sync(ctx: context.Context, apply_events=True, force=False):
 
     ctx.events_history.sync(ctx)
     if apply_events:
-        prepare_for_applying(ctx)
+        _prepare_for_applying(ctx)
         ctx.events_history.apply_all(ctx)
 
 
@@ -46,12 +46,12 @@ def sync_periodic(ctx: context.Context):
     sync(ctx, apply_events=True, force=False)
     ON_EVENT_SYNCER = 'OnEventSyncer'
     if ctx.objects_storage.get_opt_by_id(ON_EVENT_SYNCER) is None:
-        ctx.objects_storage.register_object_type(ON_EVENT_SYNCER, OnEventSyncer)
+        ctx.objects_storage.register_object_type(ON_EVENT_SYNCER, _OnEventSyncer)
         ctx.objects_storage.create(ON_EVENT_SYNCER, obj_id=ON_EVENT_SYNCER)
     ctx.root.after(_SYNC_PERIOD_IN_SEC * _MS_IN_SEC, lambda ctx=ctx: sync_periodic(ctx))
 
 
-class OnEventSyncer(objects_storage.Object):
+class _OnEventSyncer(objects_storage.Object):
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(ctx, id, **kwargs)
         ctx.pub_sub_broker.subscribe(
@@ -66,7 +66,6 @@ class OnEventSyncer(objects_storage.Object):
         if kwargs['state_changed_to'] != state_machine.StateMachine.ROOT_STATE_NAME:
             return
         sync(ctx, apply_events=True, force=False)
-
 
 def init_sync(ctx: context.Context):
     ctx.root.after(_SYNC_PERIOD_IN_SEC * _MS_IN_SEC, lambda ctx=ctx: sync_periodic(ctx))
