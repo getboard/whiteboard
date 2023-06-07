@@ -1,10 +1,9 @@
 import logging
 import tkinter
-
 from tkinter import ttk
 
-from events_history import EventsHistory
-from event_handlers import EventHandlers
+import events.events_history
+import events.event_handlers
 from menu import Menu
 from objects_storage import ObjectsStorage
 from state_machine import StateMachine
@@ -12,8 +11,9 @@ from pub_sub import Broker
 
 
 class Context:
-    events_history: EventsHistory
-    event_handlers: EventHandlers
+    root: tkinter.Tk
+    events_history: events.events_history.EventsHistory
+    event_handlers: events.event_handlers.EventHandlers
     objects_storage: ObjectsStorage
     logger: logging.Logger
     canvas: tkinter.Canvas

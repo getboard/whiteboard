@@ -1,8 +1,8 @@
 import context
-from event_handlers import EventHandler
+import events.event_handlers
 
 
-class MoveObjectHandler(EventHandler):
+class MoveObjectHandler(events.event_handlers.EventHandler):
     @classmethod
     def apply(cls, ctx: context.Context, **kwargs):
         obj_id = kwargs['obj_id']

@@ -1,7 +1,7 @@
-import event_handlers
+import events.event_handlers
 
 
-class AddTextHandler(event_handlers.EventHandler):
+class AddTextHandler(events.event_handlers.EventHandler):
     @classmethod
     def apply(cls, ctx, **kwargs):
         x = int(kwargs['x'])
@@ -11,7 +11,7 @@ class AddTextHandler(event_handlers.EventHandler):
         ctx.objects_storage.create('TEXT', x=x, y=y, text=text, obj_id=obj_id)
 
 
-class EditTextHandler(event_handlers.EventHandler):
+class EditTextHandler(events.event_handlers.EventHandler):
     @classmethod
     def apply(cls, ctx, **kwargs):
         text_id = kwargs['obj_id']
