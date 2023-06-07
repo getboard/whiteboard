@@ -89,26 +89,57 @@ def _get_available_log_files(repo: git.Repo, path_to_repo: str) -> List[str]:
             res.append(filename)
     return res
 
-def _create_new_board():
-    pass
+
+def _create_new_board(
+    filename_entry: ttk.Entry, listbox: tkinter.Listbox, repo: git.Repo, path_to_repo: str
+):
+    # TODO: better checks here + make it verbose
+    filename = filename_entry.get()
+    filename_entry.delete(0, tkinter.END)
+    if not filename or not filename.isalnum():
+        return
+    for existing_filename in listbox.get(0, tkinter.END):
+        if filename == existing_filename:
+            return
+
+    file = open(os.path.join(path_to_repo, filename), 'a')
+    file.close()
+    listbox.insert(tkinter.END, filename)
+
+
+def _set_open_button_state_to_normal(open_button: ttk.Button):
+    open_button['state'] = 'normal'
+
 
 def pick_log_file(repo: git.Repo, path_to_repo: str):
     window = tkinter.Tk(className='Choose board')
     window.geometry('400x300')
- 
+
     available_log_files = _get_available_log_files(repo, path_to_repo)
     log_files_listbox = tkinter.Listbox()
     log_files_listbox.grid(row=1, column=0, columnspan=2, sticky=tkinter.EW, padx=5, pady=5)
     for log_file in available_log_files:
         log_files_listbox.insert(tkinter.END, log_file)
 
-    new_log_file_name_entry = ttk.Entry()
-    new_log_file_name_entry.grid(column=0, row=0, padx=6, pady=6, sticky=tkinter.EW)
-    ttk.Button(text="Создать новую доску", command=_create_new_board).grid(column=1, row=0, padx=6, pady=6)
+    new_log_filename_entry = ttk.Entry()
+    new_log_filename_entry.grid(column=0, row=0, padx=6, pady=6, sticky=tkinter.EW)
+    ttk.Button(
+        text='Создать новую доску',
+        command=lambda filename_entry=new_log_filename_entry, files_listbox=log_files_listbox, repo=repo, path_to_repo=path_to_repo: _create_new_board(
+            filename_entry, files_listbox, repo, path_to_repo
+        ),
+    ).grid(column=1, row=0, padx=6, pady=6)
 
-    open_button = ttk.Button(text="Открыть выбранную доску", command=lambda window=window: window.quit())
+    open_button = ttk.Button(
+        text='Открыть выбранную доску', command=lambda window=window: window.quit()
+    )
     open_button.grid(row=2, column=1, padx=5, pady=5)
-    # TODO:open_button['state'] = 'disabled'
+    open_button['state'] = 'disabled'
+    log_files_listbox.bind(
+        '<<ListboxSelect>>',
+        lambda _, open_button=open_button: _set_open_button_state_to_normal(open_button),
+    )
+
     window.mainloop()
     selected_indx = log_files_listbox.curselection()
     log_filename = log_files_listbox.get(selected_indx)
