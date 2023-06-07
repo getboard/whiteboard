@@ -10,7 +10,7 @@ import context
 import state_machine
 import objects_storage
 
-_SYNC_PERIOD_IN_SEC = 5
+_SYNC_PERIOD_IN_SEC = 15
 _MS_IN_SEC = 1000
 
 
@@ -96,7 +96,7 @@ def _create_new_board(
     # TODO: better checks here + make it verbose
     filename = filename_entry.get()
     filename_entry.delete(0, tkinter.END)
-    if not filename or not filename.isalnum():
+    if not filename or not filename.isprintable():
         return
     for existing_filename in listbox.get(0, tkinter.END):
         if filename == existing_filename:
