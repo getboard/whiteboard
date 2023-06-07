@@ -40,6 +40,10 @@ class Broker:
     def add_publisher(self, publisher_id):
         self.subscribers[publisher_id] = {}
 
+    def remove_publisher(self, publisher_id):
+        if publisher_id in self.subscribers:
+            self.subscribers.pop(publisher_id)
+
     def publish(self, ctx: context.Context, publisher_id: str, event, **kwargs):
         if publisher_id in self.subscribers and event in self.subscribers[publisher_id]:
             for subscriber_id in self.subscribers[publisher_id][event]:

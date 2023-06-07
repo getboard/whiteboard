@@ -72,6 +72,7 @@ def _get_intersected_by_rect_object_ids(
             ids.append(object.id)
     return ids
 
+
 # does nothing with regular objects
 # for groups: copies group children_ids and destroys the group
 def _get_children_ids(global_ctx: context.Context, object_ids: List[str]) -> List[str]:
@@ -79,13 +80,15 @@ def _get_children_ids(global_ctx: context.Context, object_ids: List[str]) -> Lis
     for obj_id in object_ids:
         obj = global_ctx.objects_storage.get_by_id(obj_id)
         if isinstance(obj, object_types.GroupObject):
-            result_ids.update(obj._children_ids)    
+            result_ids.update(obj.get_children_ids())
             global_ctx.objects_storage.destroy_by_id(obj_id)
-            global_ctx.events_history.add_event(object_destroying_consts.DESTROY_OBJECT_EVENT_TYPE, obj_id=obj_id)
+            global_ctx.events_history.add_event(object_destroying_consts.DESTROY_OBJECT_EVENT_TYPE,
+                                                obj_id=obj_id)
 
         else:
             result_ids.add(obj_id)
     return list(result_ids)
+
 
 def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.Event):
     state_ctx_obj: CreateGroupStateContext = state_ctx[STATE_CONTEXT_OBJ_DICT_KEY]

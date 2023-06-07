@@ -219,6 +219,10 @@ class StickerObject(Object):
             self._text_id, font=self.get_font(scaled=True), width=self.get_width(scaled=True)
         )
 
+    def destroy(self, ctx: context.Context):
+        ctx.pub_sub_broker.remove_publisher(self.id)
+        ctx.canvas.delete(self.id)
+
     def adjust_font(self, ctx: context.Context, larger=True):
         _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         width = self.get_width(scaled=True)

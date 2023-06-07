@@ -5,7 +5,6 @@ from objects_storage import Object
 import properties
 from utils import geometry
 
-
 # TODO: Remove this after issue #30 is closed
 _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES = [
     Object.ENTERED_FOCUS_NOTIFICATION,
@@ -36,6 +35,9 @@ class GroupObject(Object):
 
         self._subscribe_to_children_notifications(ctx)
         self._init_properties(ctx)
+
+    def get_children_ids(self):
+        return self._children_ids
 
     def _subscribe_to_children_notifications(self, ctx: context.Context):
         for child_id in self._children_ids:
@@ -160,7 +162,12 @@ class GroupObject(Object):
         # tkinter handles it for us 🎉
         pass
 
+    def update(self, ctx: context.Context, **kwargs):
+        # no extra kwargs, no need to update
+        pass
+
     def destroy(self, ctx: context.Context):
+        ctx.pub_sub_broker.remove_publisher(self.id)
         for child_id in self._children_ids:
             for notification_type in _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES:
                 ctx.pub_sub_broker.unsubscribe(notification_type, child_id, self.id)
