@@ -1,4 +1,5 @@
-from tkinter import ttk, StringVar
+import tkinter
+from tkinter import ttk, StringVar, Menu
 from typing import List
 
 import context
@@ -8,17 +9,46 @@ from properties import Property
 class Submenu:
     obj_id: str
     _property_widgets: List[ttk.Widget]
+    _option_menu: Menu
 
     def __init__(self, obj_id: str, ctx: context.Context):
         self.obj_id = obj_id
         self._property_widgets = []
-        self.init_widgets(ctx)
+        self._init_widgets(ctx)
+        self._init_option_menu(ctx)
 
-    def init_widgets(self, ctx: context.Context):
+    def _init_widgets(self, ctx: context.Context):
         properties = ctx.objects_storage.get_by_id(self.obj_id).properties
         for prop_name, prop_value in properties.items():
             if not prop_value.is_hidden:
                 self.init_property(ctx, prop_name, prop_value)
+
+    def _init_option_menu(self, ctx: context.Context):
+        self._option_menu = Menu(None, tearoff=0)
+        self._option_menu.add_command(label='Bring To Front',
+                                      command=lambda: self._bring_to_front(ctx))
+        self._option_menu.add_command(label='Send To Back',
+                                      command=lambda: self._send_to_back(ctx))
+        self._option_menu.add_command(label='Delete',
+                                      command=lambda: self._delete(ctx))
+
+    def _bring_to_front(self, ctx: context.Context):
+        ctx.canvas.tag_raise(self.obj_id)
+
+    def _send_to_back(self, ctx: context.Context):
+        ctx.canvas.tag_lower(self.obj_id)
+
+    def _delete(self, ctx: context.Context):
+        self.destroy_menu(ctx)
+        ctx.objects_storage.destroy_by_id(self.obj_id)
+        ctx.events_history.add_event('DESTROY_OBJECT', obj_id=self.obj_id)
+        self.obj_id = None
+        # to trigger predicate_from_context_to_root
+        # TODO: solution without event-generate
+        ctx.canvas.event_generate('<ButtonRelease-1>')
+
+    def show_option_menu(self, ctx: context.Context, event: tkinter.Event):
+        self._option_menu.tk_popup(event.x_root, event.y_root, 0)
 
     @staticmethod
     def get_index(values: List, to_check):
@@ -63,13 +93,13 @@ class Submenu:
     def show_menu(self, ctx: context.Context):
         obj = ctx.objects_storage.get_by_id(self.obj_id)
         obj.draw_rect(ctx)
-        obj.is_focused = True
+        obj.set_focused(ctx, True)
         for w in self._property_widgets:
             w.pack(pady=1, fill='both')
 
     def destroy_menu(self, ctx: context.Context):
         obj = ctx.objects_storage.get_by_id(self.obj_id)
         obj.remove_rect(ctx)
-        obj.is_focused = False
+        obj.set_focused(ctx, False)
         for w in self._property_widgets:
             w.destroy()

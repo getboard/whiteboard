@@ -133,48 +133,48 @@ class StickerObject(Object):
             is_hidden=True,
         )
 
-    def get_font_size(self, ctx: context.Context):
+    def get_font_size(self, _: context.Context):
         return self._font_size
 
     def set_font_size(self, ctx: context.Context, value: Union[int, str]):
         self._font_size = int(value)
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_family(self, ctx: context.Context):
+    def get_font_family(self, _: context.Context):
         return self._font_family
 
     def set_font_family(self, ctx: context.Context, font_family: str):
         self._font_family = font_family
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_weight(self, ctx: context.Context):
+    def get_font_weight(self, _: context.Context):
         return self._font_weight
 
     def set_font_weight(self, ctx: context.Context, font_weight: str):
         self._font_weight = font_weight
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_slant(self, ctx: context.Context):
+    def get_font_slant(self, _: context.Context):
         return self._font_slant
 
     def set_font_slant(self, ctx: context.Context, font_slant: str):
         self._font_slant = font_slant
         ctx.canvas.itemconfig(self._text_id, font=self.get_font(ctx, scaled=True))
 
-    def get_font_color(self, ctx: context.Context):
+    def get_font_color(self, _: context.Context):
         return self._font_color
 
     def set_font_color(self, ctx: context.Context, font_color: str):
         self._font_color = font_color
         ctx.canvas.itemconfig(self._text_id, fill=self._font_color)
 
-    def get_x(self, ctx: context.Context):
+    def get_x(self, _: context.Context):
         return self._x
 
-    def get_y(self, ctx: context.Context):
+    def get_y(self, _: context.Context):
         return self._y
 
-    def get_width(self, ctx: context.Context, scaled=False):
+    def get_width(self, _: context.Context, scaled=False):
         width = float(self._width)
         if scaled:
             width *= self.scale_factor
@@ -185,10 +185,9 @@ class StickerObject(Object):
         ctx.canvas.itemconfig(self._text_id, width=self._width)
         ctx.canvas.coords(self._bg_id, self.create_note_coords(ctx))
         self.adjust_font(ctx)
-        bbox = ctx.canvas.coords(self.id)
-        ctx.pub_sub_broker.publish(ctx, self.id, self.BBOX_CHANGED_NOTIFICATION, bbox=bbox)
+        ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
 
-    def get_bg_color(self, ctx: context.Context):
+    def get_bg_color(self, _: context.Context):
         return self._bg_color
 
     def set_bg_color(self, ctx: context.Context, value: str):
@@ -199,7 +198,7 @@ class StickerObject(Object):
         ctx.canvas.itemconfig(self.get_text_id(), **kwargs)
         self.adjust_font(ctx)
 
-    def get_font(self, ctx: context.Context, scaled=False):
+    def get_font(self, _: context.Context, scaled=False):
         font_size = self._font_size
         if scaled:
             font_size *= self.scale_factor
@@ -221,6 +220,10 @@ class StickerObject(Object):
             font=self.get_font(ctx, scaled=True),
             width=self.get_width(ctx, scaled=True)
         )
+
+    def destroy(self, ctx: context.Context):
+        ctx.pub_sub_broker.remove_publisher(self.id)
+        ctx.canvas.delete(self.id)
 
     def adjust_font(self, ctx: context.Context, larger=True):
         _, y1, _, y2 = ctx.canvas.bbox(self._text_id)

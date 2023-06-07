@@ -18,6 +18,8 @@ import modules.zooming
 import modules.drag_board
 import modules.connector
 import modules.submenu
+import modules.object_destroying
+import modules.group
 
 
 def create_context(root: tkinter.Tk) -> context.Context:

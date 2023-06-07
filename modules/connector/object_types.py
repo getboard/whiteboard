@@ -179,17 +179,17 @@ class Connector(Object):
         sub = ctx.objects_storage.get_opt_by_id(pub_id)
         if sub:
             ctx.pub_sub_broker.subscribe(sub.MOVED_TO_NOTIFICATION, sub.id, self.id)
-            ctx.pub_sub_broker.subscribe(sub.BBOX_CHANGED_NOTIFICATION, sub.id, self.id)
+            ctx.pub_sub_broker.subscribe(sub.CHANGED_SIZE_NOTIFICATION, sub.id, self.id)
 
     def unsubscribe(self, ctx: context.Context, pub_id):
         sub = ctx.objects_storage.get_opt_by_id(pub_id)
         if sub:
             ctx.pub_sub_broker.unsubscribe(sub.MOVED_TO_NOTIFICATION, sub.id, self.id)
-            ctx.pub_sub_broker.unsubscribe(sub.BBOX_CHANGED_NOTIFICATION, sub.id, self.id)
+            ctx.pub_sub_broker.unsubscribe(sub.CHANGED_SIZE_NOTIFICATION, sub.id, self.id)
 
     def get_notification(self, ctx: context.Context, publisher_id, event, **kwargs):
         obj = ctx.objects_storage.get_by_id(publisher_id)
-        if obj.MOVED_TO_NOTIFICATION == event or obj.BBOX_CHANGED_NOTIFICATION == event:
+        if obj.MOVED_TO_NOTIFICATION == event or obj.CHANGED_SIZE_NOTIFICATION == event:
             if publisher_id == self._start_id:
                 self.update_start_position(ctx)
             elif publisher_id == self._end_id:
@@ -202,7 +202,7 @@ class Connector(Object):
         else:
             return [*self._start_position, *self._start_position]
 
-    def get_start_position(self, ctx: context.Context):
+    def get_start_position(self, _: context.Context):
         return self._start_position
 
     def set_start_position(self, ctx: context.Context, pos: Tuple[int, int]):
@@ -217,7 +217,7 @@ class Connector(Object):
             rect = ctx.canvas.bbox(self._start_id)
             self._start_position = self._get_exact_middle(rect, self._start_x, self._start_y)
 
-    def get_start_id(self, ctx: context.Context):
+    def get_start_id(self, _: context.Context):
         return self._start_id
 
     def set_start_id(self, ctx: context.Context, value: str):
@@ -231,7 +231,7 @@ class Connector(Object):
         else:
             return [*self._end_position, *self._end_position]
 
-    def get_end_id(self, ctx: context.Context):
+    def get_end_id(self, _: context.Context):
         return self._end_id
 
     def set_end_id(self, ctx: context.Context, value: str):
@@ -239,7 +239,7 @@ class Connector(Object):
         self._end_id = value
         self.subscribe(ctx, self._end_id)
 
-    def get_end_position(self, ctx: context.Context):
+    def get_end_position(self, _: context.Context):
         return self._end_position
 
     def set_end_position(self, ctx: context.Context, pos: Tuple[int, int]):
@@ -254,42 +254,42 @@ class Connector(Object):
             rect = ctx.canvas.bbox(self._end_id)
             self._end_position = self._get_exact_middle(rect, self._end_x, self._end_y)
 
-    def get_start_x(self, ctx: context.Context):
+    def get_start_x(self, _: context.Context):
         return self._start_x
 
-    def set_start_x(self, ctx: context.Context, value: Optional):
+    def set_start_x(self, _: context.Context, value: Optional):
         if value is not None and isinstance(value, (str, int)):
             self._start_x = int(value)
 
-    def get_start_y(self, ctx: context.Context):
+    def get_start_y(self, _: context.Context):
         return self._start_y
 
-    def set_start_y(self, ctx: context.Context, value: Optional):
+    def set_start_y(self, _: context.Context, value: Optional):
         if value is not None and isinstance(value, (str, int)):
             self._start_y = int(value)
 
-    def get_end_x(self, ctx: context.Context):
+    def get_end_x(self, _: context.Context):
         return self._end_x
 
-    def set_end_x(self, ctx: context.Context, value: str):
+    def set_end_x(self, _: context.Context, value: str):
         if value is not None and isinstance(value, (str, int)):
             self._end_x = int(value)
 
-    def get_end_y(self, ctx: context.Context):
+    def get_end_y(self, _: context.Context):
         return self._end_y
 
-    def set_end_y(self, ctx: context.Context, value: str):
+    def set_end_y(self, _: context.Context, value: str):
         if value is not None and isinstance(value, (str, int)):
             self._end_y = int(value)
 
-    def get_stroke_style(self, ctx: context.Context):
+    def get_stroke_style(self, _: context.Context):
         return self._stroke_style
 
     def set_stroke_style(self, ctx: context.Context, value: Literal['first', 'both', 'last']):
         self._stroke_style = value
         ctx.canvas.itemconfig(self.id, arrow=self._stroke_style)
 
-    def get_line_width(self, ctx: context.Context, scaled=False):
+    def get_line_width(self, _: context.Context, scaled=False):
         line_width = float(self._line_width)
         if scaled:
             line_width *= self.scale_factor
@@ -307,7 +307,7 @@ class Connector(Object):
     def set_line_color(self, ctx: context.Context, line_color: str):
         ctx.canvas.itemconfig(self.id, fill=line_color)
 
-    def get_connector_type(self, ctx: context.Context):
+    def get_connector_type(self, _: context.Context):
         return self._connector_type
 
     def set_connector_type(self, ctx: context.Context, value: str):
