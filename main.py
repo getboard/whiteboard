@@ -20,6 +20,7 @@ import modules.sticker
 import modules.move
 import modules.zooming
 import modules.drag_board
+import modules.pen
 import modules.connector
 import modules.submenu
 import modules.object_destroying
@@ -43,10 +44,10 @@ def _create_context(root: tkinter.Tk, logger: logging.Logger, repo: git.Repo, pa
 
     ctx.pub_sub_broker = pub_sub.Broker()
 
+    ctx.menu = menu.Menu(root)
     ctx.state_machine = StateMachine(ctx)
     ctx.property_bar = ttk.Frame(root)
     ctx.property_bar.pack(fill='both', expand=True, padx=10, pady=10)
-    ctx.menu = menu.Menu(root)
     return ctx
 
 

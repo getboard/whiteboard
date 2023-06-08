@@ -1,4 +1,5 @@
 import tkinter
+from typing import Callable
 
 
 class Menu:
@@ -16,6 +17,9 @@ class Menu:
         )
         self.set_root_state()
         root.config(menu=self._menubar)
+
+    def bind(self, func: Callable):
+        self._menubar.bind_all('<<MenuSelect>>', func)
 
     @property
     def current_state(self):

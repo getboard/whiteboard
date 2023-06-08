@@ -6,6 +6,7 @@ import tkinter
 
 import context
 
+
 # TODO: наверное надо по разным файлам растащить
 # TODO: наверное файл переименовать, поскольку клэшатся имена локальных переменных
 # (локальные переменные state_machine с именем модуля state_machine)
@@ -100,6 +101,7 @@ class StateMachine:
         self._global_context.canvas.bind('<ButtonRelease-3>', self.handle_event)
         self._global_context.canvas.bind('<Key>', self.handle_event)
         self._global_context.canvas.bind('<Control-ButtonPress-1>', self.handle_event)
+        self._global_context.menu.bind(self.handle_event)
 
     def _register_notifications(self):
         self._global_context.pub_sub_broker.add_publisher(StateMachine.PUB_SUB_ID)

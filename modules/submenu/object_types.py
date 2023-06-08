@@ -7,7 +7,7 @@ from properties import Property
 
 
 class Submenu:
-    obj_id: str
+    obj_id: str or None
     _property_widgets: List[ttk.Widget]
     _option_menu: Menu
 
