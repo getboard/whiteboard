@@ -13,7 +13,7 @@ CONNECTOR = 'connector'
 
 def _on_enter(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
     start = global_ctx.objects_storage.get_current_opt()
-    start_id = start.id if start else None
+    start_id = start.id if start and not isinstance(start, Connector) else None
     actual_x = int(global_ctx.canvas.canvasx(event.x))
     actual_y = int(global_ctx.canvas.canvasy(event.y))
 
