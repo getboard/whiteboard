@@ -1,5 +1,5 @@
 import context
-from event_handlers import EventHandler
+from events.event_handlers import EventHandler
 
 
 class DestroyObjectHandler(EventHandler):

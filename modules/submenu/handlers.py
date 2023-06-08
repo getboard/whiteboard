@@ -1,8 +1,8 @@
 import context
-import event_handlers
+import events.event_handlers
 
 
-class UpdateObjectHandler(event_handlers.EventHandler):
+class UpdateObjectHandler(events.event_handlers.EventHandler):
     @classmethod
     def apply(cls, ctx: context.Context, **kwargs):
         obj_id = kwargs['obj_id']

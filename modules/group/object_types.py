@@ -10,6 +10,7 @@ _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES = [
     Object.ENTERED_FOCUS_NOTIFICATION,
     Object.LEFT_FOCUS_NOTIFICATION,
     Object.CHANGED_SIZE_NOTIFICATION,
+    Object.DESTROYED_OBJECT_NOTIFICATION
 ]
 
 
@@ -155,6 +156,16 @@ class GroupObject(Object):
             self._show_rect(ctx)
             return
         if event == Object.CHANGED_SIZE_NOTIFICATION:
+            self._update_invisible_rect(ctx)
+            return
+        if event == Object.DESTROYED_OBJECT_NOTIFICATION:
+            if 'obj_id' not in kwargs:
+                return
+            obj_id = kwargs['obj_id']
+            self._children_ids.remove(obj_id)
+            if len(self._children_ids) < 2:
+                ctx.objects_storage.destroy_by_id(self.id)
+                return
             self._update_invisible_rect(ctx)
             return
 
