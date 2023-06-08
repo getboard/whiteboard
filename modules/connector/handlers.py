@@ -1,12 +1,12 @@
-from event_handlers import EventHandler
+from events.event_handlers import EventHandler
 
 
 class AddConnectorHandler(EventHandler):
     @classmethod
     def apply(cls, ctx, **kwargs):
         obj_id = kwargs['obj_id']
-        kwargs['start_position'] = eval(kwargs['start_position'])
-        kwargs['end_position'] = eval(kwargs['end_position'])
+        kwargs['start_position'] = kwargs['start_position']
+        kwargs['end_position'] = kwargs['end_position']
         kwargs.pop('obj_id')
         ctx.objects_storage.create(
             'CONNECTOR',
