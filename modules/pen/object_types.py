@@ -61,14 +61,14 @@ class PenObject(objects_storage.Object):
             is_hidden=False
         )
 
-    def get_points(self, ctx: context.Context):
+    def get_points(self, _: context.Context):
         return self._points
 
     def add_point(self, ctx: context.Context, value: tuple[int, int]):
         self._points.extend(value)
         ctx.canvas.coords(self.id, self._points)
 
-    def get_width(self, ctx: context.Context, scaled=False):
+    def get_width(self, _: context.Context, scaled=False):
         width = float(self._width)
         if scaled:
             width *= self.scale_factor
@@ -78,7 +78,7 @@ class PenObject(objects_storage.Object):
         self._width = int(value)
         ctx.canvas.itemconfig(self.id, width=self.get_width(ctx, scaled=True))
 
-    def get_line_color(self, ctx: context.Context):
+    def get_line_color(self, _: context.Context):
         return self._line_color
 
     def set_line_color(self, ctx: context.Context, color: str):
@@ -93,3 +93,8 @@ class PenObject(objects_storage.Object):
     def scale(self, ctx: context.Context, scale_factor: float):
         self.scale_factor *= scale_factor
         ctx.canvas.itemconfig(self.id, width=self.get_width(ctx, scaled=True))
+
+    def destroy(self, ctx: context.Context):
+        ctx.pub_sub_broker.publish(ctx, self.id, self.DESTROYED_OBJECT_NOTIFICATION, obj_id=self.id)
+        ctx.pub_sub_broker.remove_publisher(self.id)
+        ctx.canvas.delete(self.id)
