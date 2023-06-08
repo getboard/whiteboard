@@ -1,7 +1,8 @@
 from __future__ import annotations
 import uuid
-from typing import Type, Dict
+from typing import Type
 from typing import Optional
+from typing import Dict
 
 import context
 import pub_sub
@@ -14,8 +15,10 @@ class Object(pub_sub.Subscriber):
     _is_focused: bool
     scale_factor: float
     properties: Dict[str, Property]
+    _observers: Dict[str, Object]
 
     MOVED_TO_NOTIFICATION = 'moved_to'
+    BBOX_CHANGED_NOTIFICATION = 'bbox_changed'
     ENTERED_FOCUS_NOTIFICATION = 'entered_focus_notification'
     LEFT_FOCUS_NOTIFICATION = 'left_focus_notification'
     CHANGED_SIZE_NOTIFICATION = 'changed_size'
