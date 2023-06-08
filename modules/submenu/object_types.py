@@ -25,12 +25,11 @@ class Submenu:
 
     def _init_option_menu(self, ctx: context.Context):
         self._option_menu = Menu(None, tearoff=0)
-        self._option_menu.add_command(label='Bring To Front',
-                                      command=lambda: self._bring_to_front(ctx))
-        self._option_menu.add_command(label='Send To Back',
-                                      command=lambda: self._send_to_back(ctx))
-        self._option_menu.add_command(label='Delete',
-                                      command=lambda: self._delete(ctx))
+        self._option_menu.add_command(
+            label='Bring To Front', command=lambda: self._bring_to_front(ctx)
+        )
+        self._option_menu.add_command(label='Send To Back', command=lambda: self._send_to_back(ctx))
+        self._option_menu.add_command(label='Delete', command=lambda: self._delete(ctx))
 
     def _bring_to_front(self, ctx: context.Context):
         ctx.canvas.tag_raise(self.obj_id)

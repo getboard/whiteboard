@@ -25,22 +25,22 @@ class Connector(Object):
     _end_y: Literal[-1, 0, 1]
 
     def __init__(
-            self,
-            ctx: context.Context,
-            _id: str,
-            start_position: Tuple[int, int],
-            end_position: Tuple[int, int],
-            *,
-            start_id: Optional[str] = None,
-            end_id: Optional[str] = None,
-            start_x: Optional[Literal[-1, 0, 1]] = None,
-            start_y: Optional[Literal[-1, 0, 1]] = None,
-            end_x: Optional[Literal[-1, 0, 1]] = None,
-            end_y: Optional[Literal[-1, 0, 1]] = None,
-            stroke_style: Optional[Literal['first', 'both', 'last']] = 'last',
-            line_width: int = 2,
-            line_color: str = 'black',
-            connector_type: Literal['elbowed', 'straight', 'curved'] = 'curved'
+        self,
+        ctx: context.Context,
+        _id: str,
+        start_position: Tuple[int, int],
+        end_position: Tuple[int, int],
+        *,
+        start_id: Optional[str] = None,
+        end_id: Optional[str] = None,
+        start_x: Optional[Literal[-1, 0, 1]] = None,
+        start_y: Optional[Literal[-1, 0, 1]] = None,
+        end_x: Optional[Literal[-1, 0, 1]] = None,
+        end_y: Optional[Literal[-1, 0, 1]] = None,
+        stroke_style: Optional[Literal['first', 'both', 'last']] = 'last',
+        line_width: int = 2,
+        line_color: str = 'black',
+        connector_type: Literal['elbowed', 'straight', 'curved'] = 'curved',
     ):
         super().__init__(ctx, _id)
         self._start_id = start_id
@@ -73,7 +73,7 @@ class Connector(Object):
             getter=self.get_line_color,
             setter=self.set_line_color,
             restrictions='default',
-            is_hidden=False
+            is_hidden=False,
         )
 
         self.properties[consts.LINE_WIDTH_PROPERTY_NAME] = Property(
@@ -82,7 +82,7 @@ class Connector(Object):
             getter=self.get_line_width,
             setter=self.set_line_width,
             restrictions='default',
-            is_hidden=False
+            is_hidden=False,
         )
 
         self.properties[consts.STROKE_STYLE_PROPERTY_NAME] = Property(
@@ -91,7 +91,7 @@ class Connector(Object):
             getter=self.get_stroke_style,
             setter=self.set_stroke_style,
             restrictions=['last', 'first', 'both'],
-            is_hidden=False
+            is_hidden=False,
         )
 
         self.properties[consts.CONNECTOR_TYPE_PROPERTY_NAME] = Property(
@@ -100,7 +100,7 @@ class Connector(Object):
             getter=self.get_connector_type,
             setter=self.set_connector_type,
             restrictions=['elbowed', 'straight', 'curved'],
-            is_hidden=False
+            is_hidden=False,
         )
 
         self.properties[consts.START_ID_NAME] = Property(
@@ -109,7 +109,7 @@ class Connector(Object):
             getter=self.get_start_id,
             setter=self.set_start_id,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[consts.END_ID_NAME] = Property(
@@ -118,7 +118,7 @@ class Connector(Object):
             getter=self.get_end_id,
             setter=self.set_end_id,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[consts.START_POSITION] = Property(
@@ -127,7 +127,7 @@ class Connector(Object):
             getter=self.get_start_position,
             setter=self.set_start_position,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[consts.END_POSITION] = Property(
@@ -136,7 +136,7 @@ class Connector(Object):
             getter=self.get_end_position,
             setter=self.set_end_position,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[consts.START_X_STICK] = Property(
@@ -145,7 +145,7 @@ class Connector(Object):
             getter=self.get_start_x,
             setter=self.set_start_x,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[consts.START_Y_STICK] = Property(
@@ -154,7 +154,7 @@ class Connector(Object):
             getter=self.get_start_y,
             setter=self.set_start_y,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[consts.START_X_STICK] = Property(
@@ -163,7 +163,7 @@ class Connector(Object):
             getter=self.get_end_x,
             setter=self.set_end_x,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[consts.START_Y_STICK] = Property(
@@ -172,7 +172,7 @@ class Connector(Object):
             getter=self.get_end_y,
             setter=self.set_end_y,
             restrictions='default',
-            is_hidden=True
+            is_hidden=True,
         )
 
     def subscribe(self, ctx: context.Context, pub_id):
@@ -363,7 +363,7 @@ class Connector(Object):
             width=self._line_width,
             arrow=self._stroke_style,
             tags=self.id,
-            fill=self._line_color
+            fill=self._line_color,
         )
 
     def _correct_connection_edges(self, ctx: context.Context):
@@ -465,24 +465,30 @@ class Connector(Object):
         mid_y = (self._start_position[1] + self._end_position[1]) / 2
         points = [self._start_position]
         if self._start_x == 0 and self._start_y == -1 and self._end_x == 0 and self._end_y == 1:
-            points.extend([
-                (self._start_position[0], mid_y),
-                (self._end_position[0], mid_y),
-            ])
+            points.extend(
+                [
+                    (self._start_position[0], mid_y),
+                    (self._end_position[0], mid_y),
+                ]
+            )
         elif self._start_x == 0 and self._start_y == -1 and self._end_x == -1 and self._end_y == 0:
             points.append((self._start_position[0], self._end_position[1]))
         elif self._end_x == 0 and self._end_y == -1 and self._start_x == 0 and self._start_y == 1:
-            points.extend([
-                (self._start_position[0], mid_y),
-                (self._end_position[0], mid_y),
-            ])
+            points.extend(
+                [
+                    (self._start_position[0], mid_y),
+                    (self._end_position[0], mid_y),
+                ]
+            )
         elif self._end_x == 0 and self._end_y == -1 and self._start_x == -1 and self._start_y == 0:
             points.append((self._end_position[0], self._start_position[1]))
         else:
-            points.extend([
-                (mid_x, self._start_position[1]),
-                (mid_x, self._end_position[1]),
-            ])
+            points.extend(
+                [
+                    (mid_x, self._start_position[1]),
+                    (mid_x, self._end_position[1]),
+                ]
+            )
         points.append(self._end_position)
         return points
 
@@ -510,8 +516,8 @@ class Connector(Object):
             c += [1, 2, 1]
         if cnt == 4:
             c += [1, 3, 3, 1]
-        x = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t ** i * points[i][0] for i in range(cnt))
-        y = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t ** i * points[i][1] for i in range(cnt))
+        x = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t**i * points[i][0] for i in range(cnt))
+        y = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t**i * points[i][1] for i in range(cnt))
         return x, y
 
     @staticmethod
@@ -543,12 +549,7 @@ class Connector(Object):
         """
         x_ = [rect[0], (rect[0] + rect[2]) / 2, rect[2]]
         y_ = [rect[1], (rect[1] + rect[3]) / 2, rect[3]]
-        return [
-            (x_[0], y_[1]),
-            (x_[1], y_[0]),
-            (x_[2], y_[1]),
-            (x_[1], y_[2])
-        ]
+        return [(x_[0], y_[1]), (x_[1], y_[0]), (x_[2], y_[1]), (x_[1], y_[2])]
 
     @staticmethod
     def _find_min_point(rect: Tuple[int, int, int, int], point: Tuple[int, int]):

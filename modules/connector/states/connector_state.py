@@ -7,6 +7,7 @@ from state_machine import StateMachine
 from context import Context
 from modules.connector.object_types import Connector
 from properties import Property
+
 CREATE_CONNECTOR_STATE_NAME = 'CREATE_CONNECTOR'
 CONNECTOR = 'connector'
 
@@ -21,7 +22,7 @@ def _on_enter(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
         'CONNECTOR',
         start_position=(actual_x, actual_y),
         end_position=(actual_x, actual_y),
-        start_id=start_id
+        start_id=start_id,
     )
     connector = global_ctx.objects_storage.get_opt_by_id(obj_id)
     state_ctx[CONNECTOR] = connector
@@ -49,11 +50,7 @@ def _on_leave(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
     for key, prop in obj.properties.items():
         if prop.getter(global_ctx):
             kwargs[key] = prop.getter(global_ctx)
-    global_ctx.events_history.add_event(
-        'ADD_CONNECTOR',
-        obj_id=obj.id,
-        **kwargs
-    )
+    global_ctx.events_history.add_event('ADD_CONNECTOR', obj_id=obj.id, **kwargs)
     global_ctx.menu.set_root_state()
 
 
@@ -75,13 +72,9 @@ def create_state(state_machine: StateMachine) -> State:
     state.set_event_handler(_handle_event)
     state.set_on_leave(_on_leave)
     state_machine.add_transition(
-        StateMachine.ROOT_STATE_NAME,
-        CREATE_CONNECTOR_STATE_NAME,
-        _predicate_from_root_to_connector
+        StateMachine.ROOT_STATE_NAME, CREATE_CONNECTOR_STATE_NAME, _predicate_from_root_to_connector
     )
     state_machine.add_transition(
-        CREATE_CONNECTOR_STATE_NAME,
-        StateMachine.ROOT_STATE_NAME,
-        _predicate_from_connector_to_root
+        CREATE_CONNECTOR_STATE_NAME, StateMachine.ROOT_STATE_NAME, _predicate_from_connector_to_root
     )
     return state

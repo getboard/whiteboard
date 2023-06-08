@@ -4,7 +4,7 @@ import typing
 import context
 import objects_storage
 
-from typing import List
+from typing import List, Tuple
 from . import consts
 from properties import PropertyType, Property
 
@@ -14,14 +14,16 @@ class PenObject(objects_storage.Object):
     _line_width: int
     _points: List[float]
 
-    def __init__(self,
-                 ctx: context.Context,
-                 id_: str,
-                 points: typing.Iterable[int],
-                 *,
-                 line_width: int = 2,
-                 line_color='black',
-                 **_):
+    def __init__(
+        self,
+        ctx: context.Context,
+        id_: str,
+        points: typing.Iterable[int],
+        *,
+        line_width: int = 2,
+        line_color='black',
+        **_
+    ):
         super().__init__(ctx, id_)
         self._points = list(points)
         self._width = line_width
@@ -32,7 +34,7 @@ class PenObject(objects_storage.Object):
             fill=self._line_color,
             capstyle=tkinter.ROUND,
             smooth=True,
-            tags=self.id
+            tags=self.id,
         )
         self.init_properties()
 
@@ -42,7 +44,7 @@ class PenObject(objects_storage.Object):
             property_description=consts.EMPTY_DESC,
             getter=self.get_points,
             setter=self.add_point,
-            is_hidden=True
+            is_hidden=True,
         )
 
         self.properties[consts.LINE_COLOR_PROPERTY_NAME] = Property(
@@ -50,7 +52,7 @@ class PenObject(objects_storage.Object):
             property_description=consts.LINE_COLOR_PROPERTY_DESC,
             getter=self.get_line_color,
             setter=self.set_line_color,
-            is_hidden=False
+            is_hidden=False,
         )
 
         self.properties[consts.LINE_WIDTH_PROPERTY_NAME] = Property(
@@ -58,13 +60,13 @@ class PenObject(objects_storage.Object):
             property_description=consts.LINE_WIDTH_PROPERTY_DESC,
             getter=self.get_width,
             setter=self.set_width,
-            is_hidden=False
+            is_hidden=False,
         )
 
     def get_points(self, _: context.Context):
         return self._points
 
-    def add_point(self, ctx: context.Context, value: tuple[int, int]):
+    def add_point(self, ctx: context.Context, value: Tuple[int, int]):
         self._points.extend(value)
         ctx.canvas.coords(self.id, self._points)
 

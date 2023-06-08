@@ -1,5 +1,6 @@
 import logging
 
+
 def make_logger() -> logging.Logger:
     logger = logging.Logger('global_logger')
     handler = logging.StreamHandler()

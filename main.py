@@ -27,7 +27,9 @@ import modules.object_destroying
 import modules.group
 
 
-def _create_context(root: tkinter.Tk, logger: logging.Logger, repo: git.Repo, path_to_repo: str, log_filename: str) -> context.Context:
+def _create_context(
+    root: tkinter.Tk, logger: logging.Logger, repo: git.Repo, path_to_repo: str, log_filename: str
+) -> context.Context:
     ctx = context.Context()
 
     ctx.root = root
@@ -54,10 +56,10 @@ def _create_context(root: tkinter.Tk, logger: logging.Logger, repo: git.Repo, pa
 def main():
     # TODO: take the path from somewhere
     logger = make_logger.make_logger()
-    
+
     PATH_TO_REPO = './sync_repo'
     repo = git.Repo(PATH_TO_REPO)
-    
+
     picked_log_filename = events.sync.pick_log_file(repo, PATH_TO_REPO)
     if picked_log_filename is None:
         return

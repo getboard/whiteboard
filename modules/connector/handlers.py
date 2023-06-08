@@ -8,8 +8,4 @@ class AddConnectorHandler(EventHandler):
         kwargs['start_position'] = kwargs['start_position']
         kwargs['end_position'] = kwargs['end_position']
         kwargs.pop('obj_id')
-        ctx.objects_storage.create(
-            'CONNECTOR',
-            obj_id=obj_id,
-            **kwargs
-        )
+        ctx.objects_storage.create('CONNECTOR', obj_id=obj_id, **kwargs)
