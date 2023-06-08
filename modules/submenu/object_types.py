@@ -90,8 +90,11 @@ class Submenu:
         self._update_frame(ctx)
 
     def _update_frame(self, ctx: context.Context):
+        # TODO: BUG HERE. doesnt fit object
         x, y, _, _ = ctx.canvas.bbox(self.obj_id)
-        self._property_frame.place(x=x - 30, y=y - 30)
+        actual_x = int(ctx.canvas.canvasx(x))
+        actual_y = int(ctx.canvas.canvasy(y))
+        self._property_frame.place(x=actual_x, y=actual_y)
 
     def show_menu(self, ctx: context.Context):
         obj = ctx.objects_storage.get_by_id(self.obj_id)
