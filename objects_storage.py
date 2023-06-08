@@ -19,6 +19,7 @@ class Object(pub_sub.Subscriber):
     ENTERED_FOCUS_NOTIFICATION = 'entered_focus_notification'
     LEFT_FOCUS_NOTIFICATION = 'left_focus_notification'
     CHANGED_SIZE_NOTIFICATION = 'changed_size'
+    DESTROYED_OBJECT_NOTIFICATION = 'destroyed_object'
 
     def __init__(self, ctx: context.Context, id: str, **kwargs):
         super().__init__(id)
@@ -34,6 +35,7 @@ class Object(pub_sub.Subscriber):
         ctx.pub_sub_broker.add_publisher_event(self.id, Object.ENTERED_FOCUS_NOTIFICATION)
         ctx.pub_sub_broker.add_publisher_event(self.id, Object.LEFT_FOCUS_NOTIFICATION)
         ctx.pub_sub_broker.add_publisher_event(self.id, Object.CHANGED_SIZE_NOTIFICATION)
+        ctx.pub_sub_broker.add_publisher_event(self.id, Object.DESTROYED_OBJECT_NOTIFICATION)
 
     def _on_focused_change(self, ctx: context.Context):
         if self._is_focused:

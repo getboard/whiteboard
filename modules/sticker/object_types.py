@@ -220,6 +220,7 @@ class StickerObject(Object):
         )
 
     def destroy(self, ctx: context.Context):
+        ctx.pub_sub_broker.publish(ctx, self.id, self.DESTROYED_OBJECT_NOTIFICATION, obj_id=self.id)
         ctx.pub_sub_broker.remove_publisher(self.id)
         ctx.canvas.delete(self.id)
 
