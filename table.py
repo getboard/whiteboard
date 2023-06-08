@@ -56,6 +56,8 @@ class Table:
     def add_object(self, ctx: context.Context, obj_id: str):
         obj = ctx.objects_storage.get_by_id(obj_id)
         row = []
+        if obj.is_hidden():
+            return
         for col in self._props:
             if col in obj.properties:
                 row.append(obj.properties[col].getter(ctx))
@@ -79,7 +81,10 @@ class Table:
                 index = i
         return index
 
-    def set_focus_by_id(self, obj_id: str):
+    def set_focus_by_id(self, obj_id: str, ctx: context.Context):
+        obj = ctx.objects_storage.get_by_id(obj_id)
+        if obj.is_hidden():
+            return
         self._table.focus(obj_id)
         self._table.selection_set(obj_id)
 
@@ -90,6 +95,8 @@ class Table:
     def update_object(self, ctx: context.Context, obj_id: str):
         obj: Object = ctx.objects_storage.get_by_id(obj_id)
         updated_values = []
+        if obj.is_hidden():
+            return
         for c in self._props:
             if c in obj.properties:
                 updated_values.append(obj.properties[c].getter(ctx))

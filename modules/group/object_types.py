@@ -17,8 +17,10 @@ _SUBSCRIBE_TO_ALL_CHILDREN_NOTIFICATION_TYPES = [
 class GroupObject(Object):
     _children_ids: List[str]
 
-    def __init__(self, ctx: context.Context, id: str, children_ids: List[str]):
-        super().__init__(ctx, id)
+    def __init__(self, ctx: context.Context, id: str, children_ids: List[str], author='',
+                 description=''):
+        super().__init__(ctx=ctx, id=id, obj_type='GROUP', is_hidden=True, author=author,
+                         description=description)
         self._children_ids = children_ids
 
         invisible_rect = self._get_invisible_rect(ctx)

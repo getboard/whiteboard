@@ -227,9 +227,7 @@ class ObjectsStorage:
         else:
             obj_id = uuid.uuid4().hex[:10]
         self._objects[obj_id] = self._object_types[type_name](self._ctx, obj_id, **kwargs)
-        # TODO: bad check
-        if type_name != 'group':
-            self._ctx.table.add_object(self._ctx, obj_id)
+        self._ctx.table.add_object(self._ctx, obj_id)
         return obj_id
 
     def update(self, object_id: str, **kwargs):
