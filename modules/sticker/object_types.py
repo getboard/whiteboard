@@ -213,7 +213,7 @@ class StickerObject(Object):
         ctx.canvas.itemconfig(
             self._text_id,
             font=self.get_font(ctx, scaled=True),
-            width=self.get_width(ctx, scaled=True)
+            width=self.get_width(ctx, scaled=True),
         )
 
     def destroy(self, ctx: context.Context):

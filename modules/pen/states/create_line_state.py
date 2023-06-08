@@ -31,9 +31,7 @@ def _handle_event(global_ctx: Context, state_ctx: Dict, event: tkinter.Event):
 def _on_leave(global_ctx: Context, state_ctx: Dict, _: tkinter.Event):
     obj: PenObject = state_ctx[PEN_OBJECT]
     kwargs = dict((key, prop.getter(global_ctx)) for key, prop in obj.properties.items())
-    global_ctx.events_history.add_event(
-        ADD_PEN_STATE_NAME, obj_id=obj.id, **kwargs
-    )
+    global_ctx.events_history.add_event(ADD_PEN_STATE_NAME, obj_id=obj.id, **kwargs)
 
 
 def _predicate_from_pen_to_pen(_: Context, event: tkinter.Event) -> bool:
@@ -67,7 +65,5 @@ def create_state(state_machine: StateMachine) -> State:
     state_machine.add_transition(
         ADD_PEN_STATE_NAME, StateMachine.ROOT_STATE_NAME, _predicate_from_pen_to_root
     )
-    state_machine.add_transition(
-        ADD_PEN_STATE_NAME, ADD_PEN_STATE_NAME, _predicate_from_pen_to_pen
-    )
+    state_machine.add_transition(ADD_PEN_STATE_NAME, ADD_PEN_STATE_NAME, _predicate_from_pen_to_pen)
     return state

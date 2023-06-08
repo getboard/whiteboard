@@ -82,8 +82,9 @@ def _get_children_ids(global_ctx: context.Context, object_ids: List[str]) -> Lis
         if isinstance(obj, object_types.GroupObject):
             result_ids.update(obj.get_children_ids())
             global_ctx.objects_storage.destroy_by_id(obj_id)
-            global_ctx.events_history.add_event(object_destroying_consts.DESTROY_OBJECT_EVENT_TYPE,
-                                                obj_id=obj_id)
+            global_ctx.events_history.add_event(
+                object_destroying_consts.DESTROY_OBJECT_EVENT_TYPE, obj_id=obj_id
+            )
 
         else:
             result_ids.add(obj_id)
@@ -110,7 +111,9 @@ def _create_group(global_ctx: context.Context, state_ctx: Dict, event: tkinter.E
         children_ids=children_ids,
     )
     global_ctx.events_history.add_event(
-        consts.CREATE_GROUP_EVENT_TYPE, obj_id=obj_id, children_ids=children_ids,
+        consts.CREATE_GROUP_EVENT_TYPE,
+        obj_id=obj_id,
+        children_ids=children_ids,
     )
 
 

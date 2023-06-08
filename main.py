@@ -27,8 +27,9 @@ import modules.object_destroying
 import modules.group
 
 
-def _create_context(root: tkinter.Tk, logger: logging.Logger, repo: git.Repo, path_to_repo: str,
-                    log_filename: str) -> context.Context:
+def _create_context(
+    root: tkinter.Tk, logger: logging.Logger, repo: git.Repo, path_to_repo: str, log_filename: str
+) -> context.Context:
     ctx = context.Context()
 
     ctx.root = root

@@ -30,16 +30,15 @@ class Submenu:
                 PropertyType.FONT_SLANT,
                 PropertyType.COLOR
             ]:
-                self.init_property(ctx, prop_name, prop_value)
+                self._init_property(ctx, prop_name, prop_value)
 
     def _init_option_menu(self, ctx: context.Context):
         self._option_menu = Menu(None, tearoff=0)
-        self._option_menu.add_command(label='Bring To Front',
-                                      command=lambda: self._bring_to_front(ctx))
-        self._option_menu.add_command(label='Send To Back',
-                                      command=lambda: self._send_to_back(ctx))
-        self._option_menu.add_command(label='Delete',
-                                      command=lambda: self._delete(ctx))
+        self._option_menu.add_command(
+            label='Bring To Front', command=lambda: self._bring_to_front(ctx)
+        )
+        self._option_menu.add_command(label='Send To Back', command=lambda: self._send_to_back(ctx))
+        self._option_menu.add_command(label='Delete', command=lambda: self._delete(ctx))
 
     def _bring_to_front(self, ctx: context.Context):
         ctx.canvas.tag_raise(self.obj_id)
@@ -71,7 +70,7 @@ class Submenu:
                 index = i
         return index
 
-    def init_property(self, ctx: context.Context, prop_name: str, prop_value: Property):
+    def _init_property(self, ctx: context.Context, prop_name: str, prop_value: Property):
         string_var = StringVar()
         parsed_value = prop_value.getter(ctx)
         restrictions = prop_value.restrictions
@@ -94,12 +93,15 @@ class Submenu:
         ctx.events_history.add_event('UPDATE_OBJECT', obj_id=self.obj_id, **kwargs)
         ctx.objects_storage.get_by_id(self.obj_id).draw_rect(ctx)
         ctx.table.update_object(ctx, self.obj_id)
+        self._update_frame(ctx)
 
-    def show_menu(self, ctx: context.Context):
-        obj = ctx.objects_storage.get_by_id(self.obj_id)
+    def _update_frame(self, ctx: context.Context):
         x, y, _, _ = ctx.canvas.bbox(self.obj_id)
         self._property_frame.place(x=x - 30, y=y - 30)
 
+    def show_menu(self, ctx: context.Context):
+        obj = ctx.objects_storage.get_by_id(self.obj_id)
+        self._update_frame(ctx)
         obj.draw_rect(ctx)
         obj.set_focused(ctx, True)
 
