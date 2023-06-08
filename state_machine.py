@@ -6,6 +6,7 @@ import tkinter
 
 import context
 
+
 # TODO: наверное надо по разным файлам растащить
 # TODO: наверное файл переименовать, поскольку клэшатся имена локальных переменных
 # (локальные переменные state_machine с именем модуля state_machine)
@@ -60,6 +61,10 @@ class StateMachine:
 
     ROOT_STATE_NAME = 'ROOT'
     CONTEXT_STATE_NAME = 'CONTEXT'
+
+    PUB_SUB_ID = 'STATE_MACHINE'
+    STATE_CHANGED_NOTIFICATION = 'state_changed'
+
     _states: Dict[str, State]  # name -> State
     _transitions: Dict[str, List[_TransitionDescription]]  # before -> after
     _cur_state: State
@@ -74,6 +79,7 @@ class StateMachine:
         self._cur_state = self._make_root_state()
         self._cur_state_context = self._make_empty_context()
 
+        self._register_notifications()
         self._start_listening()
 
     def _make_root_state(self):
@@ -87,12 +93,21 @@ class StateMachine:
 
     def _start_listening(self):
         self._global_context.canvas.bind('<ButtonPress-1>', self.handle_event)
+        self._global_context.canvas.bind('<ButtonPress-3>', self.handle_event)
         self._global_context.canvas.bind('<B1-Motion>', self.handle_event)
         self._global_context.canvas.bind('<Key>', self.handle_event)
         self._global_context.canvas.bind('<Shift-ButtonPress-1>', self.handle_event)
         self._global_context.canvas.bind('<ButtonRelease-1>', self.handle_event)
+        self._global_context.canvas.bind('<ButtonRelease-3>', self.handle_event)
         self._global_context.canvas.bind('<Key>', self.handle_event)
         self._global_context.canvas.bind('<Control-ButtonPress-1>', self.handle_event)
+        self._global_context.menu.bind(self.handle_event)
+
+    def _register_notifications(self):
+        self._global_context.pub_sub_broker.add_publisher(StateMachine.PUB_SUB_ID)
+        self._global_context.pub_sub_broker.add_publisher_event(
+            StateMachine.PUB_SUB_ID, StateMachine.STATE_CHANGED_NOTIFICATION
+        )
 
     def add_state(self, state: State):
         self._states[state.get_name()] = state
@@ -117,11 +132,29 @@ class StateMachine:
                     # Залоггировать ошибку
                     return
                 # Залоггировать, что выходим из состояния before
+                state_changed_from = self._cur_state.get_name()
                 self._cur_state.on_leave(self._global_context, self._cur_state_context, event)
                 self._cur_state_context = self._make_empty_context()
                 self._cur_state = after_state
                 # Залоггировать, что входим в состояние after
                 self._cur_state.on_enter(self._global_context, self._cur_state_context, event)
+
+                state_changed_to = self._cur_state.get_name()
+                self._global_context.pub_sub_broker.publish(
+                    self._global_context,
+                    StateMachine.PUB_SUB_ID,
+                    StateMachine.STATE_CHANGED_NOTIFICATION,
+                    state_changed_from=state_changed_from,
+                    state_changed_to=state_changed_to,
+                )
                 return
         # Залоггировать, что ни один предикат не выполнился
         self._cur_state.handle_event(self._global_context, self._cur_state_context, event)
+
+    def reset(self):
+        self._cur_state = self._states[StateMachine.ROOT_STATE_NAME]
+        self._cur_state_context = self._make_empty_context()
+        self._register_notifications()
+
+    def get_cur_state_name(self) -> str:
+        return self._cur_state.get_name()

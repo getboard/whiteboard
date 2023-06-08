@@ -1,7 +1,7 @@
-import event_handlers
+import events.event_handlers
 
 
-class AddStickerHandler(event_handlers.EventHandler):
+class AddStickerHandler(events.event_handlers.EventHandler):
     @classmethod
     def apply(cls, ctx, **kwargs):
         x = int(kwargs['x'])
@@ -11,7 +11,7 @@ class AddStickerHandler(event_handlers.EventHandler):
         ctx.objects_storage.create('STICKER', x=x, y=y, text=text, obj_id=obj_id)
 
 
-class EditStickerHandler(event_handlers.EventHandler):
+class EditStickerHandler(events.event_handlers.EventHandler):
     @classmethod
     def apply(cls, ctx, **kwargs):
         sticker_id = kwargs['obj_id']
