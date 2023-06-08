@@ -77,6 +77,7 @@ def main():
     ctx = _create_context(root_window, logger, repo, PATH_TO_REPO, picked_log_filename)
     ctx.canvas.focus_set()
     modules.modules.init_modules(ctx)
+    ctx.table.init_table(ctx)
 
     events.sync.sync(ctx, apply_events=True, force=True)
     events.sync.init_sync(ctx)

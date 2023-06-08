@@ -1,7 +1,7 @@
 from __future__ import annotations
 import tkinter
 from tkinter import ttk
-from typing import List
+from typing import List, Dict
 
 import context
 from objects_storage import Object
@@ -10,44 +10,35 @@ from properties import PropertyType
 
 class Table:
     _frame: ttk.Frame
-    _columns: List[str]
     _table: ttk.Treeview
-    _scroller: ttk.Scrollbar
-    _columns = [
-        'obj_type',
-        'font_family',
-        'font_size',
-        'font_weight',
-        'font_slant',
-        'font_color',
-        'sticky_note_width',
-        'sticky_note_background_color'
-    ]
+    _scroller_x: ttk.Scrollbar
+    _scroller_y: ttk.Scrollbar
+    _props: Dict[str, str]
 
-    _headings = [
-        'Тип объекта',
-        'Шрифт',
-        'Размер шрифта',
-        'Насыщенность шрифта',
-        'Наклон шрифта',
-        'Цвет шрифта',
-        'Ширина карточки',
-        'Цвет карточки'
-    ]
-
-    def __init__(self, root: tkinter.Tk, ctx: context.Context, width: int, height: int):
+    def __init__(self, root: tkinter.Tk, _: context.Context, width: int, height: int):
+        self._props = {}
+        self._width = width
+        self._height = height
+        self._column_width = 100
         self._frame = ttk.Frame(root, width=width, height=height)
         self._frame.pack(side="left", fill="both", expand=True)
-        self._table = ttk.Treeview(self._frame, columns=self._columns, show="headings")
+
+    def init_table(self, ctx: context.Context):
+        for obj_type in ctx.objects_storage.get_objects_types().values():
+            for prop_name, prop_desc in obj_type.get_props().items():
+                if prop_desc:
+                    self._props[prop_name] = prop_desc
+
+        self._table = ttk.Treeview(self._frame, columns=list(self._props.keys()), show="headings")
         self._table.pack(side="left", fill="both", expand=True)
-        column_width = 100
-        for i in range(len(self._columns)):
-            self._table.column(self._columns[i], width=column_width)
+        for prop_name, prop_desc in self._props.items():
+            self._table.column(prop_name, width=self._column_width)
             self._table.heading(
-                self._columns[i],
-                text=self._headings[i],
-                command=lambda col=self._columns[i]: self.sort_column(col, reverse=False)
+                prop_name,
+                text=prop_desc,
+                command=lambda col=prop_name: self.sort_column(col, reverse=False)
             )
+
         self._scroller_x = ttk.Scrollbar(
             self._table,
             orient="horizontal",
@@ -65,9 +56,9 @@ class Table:
     def add_object(self, ctx: context.Context, obj_id: str):
         obj = ctx.objects_storage.get_by_id(obj_id)
         row = []
-        for col in self._columns:
+        for col in self._props:
             if col in obj.properties:
-                row.append(obj.properties[col].getter())
+                row.append(obj.properties[col].getter(ctx))
             else:
                 row.append("")
         self._table.insert("", "end", id=obj_id, values=row)
@@ -99,9 +90,9 @@ class Table:
     def update_object(self, ctx: context.Context, obj_id: str):
         obj: Object = ctx.objects_storage.get_by_id(obj_id)
         updated_values = []
-        for c in self._columns:
+        for c in self._props:
             if c in obj.properties:
-                updated_values.append(obj.properties[c].getter())
+                updated_values.append(obj.properties[c].getter(ctx))
             else:
                 updated_values.append('')
         self._table.item(obj.id, values=updated_values)
@@ -123,11 +114,11 @@ class Table:
             return
         edit_window = tkinter.Toplevel(self._frame)
         entry_widgets: dict[str, ttk.Widget] = dict()
-        for i, col in enumerate(self._columns):
+        for i, col in enumerate(self._props):
             if col in obj.properties:
                 prop = obj.properties[col]
                 label = ttk.Label(edit_window, text=prop.property_description)
-                label.grid(row=i, column=0, padx=5, pady=5)
+                label.grid(row=i, column=0, padx=5, pady=5, sticky='nsew')
                 if prop.property_type in [
                     PropertyType.LINE_TYPE,
                     PropertyType.LINE_WIDTH,
@@ -156,16 +147,18 @@ class Table:
                     entry.insert(0, props_values[i])
                 if prop.setter is None:
                     entry.configure(state='disabled')
-                entry.grid(row=i, column=1, padx=5, pady=5)
+                entry.grid(row=i, column=1, padx=5, pady=5, sticky='nsew')
                 entry_widgets[col] = entry
 
         def save_changes():
             updated_values = []
-            for c in self._columns:
+            for c in self._props:
                 if c in obj.properties:
                     if obj.properties[c].setter is not None:
                         obj.properties[c].setter(ctx, entry_widgets[c].get())
-                    updated_values.append(obj.properties[c].getter())
+                        ctx.events_history.add_event('UPDATE_OBJECT', obj_id=obj_id,
+                                                     c=obj.properties[c].getter(ctx))
+                    updated_values.append(obj.properties[c].getter(ctx))
                 else:
                     updated_values.append('')
             self._table.item(selected_item, values=updated_values)

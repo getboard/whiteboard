@@ -6,7 +6,6 @@ from typing import Optional, Tuple, Literal, Union, Iterable
 import context
 from objects_storage import Object
 from properties import PropertyType, Property
-from . import consts
 
 
 class Connector(Object):
@@ -24,25 +23,48 @@ class Connector(Object):
     _end_x: Literal[-1, 0, 1]
     _end_y: Literal[-1, 0, 1]
 
+    LINE_COLOR_PROPERTY_NAME = 'line_color'
+    LINE_WIDTH_PROPERTY_NAME = 'line_width'
+    STROKE_STYLE_PROPERTY_NAME = 'stroke_style'
+    CONNECTOR_TYPE_PROPERTY_NAME = 'connector_type'
+    START_ID_NAME = 'start_id'
+    END_ID_NAME = 'end_id'
+    START_POSITION = 'start_position'
+    END_POSITION = 'end_position'
+    START_X_STICK = 'start_x'
+    START_Y_STICK = 'start_y'
+    END_X_STICK = 'end_x'
+    END_Y_STICK = 'end_y'
+
+    LINE_COLOR_PROPERTY_DESC = 'Цвет линии'
+    LINE_WIDTH_PROPERTY_DESC = 'Толщина линии'
+    STROKE_STYLE_PROPERTY_DESC = 'Связь'
+    CONNECTOR_TYPE_PROPERTY_DESC = 'Тип линии связи'
+    EMPTY_DESC = ''
+
     def __init__(
-        self,
-        ctx: context.Context,
-        _id: str,
-        start_position: Tuple[int, int],
-        end_position: Tuple[int, int],
-        *,
-        start_id: Optional[str] = None,
-        end_id: Optional[str] = None,
-        start_x: Optional[Literal[-1, 0, 1]] = None,
-        start_y: Optional[Literal[-1, 0, 1]] = None,
-        end_x: Optional[Literal[-1, 0, 1]] = None,
-        end_y: Optional[Literal[-1, 0, 1]] = None,
-        stroke_style: Optional[Literal['first', 'both', 'last']] = 'last',
-        line_width: int = 2,
-        line_color: str = 'black',
-        connector_type: Literal['elbowed', 'straight', 'curved'] = 'curved',
+            self,
+            ctx: context.Context,
+            _id: str,
+            start_position: Tuple[int, int],
+            end_position: Tuple[int, int],
+            *,
+            start_id: Optional[str] = None,
+            end_id: Optional[str] = None,
+            start_x: Optional[Literal[-1, 0, 1]] = None,
+            start_y: Optional[Literal[-1, 0, 1]] = None,
+            end_x: Optional[Literal[-1, 0, 1]] = None,
+            end_y: Optional[Literal[-1, 0, 1]] = None,
+            stroke_style: Optional[Literal['first', 'both', 'last']] = 'last',
+            line_width: int = 2,
+            line_color: str = 'black',
+            connector_type: Literal['elbowed', 'straight', 'curved'] = 'curved',
+            author='',
+            description='',
+            **_
     ):
-        super().__init__(ctx, _id)
+        super().__init__(ctx=ctx, id=_id, obj_type='CONNECTOR', is_hidden=False, author=author,
+                         description=description)
         self._start_id = start_id
         self._end_id = end_id
 
@@ -63,112 +85,122 @@ class Connector(Object):
             self.set_start_position(ctx, pos=start_position)
         if end_position or end_x and end_y:
             self.set_end_position(ctx, pos=end_position)
-        self.init_properties()
+        self._init_properties()
         self._curve(ctx)
 
-    def init_properties(self):
-        self.properties[consts.LINE_COLOR_PROPERTY_NAME] = Property(
+    @classmethod
+    def get_props(cls):
+        super_props = super().get_props().copy()
+        super_props[cls.LINE_COLOR_PROPERTY_NAME] = cls.LINE_COLOR_PROPERTY_DESC
+        super_props[cls.LINE_WIDTH_PROPERTY_NAME] = cls.LINE_WIDTH_PROPERTY_DESC
+        super_props[cls.STROKE_STYLE_PROPERTY_NAME] = cls.STROKE_STYLE_PROPERTY_DESC
+        super_props[cls.CONNECTOR_TYPE_PROPERTY_NAME] = cls.CONNECTOR_TYPE_PROPERTY_DESC
+        super_props[cls.STROKE_STYLE_PROPERTY_NAME] = cls.STROKE_STYLE_PROPERTY_DESC
+        return super_props
+
+    def _init_properties(self):
+        self.properties[self.LINE_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
-            property_description=consts.LINE_COLOR_PROPERTY_DESC,
+            property_description=self.LINE_COLOR_PROPERTY_DESC,
             getter=self.get_line_color,
             setter=self.set_line_color,
             restrictions='default',
             is_hidden=False,
         )
 
-        self.properties[consts.LINE_WIDTH_PROPERTY_NAME] = Property(
+        self.properties[self.LINE_WIDTH_PROPERTY_NAME] = Property(
             property_type=PropertyType.LINE_WIDTH,
-            property_description=consts.LINE_WIDTH_PROPERTY_DESC,
+            property_description=self.LINE_WIDTH_PROPERTY_DESC,
             getter=self.get_line_width,
             setter=self.set_line_width,
             restrictions='default',
             is_hidden=False,
         )
 
-        self.properties[consts.STROKE_STYLE_PROPERTY_NAME] = Property(
+        self.properties[self.STROKE_STYLE_PROPERTY_NAME] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.STROKE_STYLE_PROPERTY_DESC,
+            property_description=self.STROKE_STYLE_PROPERTY_DESC,
             getter=self.get_stroke_style,
             setter=self.set_stroke_style,
             restrictions=['last', 'first', 'both'],
             is_hidden=False,
         )
 
-        self.properties[consts.CONNECTOR_TYPE_PROPERTY_NAME] = Property(
+        self.properties[self.CONNECTOR_TYPE_PROPERTY_NAME] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.CONNECTOR_TYPE_PROPERTY_DESC,
+            property_description=self.CONNECTOR_TYPE_PROPERTY_DESC,
             getter=self.get_connector_type,
             setter=self.set_connector_type,
             restrictions=['elbowed', 'straight', 'curved'],
             is_hidden=False,
         )
 
-        self.properties[consts.START_ID_NAME] = Property(
+        self.properties[self.START_ID_NAME] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.EMPTY_DESC,
+            property_description=self.EMPTY_DESC,
             getter=self.get_start_id,
             setter=self.set_start_id,
             restrictions='default',
             is_hidden=True,
         )
 
-        self.properties[consts.END_ID_NAME] = Property(
+        self.properties[self.END_ID_NAME] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.EMPTY_DESC,
+            property_description=self.EMPTY_DESC,
             getter=self.get_end_id,
             setter=self.set_end_id,
             restrictions='default',
             is_hidden=True,
         )
 
-        self.properties[consts.START_POSITION] = Property(
+        self.properties[self.START_POSITION] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.EMPTY_DESC,
+            property_description=self.EMPTY_DESC,
             getter=self.get_start_position,
             setter=self.set_start_position,
             restrictions='default',
             is_hidden=True,
         )
 
-        self.properties[consts.END_POSITION] = Property(
+        self.properties[self.END_POSITION] = Property(
             property_type=PropertyType.TEXT,
-            property_description=consts.EMPTY_DESC,
+            property_description=self.EMPTY_DESC,
             getter=self.get_end_position,
             setter=self.set_end_position,
             restrictions='default',
             is_hidden=True,
         )
 
-        self.properties[consts.START_X_STICK] = Property(
+        self.properties[self.START_X_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description=consts.EMPTY_DESC,
+            property_description=self.EMPTY_DESC,
             getter=self.get_start_x,
             setter=self.set_start_x,
             restrictions='default',
             is_hidden=True,
         )
 
-        self.properties[consts.START_Y_STICK] = Property(
+        self.properties[self.START_Y_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description=consts.EMPTY_DESC,
+            property_description=self.EMPTY_DESC,
             getter=self.get_start_y,
             setter=self.set_start_y,
             restrictions='default',
             is_hidden=True,
         )
 
-        self.properties[consts.START_X_STICK] = Property(
+        self.properties[self.START_X_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description=consts.EMPTY_DESC,
+            property_description=self.EMPTY_DESC,
             getter=self.get_end_x,
             setter=self.set_end_x,
             restrictions='default',
             is_hidden=True,
         )
 
-        self.properties[consts.START_Y_STICK] = Property(
+        self.properties[self.START_Y_STICK] = Property(
             property_type=PropertyType.NUMBER,
-            property_description=consts.EMPTY_DESC,
+            property_description=self.EMPTY_DESC,
             getter=self.get_end_y,
             setter=self.set_end_y,
             restrictions='default',
@@ -350,7 +382,6 @@ class Connector(Object):
         ctx.canvas.delete(self.id)
 
     def _curve(self, ctx: context.Context):
-        ctx.canvas.delete(self.id)
         self._correct_connection_edges(ctx)
         if self._connector_type == 'straight':
             points = self._extend_points(self._find_basic_points_of_straight())
@@ -358,13 +389,16 @@ class Connector(Object):
             points = self._extend_points(self._find_basic_points_of_elbowed())
         else:
             points = self._extend_points(self._find_basic_points_of_bezier())
-        ctx.canvas.create_line(
-            points,
-            width=self._line_width,
-            arrow=self._stroke_style,
-            tags=self.id,
-            fill=self._line_color,
-        )
+        if ctx.canvas.gettags(self.id):
+            ctx.canvas.coords(self.id, points)
+        else:
+            ctx.canvas.create_line(
+                points,
+                width=self._line_width,
+                arrow=self._stroke_style,
+                tags=[self.id],
+                fill=self._line_color,
+            )
 
     def _correct_connection_edges(self, ctx: context.Context):
         xs1, ys1, xs2, ys2 = self.get_start_bbox(ctx)
@@ -516,8 +550,8 @@ class Connector(Object):
             c += [1, 2, 1]
         if cnt == 4:
             c += [1, 3, 3, 1]
-        x = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t**i * points[i][0] for i in range(cnt))
-        y = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t**i * points[i][1] for i in range(cnt))
+        x = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t ** i * points[i][0] for i in range(cnt))
+        y = sum(c[i] * (1 - t) ** (cnt - 1 - i) * t ** i * points[i][1] for i in range(cnt))
         return x, y
 
     @staticmethod

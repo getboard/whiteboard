@@ -25,24 +25,35 @@ class TextObject(Object):
     FONT_SLANT_PROPERTY_DESC = 'Наклон шрифта'
     FONT_COLOR_PROPERTY_DESC = 'Цвет шрифта'
 
-    def __init__(self, ctx: context.Context, id: str, obj_type: str, **kwargs):
-        super().__init__(ctx, id, obj_type)
+    def __init__(self, ctx: context.Context, id: str, author='', description='', **kwargs):
+        super().__init__(ctx=ctx, id=id, obj_type='TEXT', is_hidden=False, author=author,
+                         description=description)
         self._font_family = 'Arial'
         self._font_size = 14
         self._font_weight = 'normal'
         self._font_slant = 'roman'
         self._font_color = 'black'
         self._text_id = ctx.canvas.create_text(
-            self.get_x(ctx),
-            self.get_y(ctx),
+            kwargs['x'],
+            kwargs['y'],
             text=kwargs['text'],
             tags=[id, 'text'],
             fill=self.get_font_color(ctx),
             font=self.get_font(ctx, scaled=True),
         )
-        self.init_properties()
+        self._init_properties()
 
-    def init_properties(self):
+    @classmethod
+    def get_props(cls):
+        super_props = super().get_props().copy()
+        super_props[cls.FONT_SIZE_PROPERTY_NAME] = cls.FONT_FAMILY_PROPERTY_DESC
+        super_props[cls.FONT_SLANT_PROPERTY_NAME] = cls.FONT_SLANT_PROPERTY_DESC
+        super_props[cls.FONT_COLOR_PROPERTY_NAME] = cls.FONT_COLOR_PROPERTY_DESC
+        super_props[cls.FONT_WEIGHT_PROPERTY_NAME] = cls.FONT_WEIGHT_PROPERTY_DESC
+        super_props[cls.FONT_FAMILY_PROPERTY_NAME] = cls.FONT_FAMILY_PROPERTY_DESC
+        return super_props
+
+    def _init_properties(self):
         self.properties[self.FONT_FAMILY_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_FAMILY,
             property_description=self.FONT_FAMILY_PROPERTY_DESC,

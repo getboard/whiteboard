@@ -22,7 +22,7 @@ class StickerObject(Object):
     FONT_SLANT_PROPERTY_NAME = 'font_slant'
     FONT_COLOR_PROPERTY_NAME = 'font_color'
     STICKY_NOTE_WIDTH_PROPERTY_NAME = 'sticky_note_width'
-    BG_COLOR_PROPERTY_NAME = 'sticky_note_background_color'
+    STICKY_NOTE_COLOR_PROPERTY_NAME = 'sticky_note_background_color'
 
     FONT_FAMILY_PROPERTY_DESC = 'Шрифт'
     FONT_SIZE_PROPERTY_DESC = 'Размер шрифта'
@@ -30,21 +30,20 @@ class StickerObject(Object):
     FONT_SLANT_PROPERTY_DESC = 'Наклон шрифта'
     FONT_COLOR_PROPERTY_DESC = 'Цвет шрифта'
     STICKY_NOTE_WIDTH_PROPERTY_DESC = 'Ширина карточка'
-    BG_COLOR_PROPERTY_DESC = 'Цвет карточки'
+    STICKY_NOTE_COLOR_PROPERTY_DESC = 'Цвет карточки'
 
-    def __init__(self, ctx: context.Context, id: str, obj_type: str, **kwargs):
-        super().__init__(ctx, id, obj_type)
+    def __init__(self, ctx: context.Context, id: str, author='', description='', **kwargs):
+        super().__init__(ctx=ctx, id=id, obj_type='STICKER', is_hidden=False, author=author,
+                         description=description)
         self._width = 100
         self._font_family = 'Arial'
         self._font_size = 14
         self._font_weight = 'normal'
         self._font_slant = 'roman'
         self._font_color = 'black'
-        self._x = kwargs['x']
-        self._y = kwargs['y']
         self._text_id = ctx.canvas.create_text(
-            self.get_x(ctx),
-            self.get_y(ctx),
+            kwargs['x'],
+            kwargs['y'],
             text=kwargs['text'],
             tags=[id, 'sticker'],
             fill=self.get_font_color(ctx),
@@ -55,8 +54,8 @@ class StickerObject(Object):
         self._bg_color = 'light yellow'
         self._bg_id = ctx.canvas.create_rectangle(arr, fill=self._bg_color, tags=[id, 'sticker'])
         ctx.canvas.tag_lower(self._bg_id, self._text_id)
-        self.adjust_font(ctx)
-        self.init_properties()
+        self._adjust_font(ctx)
+        self._init_properties()
 
     def create_note_coords(self, ctx: context.Context):
         args = ctx.canvas.bbox(self._text_id)
@@ -67,7 +66,19 @@ class StickerObject(Object):
         arr[3] = arr[1] + self.get_width(ctx)
         return arr
 
-    def init_properties(self):
+    @classmethod
+    def get_props(cls):
+        super_props = super().get_props().copy()
+        super_props[cls.FONT_SIZE_PROPERTY_NAME] = cls.FONT_FAMILY_PROPERTY_DESC
+        super_props[cls.FONT_SLANT_PROPERTY_NAME] = cls.FONT_SLANT_PROPERTY_DESC
+        super_props[cls.FONT_COLOR_PROPERTY_NAME] = cls.FONT_COLOR_PROPERTY_DESC
+        super_props[cls.FONT_WEIGHT_PROPERTY_NAME] = cls.FONT_WEIGHT_PROPERTY_DESC
+        super_props[cls.FONT_FAMILY_PROPERTY_NAME] = cls.FONT_FAMILY_PROPERTY_DESC
+        super_props[cls.STICKY_NOTE_WIDTH_PROPERTY_NAME] = cls.STICKY_NOTE_WIDTH_PROPERTY_DESC
+        super_props[cls.STICKY_NOTE_COLOR_PROPERTY_NAME] = cls.STICKY_NOTE_COLOR_PROPERTY_DESC
+        return super_props
+
+    def _init_properties(self):
         self.properties[self.FONT_FAMILY_PROPERTY_NAME] = Property(
             property_type=PropertyType.FONT_FAMILY,
             property_description=self.FONT_FAMILY_PROPERTY_DESC,
@@ -108,9 +119,9 @@ class StickerObject(Object):
             is_hidden=False
         )
 
-        self.properties[self.BG_COLOR_PROPERTY_NAME] = Property(
+        self.properties[self.STICKY_NOTE_COLOR_PROPERTY_NAME] = Property(
             property_type=PropertyType.COLOR,
-            property_description=self.BG_COLOR_PROPERTY_DESC,
+            property_description=self.STICKY_NOTE_COLOR_PROPERTY_DESC,
             getter=self.get_bg_color,
             setter=self.set_bg_color,
             is_hidden=False
@@ -163,11 +174,11 @@ class StickerObject(Object):
         self._font_color = font_color
         ctx.canvas.itemconfig(self._text_id, fill=self._font_color)
 
-    def get_x(self, _: context.Context):
-        return self._x
+    def get_x(self, ctx: context.Context):
+        return ctx.canvas.bbox(self.id)[0]
 
-    def get_y(self, _: context.Context):
-        return self._y
+    def get_y(self, ctx: context.Context):
+        return ctx.canvas.bbox(self.id)[0]
 
     def get_width(self, _: context.Context, scaled=False):
         width = float(self._width)
@@ -179,7 +190,7 @@ class StickerObject(Object):
         self._width = int(value)
         ctx.canvas.itemconfig(self._text_id, width=self._width)
         ctx.canvas.coords(self._bg_id, self.create_note_coords(ctx))
-        self.adjust_font(ctx)
+        self._adjust_font(ctx)
         ctx.pub_sub_broker.publish(ctx, self.id, Object.CHANGED_SIZE_NOTIFICATION)
 
     def get_bg_color(self, _: context.Context):
@@ -191,7 +202,7 @@ class StickerObject(Object):
 
     def update(self, ctx: context.Context, **kwargs):
         ctx.canvas.itemconfig(self.get_text_id(), **kwargs)
-        self.adjust_font(ctx)
+        self._adjust_font(ctx)
 
     def get_font(self, _: context.Context, scaled=False):
         font_size = self._font_size
@@ -221,7 +232,7 @@ class StickerObject(Object):
         ctx.pub_sub_broker.remove_publisher(self.id)
         ctx.canvas.delete(self.id)
 
-    def adjust_font(self, ctx: context.Context, larger=True):
+    def _adjust_font(self, ctx: context.Context, larger=True):
         _, y1, _, y2 = ctx.canvas.bbox(self._text_id)
         width = self.get_width(ctx, scaled=True)
         floated_size = float(self._font_size)
